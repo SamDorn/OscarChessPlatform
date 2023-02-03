@@ -26,13 +26,20 @@
     var $fen = $('#fen')
     var $pgn = $('#pgn')
     
-    updateStatus()
-
+    updateStatus();
+    var prova = document.getElementById("fen").innerHTML;
+    $.ajax({
+      url: "ajax.php",
+      type: "GET",
+      data: { fen: prova },
+      dataType: "json",
+      success: function(data){
+        console.log(data)
+      }
+    })
   </script>
 </html>
-<?php
-  
-  exec("bash bash/script.sh ");
+
 
   
 
