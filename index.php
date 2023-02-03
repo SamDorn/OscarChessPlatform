@@ -32,7 +32,7 @@
 </html>
 <?php
   
-  exec("bash bash/script.sh Oscar.txt");
+  exec("bash bash/script.sh ");
 
   
 
