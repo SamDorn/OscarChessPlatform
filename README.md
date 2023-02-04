@@ -68,5 +68,5 @@ When it will be finished you should be able to:\
 | Chessboard.js | https://chrisoakman.com/ | https://chessboardjs.com/ |
 | Stockfish.py | https://github.com/zhelyabuzhsky | https://github.com/zhelyabuzhsky/stockfish |
 | Stockfish 15 | https://github.com/official-stockfish | https://github.com/official-stockfish/Stockfish |
-| Stockfish 15 | https://github.com/jquery | https://github.com/jquery/jquery |
+| jQuery | https://github.com/jquery | https://github.com/jquery/jquery |
 
