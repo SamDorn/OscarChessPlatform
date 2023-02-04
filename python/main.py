@@ -1,18 +1,29 @@
-import subprocess
+import sys
+from stockfish import Stockfish
+stockfish = Stockfish(path="./stockfish/stockfish.exe")
 
-def main(output_file):
-    
+#sys.argv[1] contains the first argument provided which will be the username of 
+#the player who is playing against the pc 
+#fileName= sys.argv[1]
+#sys.argv[2] contains the fen string representing the position where stockfish
+#need to do the best move
 
-    p = subprocess.Popen(['./stockfish/stockfish.exe position startpos', 'eval'],
-                        stdin=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
+fileName = sys.argv[1]
 
-    output, error = p.communicate(input=b'\neval\n')
+fen = sys.argv[2]
 
-    with open(output_file, 'w') as file:
-        file.write(output.decode())
+skill = sys.argv[3]
 
-if __name__ == '__main__':
-    output_file = input("Enter output file name: ")
-    main(output_file)
+file = open(f"./games/{fileName}", "w")
+
+stockfish.set_skill_level(skill)
+
+
+
+stockfish.set_fen_position(fen)
+
+stockfish.make_moves_from_current_position([stockfish.get_best_move()])
+
+file.write(stockfish.get_fen_position())
+
+file.close()
