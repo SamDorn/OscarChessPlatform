@@ -11,16 +11,12 @@
 
 ## Roadmap
 - [x] Play against computer
-<<<<<<< Updated upstream
-- [ ] Select level computer
-=======
 - [x] Select level computer
 - [ ] Make random to be black or white
 - [ ] Make button to see previous move
 - [ ] Make a pgn on the side of the chessboard
 - [ ] Create the index page where the user will land
 - [ ] Make the site using MVC pattern.
->>>>>>> Stashed changes
 - [ ] Login/signup with database 
 - [ ] Play against another player
 - [ ] Live chat during online matches
@@ -81,5 +77,3 @@ When it will be finished you should be able to:\
 | jQuery | https://github.com/jquery | https://github.com/jquery/jquery |
 =======
 | Stockfish 15 | https://github.com/jquery | https://github.com/jquery/jquery |
->>>>>>> Stashed changes
-
