@@ -1,4 +1,5 @@
 import sys
+import os
 from stockfish import Stockfish
 stockfish = Stockfish(path="../Executable/stockfish.exe")
 
@@ -11,6 +12,11 @@ fileName = sys.argv[1]
 #need to do the best move
 
 fen = sys.argv[2]
+
+if fen == "gameOver":
+    os.remove(f"../GeneratedFiles/{fileName}")
+    sys.exit()
+    
 
 skill = sys.argv[3]
 

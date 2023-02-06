@@ -20,7 +20,7 @@
 
 <body>
     <div style="display:flex; justify-content:center;">
-        <div id="myBoard" style="width: 800px; position:relative;"></div>
+        <div id="myBoard" style="width: 600px; position:relative;"></div>
     </div>
     <div>
         <input type="number" name="skill" id="skill">

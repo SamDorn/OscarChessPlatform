@@ -25,7 +25,7 @@
 - [ ] Gui
 - [ ] Watch games played
 - [ ] Create api 
-- [ ] Solution for files created (player vs PC)
+- [x] Solution for files created (player vs PC)
 
 ## What is it?
 It's a web application that allow you to do different things.\

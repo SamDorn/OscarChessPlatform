@@ -72,7 +72,9 @@ function onDrop(source, target){
 
 function onSnapEnd(){
     board.position(game.fen())
-    $.ajax({
+    
+    if(!game.game_over()){
+      $.ajax({
         url: "../app/Ajax/ajax.php",
         type: "GET",
         data: { 
@@ -84,8 +86,46 @@ function onSnapEnd(){
         success: function(data){
           board.position(data)
           game.load(data)
+          if(game.game_over()){
+            $.ajax({
+              url: "../app/Ajax/ajax.php",
+              type: "GET",
+              data: { 
+                  fen: "gameOver", 
+                  fileName: sessionId,
+                  skill: skill
+              },
+              dataType: "json",
+              success: function(data){
+                alert("Game ended")
+              }
+            })
+          }
         }
       })
+          
+        
+    }
+   
+    
+    else{
+      $.ajax({
+        url: "../app/Ajax/ajax.php",
+        type: "GET",
+        data: { 
+            fen: "gameOver", 
+            fileName: sessionId,
+            skill: skill
+        },
+        dataType: "json",
+        success: function(data){
+          alert("Game ended")
+        }
+      })
+      
+    }
+
+
 
 }
 var config = {
