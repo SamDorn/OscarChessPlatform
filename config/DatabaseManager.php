@@ -2,7 +2,7 @@
     class DatabaseManager{
         private $host = "127.0.0.1";
         private $user = "root";
-        private $passwod = "";
+        private $password = "";
         private $db_name= "OscarChessPlatform";
 
         public function __construct(){

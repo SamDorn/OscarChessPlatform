@@ -11,7 +11,7 @@
     <title>OscarChessPlatform</title>
 </head>
 <body>
-    <a href="versusComputer.php">Gioca contro il PC</a>
+    <a href="versusComputer.php">Gioca contro il PC</a><br>
     <a href="login.php" class="login">Effetua Login</a>
 </body>
 </html>
