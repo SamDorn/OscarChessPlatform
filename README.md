@@ -1,11 +1,11 @@
 # OscarChessPlatform
-- [Roadmap](#roadmap-)
-- [What is it?](#what-is-it-)
-- [How does it work?](#how-does-it-work-)
+- [Roadmap](#roadmap)
+- [What is it?](#what-is-it)
+- [How does it work?](#how-does-it-work)
   * [Against computer](#against-computer)
-  * [Against player](#against-player-)
-  * [Learn secton](#laern-section-)
-  * [Watch another player](#watch-another-player-)
+  * [Against player](#against-player)
+  * [Learn secton](#laern-section)
+  * [Watch another player](#watch-another-player)
   
 - [Credits](#credits)
 
