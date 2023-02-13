@@ -1,7 +1,7 @@
 import sys
 import os
 from stockfish import Stockfish
-stockfish = Stockfish(path="../Executable/stockfish.exe")
+stockfish = Stockfish(path="../app/executable/stockfish.exe")
 
 #sys.argv[1] contains the first argument provided which will be the username of 
 #the player who is playing against the pc
@@ -14,7 +14,7 @@ fileName = sys.argv[1]
 fen = sys.argv[2]
 
 if fen == "gameOver":
-    os.remove(f"../GeneratedFiles/{fileName}")
+    os.remove(f"../app/generated_files/{fileName}")
     sys.exit()
     
 
@@ -28,7 +28,7 @@ moveOverhead = int(skill)
 if time == 0:
     time = 1
 
-file = open(f"../GeneratedFiles/{fileName}", "w")
+file = open(f"../app/generated_files/{fileName}", "w")
 
 stockfish.update_engine_parameters({"Move Overhead": moveOverhead,"UCI_LimitStrength": "true"})
 

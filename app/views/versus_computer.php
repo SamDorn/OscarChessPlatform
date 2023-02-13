@@ -1,10 +1,5 @@
-<?php
-  session_start();
-?>
-
 <!DOCTYPE html>
-<html lang="it">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,9 +10,7 @@
     <script src="js/libraries/chess.js/chess.js"></script>
     <script src="js/libraries/chessboardjs-1.0.0/js/chessboard-1.0.0.js"></script>
     <script src="js/script.js"></script>
-    
 </head>
-
 <body>
     <div style="display:flex; justify-content:center;">
         <div id="myBoard" style="width: 600px; position:relative;"></div>
@@ -37,5 +30,4 @@ btnSelectSkill.addEventListener("click", function(){
 var sessionId = <?php echo "'". session_id(). "'\n"?>
 board = Chessboard("myBoard", config)
 </script>
-
 </html>

@@ -1,17 +1,36 @@
 <?php
-    session_start();
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OscarChessPlatform</title>
-</head>
-<body>
-    <a href="versusComputer.php">Gioca contro il PC</a><br>
-    <a href="login.php" class="login">Effetua Login</a>
-</body>
-</html>
+session_start();
+require_once '../vendor/autoload.php';
+use App\controllers\AjaxController;
+use App\controllers\IndexController;
+
+$action = 'index';
+
+if (isset($_GET['request'])) 
+{
+    $ajaxController = new AjaxController();
+    $ajaxController->handleRequest();
+    $action = 'nulla';
+}
+
+if (isset($_GET['action'])) 
+{
+    $action = $_GET['action'];
+}
+
+
+$indexController = new IndexController();
+
+switch ($action) {
+    case 'index':
+        $indexController->index();
+        break;
+    case 'vsComputer':
+        $indexController->vsComputer();
+        break;
+    
+    default:
+        die();
+}
+?>
