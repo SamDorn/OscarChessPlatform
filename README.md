@@ -1,6 +1,6 @@
 # OscarChessPlatform
-- [Roadmap](#roadmap)
 - [What is it?](#what-is-it)
+- [Roadmap](#roadmap)
 - [How does it work?](#how-does-it-work)
   * [Against computer](#against-computer)
   * [Against player](#against-player)
@@ -76,4 +76,3 @@ When it will be finished you should be able to:\
 | Stockfish.py | https://github.com/zhelyabuzhsky | https://github.com/zhelyabuzhsky/stockfish |
 | Stockfish 15 | https://github.com/official-stockfish | https://github.com/official-stockfish/Stockfish |
 | jQuery | https://github.com/jquery | https://github.com/jquery/jquery |
-| Stockfish 15 | https://github.com/jquery | https://github.com/jquery/jquery |
