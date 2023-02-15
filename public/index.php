@@ -29,6 +29,10 @@ switch ($action) {
     case 'vsComputer':
         $indexController->vsComputer();
         break;
+
+    case 'login':
+        $indexController->login();
+        break;
     
     default:
         die();

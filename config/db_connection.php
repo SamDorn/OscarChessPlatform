@@ -7,7 +7,7 @@
         public $con;
 
         public function __construct(){
-            $con = new PDO("mysql:host=$this->host;dbname=$this->db_name;", $this->user, $this->password);
+            $this->con = new PDO("mysql:host=$this->host;dbname=$this->db_name;", $this->user, $this->password);
         }
 
         public function getConnection(){

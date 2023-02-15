@@ -25,10 +25,10 @@ When it will be finished you should be able to:\
 ## Roadmap
 - [x] Play against computer
 - [x] Select level computer
-- [ ] Make random to be black or white
+- [x] Make random to be black or white
 - [ ] Make button to see previous move
 - [ ] Make a pgn on the side of the chessboard
-- [ ] Create the index page where the user will land
+- [x] Create the index page where the user will land
 - [x] Make the site using MVC pattern.
 - [ ] Login/signup with database 
 - [ ] Play against another player

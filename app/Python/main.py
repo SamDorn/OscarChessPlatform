@@ -13,16 +13,13 @@ fileName = sys.argv[1]
 
 fen = sys.argv[2]
 
-if fen == "gameOver":
-    os.remove(f"../app/generated_files/{fileName}")
-    sys.exit()
-    
-
 skill = sys.argv[3]
 
 time = int(skill)
 
-moveOverhead = int(skill)
+
+
+moveOverhead = 0
 
 
 if time == 0:

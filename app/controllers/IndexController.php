@@ -11,6 +11,10 @@ class IndexController
 
     public function vsComputer()
     {
-        require_once '../app/views/versus_computer.php';
+        require_once '../app/views/versus_computer_page.php';
+    }
+    public function login()
+    {
+        require_once '../app/views/login_page.php';
     }
 }
