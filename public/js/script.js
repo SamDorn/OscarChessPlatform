@@ -62,7 +62,6 @@ function onDrop(source, target){
         to: target,
         promotion: 'r' // NOTE: always promote to a queen for example simplicity
       })
-    
       // illegal move
       if (move === null) return 'snapback';
 
@@ -87,6 +86,7 @@ function onSnapEnd(){
         success: function(data){
           board.position(data)
           game.load(data)
+          localStorage.setItem("fen", data)
           
         }
       })
@@ -120,6 +120,19 @@ var config = {
     onDragStart: onDragStart,
     onDrop: onDrop,
     onSnapEnd: onSnapEnd,
+}
+
+function getFileContent(){
+  $.get("../app/generated_files/" + sessionId + '.txt', function(data) {
+    game.load(data)
+    board.position(data)
+ }, 'text');
+ skill = 0;
+
+}
+
+function setStorage(){
+  localStorage.setItem("skill", skill)
 }
 
 

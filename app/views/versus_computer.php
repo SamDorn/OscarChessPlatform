@@ -24,10 +24,13 @@
 var btnSelectSkill = document.getElementById("selectSkill")
 var skill = undefined
 btnSelectSkill.addEventListener("click", function(){
-    skill = document.getElementById("skill").value
-    console.log(skill)
+skill = document.getElementById("skill").value
+$('#skill').hide()
+$('#selectSkill').hide()
+localStorage.setItem("skill", skill)
 })
 var sessionId = <?php echo "'". session_id(). "'\n"?>
 board = Chessboard("myBoard", config)
+getFileContent()
 </script>
 </html>
