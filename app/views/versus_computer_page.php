@@ -10,7 +10,7 @@
     <script src="js/libraries/jQuery/jquery-3.6.3.min.js"></script>
     <script src="js/libraries/chess.js/chess.js"></script>
     <script src="js/libraries/chessboardjs-1.0.0/js/chessboard-1.0.0.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/scripts/vsComputer.js"></script>
 </head>
 
 <body>
@@ -110,7 +110,7 @@
 
                 if (colorOpp == 'w') {
                     board.orientation('black')
-                    
+
                 }
 
 

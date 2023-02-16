@@ -6,8 +6,9 @@ use App\controllers\AjaxController;
 use App\controllers\IndexController;
 
 $action = 'index';
+$indexController = new IndexController();
 
-if (isset($_GET['request'])) 
+if (isset($_GET['request']) || isset($_POST['request'])) 
 {
     $ajaxController = new AjaxController();
     $ajaxController->handleRequest();
@@ -20,7 +21,7 @@ if (isset($_GET['action']))
 }
 
 
-$indexController = new IndexController();
+
 
 switch ($action) {
     case 'index':
@@ -37,4 +38,3 @@ switch ($action) {
     default:
         die();
 }
-?>

@@ -1,1 +1,8 @@
+RewriteEngine On
 
+RewriteRule (^|/)app(/|$) - [F]
+RewriteRule (^|/)config(/|$) - [F]
+RewriteRule (^|/)vendor(/|$) - [F]
+RewriteRule (^|/)LICENSE(/|$) - [F]
+RewriteRule (^|/)composer.json(/|$) - [F]
+RewriteRule (^|/)composer.lock(/|$) - [F]

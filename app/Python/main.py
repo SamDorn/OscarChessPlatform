@@ -13,13 +13,17 @@ fileName = sys.argv[1]
 
 fen = sys.argv[2]
 
-skill = sys.argv[3]
+skill = int(sys.argv[3])
 
 time = int(skill)
 
 
+if skill < 10:
+    moveOverhead = 0
+else:
+    moveOverhead = int(skill)
 
-moveOverhead = 0
+
 
 
 if time == 0:
