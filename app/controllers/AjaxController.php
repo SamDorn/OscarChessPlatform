@@ -22,16 +22,19 @@ class AjaxController
      * The request is then handled with a switch and for every possible request
      * a function will take care of the request and provide the data
      *
-     * @return void
+     * @return string $response
      */
     public function handleRequest()
     {
-        if(isset($_GET['request']))
+        if (isset($_GET['request']))
             $request = $_GET['request'];
 
-        if(isset($_POST['request']))
+        if (isset($_POST['request']))
             $request = $_POST['request'];
-         //
+
+
+        if (isset($_POST['username']))
+            $username = $_POST['username'];
         /**
          * This portion of the code is for the player vs PC. It gets the values
          * sent which are a file name which will be the session_id, 
@@ -89,6 +92,9 @@ class AjaxController
                 $this->response = $this->add($username, $email, $password);
                 break;
 
+            case 'checkUsername':
+                $this->response = $this->checkUsername($username);
+                break;
             default:
                 $this->response = 'Invalid request';
                 break;
@@ -124,18 +130,74 @@ class AjaxController
         return $new_fen; //return the new position
     }
 
-   
+
+    /**
+     * This function calls the checkUser function of the UserModel
+     * class with checks if the username and password match with a 
+     * record in the database
+     *
+     * @param string $username
+     * @param string $password
+     * @return string success or fail
+     */
     private function check($username, $password)
     {
-        $this->userModel->checkUser($username, $password);
+        try {
+            if ($this->userModel->checkUser($username, $password))
+            {
+                $_SESSION["username"] = $username;
+                return "OK";
+            }
+
+
+            else
+                return "Wrong credential";
+        } catch (Exception) {
+
+            return "Something went wrong";
+        }
     }
 
+
+    /**
+     * This function add the user in the database
+     * It calls the addUser method from the UserModel class
+     * It takes $username, $email and $password which are taken from
+     * the post request.
+     *
+     * @param string $username
+     * @param string $email
+     * @param string $password
+     * @return string success or fail
+     */
     private function add($username, $email, $password)
     {
-        try{
+        try {
             $this->userModel->addUser($username, $email, $password);
             return "User Signed-Up";
-        }catch(Exception $e){
+        } catch (Exception) {
+            return "Something went wrong";
+        }
+    }
+
+    /**
+     * This function calls the function checkUsername of the UserModel class
+     * and checks if the username that the user is typing is available and it is
+     * not used by another user.
+     *
+     * @param string $username
+     * @return string is available or not
+     */
+    private function checkUsername($username)
+    {
+        try {
+            if ($this->userModel->checkUsername($username))
+
+                return "Username already taken";
+            else
+
+                return "Username available";
+        } catch (Exception) {
             return "Something went wrong";
         }
     }

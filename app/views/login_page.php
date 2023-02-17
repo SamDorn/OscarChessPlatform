@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,7 +15,7 @@
             <input type="text" name="username" id="usernameLogin" placeholder="username" required><br>
             <input type="password" name="password" id="passwordLogin" placeholder="password" required><br>
             <input type="submit" value="Accedi" id="submitLogin">
-            <a href="" id="goSignUp">Registrati</a>
+            <a href="" id="goSignUp">Nuovo utente?</a>
         </form>
     </div>
     <div id="registerForm" style="display:flex; justify-content:center;">
@@ -32,6 +31,7 @@
 </body>
 <script>
     $("#registerForm").hide()
+    $("#error").hide()
     $(document).ready(function() {
         $("#loginForm").submit(function(e) {
             e.preventDefault();
@@ -49,12 +49,18 @@
         $("#usernameSignUp").keyup(function(e) {
             e.preventDefault()
             checkUsernameAjax()
-        });
+        })
 
         $("#registerForm").submit(function(e) {
             e.preventDefault()
             insertUserAjax()
         })
+
+        $("#loginForm").submit(function(e){
+            e.preventDefault()
+            checkUserAjax()
+        })
+
     })
 </script>
 
