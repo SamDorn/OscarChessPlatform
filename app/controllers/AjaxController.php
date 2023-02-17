@@ -8,7 +8,7 @@ use Exception;
 class AjaxController
 {
     private $userModel;
-    public $response = "";
+    private $response = "";
 
     public function __construct()
     {
@@ -35,6 +35,9 @@ class AjaxController
 
         if (isset($_POST['username']))
             $username = $_POST['username'];
+
+        if (isset($_POST['email']))
+            $email = $_POST['email'];
         /**
          * This portion of the code is for the player vs PC. It gets the values
          * sent which are a file name which will be the session_id, 
@@ -53,7 +56,7 @@ class AjaxController
 
             $username = $_POST["username"];
 
-            $password = $_POST["password"];
+            $password = hash("sha512", $_POST["password"]);
         }
 
 
@@ -69,18 +72,18 @@ class AjaxController
 
             $email = $_POST["email"];
 
-            $password = $_POST["password"];
+            $password = hash("sha512", $_POST["password"]);
         }
 
 
 
         /**
          * This is the switch that handle the request.
-         * Currently the are 3 possible request but it is expected that
+         * Currently the are 5 possible request but it is expected that
          * there will be more like for chess PVP and more.
          */
         switch ($request) {
-            case 'get_move_no_login':
+            case 'get_move_pc':
                 $this->response = $this->get_move_pc($fileName, $fen, $skill);
                 break;
 
@@ -94,6 +97,10 @@ class AjaxController
 
             case 'checkUsername':
                 $this->response = $this->checkUsername($username);
+                break;
+
+            case 'checkEmail':
+                $this->response = $this->checkEmail($email);
                 break;
             default:
                 $this->response = 'Invalid request';
@@ -117,8 +124,13 @@ class AjaxController
      * @param boolean $login
      * @return string $new_fen
      */
-    private function get_move_pc($fileName, $fen, $skill, $login = false)
+    private function get_move_pc($fileName, $fen, $skill)
     {
+        escapeshellcmd($fileName);
+        escapeshellcmd($fen);
+        escapeshellcmd($skill);
+
+
         exec("py ../app/python/main.py $fileName $fen $skill"); //execute the python script
 
         $file = fopen("../app/generated_files/$fileName", "r"); //open the file created by the script
@@ -128,10 +140,11 @@ class AjaxController
         unlink("../app/generated_files/$fileName"); //delete the file created by the python script
 
         return $new_fen; //return the new position
+
     }
 
 
-    /**
+    /** 
      * This function calls the checkUser function of the UserModel
      * class with checks if the username and password match with a 
      * record in the database
@@ -143,15 +156,11 @@ class AjaxController
     private function check($username, $password)
     {
         try {
-            if ($this->userModel->checkUser($username, $password))
-            {
+            if ($this->userModel->checkUser($username, $password)) {
                 $_SESSION["username"] = $username;
                 return "OK";
-            }
-
-
-            else
-                return "Wrong credential";
+            } else
+                return "Wrong credentials";
         } catch (Exception) {
 
             return "Something went wrong";
@@ -192,11 +201,21 @@ class AjaxController
     {
         try {
             if ($this->userModel->checkUsername($username))
-
                 return "Username already taken";
             else
-
                 return "Username available";
+        } catch (Exception) {
+            return "Something went wrong";
+        }
+    }
+
+    private function checkEmail($email)
+    {
+        try {
+            if ($this->userModel->checkEmail($email))
+                return "Email already used";
+            else
+                return;
         } catch (Exception) {
             return "Something went wrong";
         }

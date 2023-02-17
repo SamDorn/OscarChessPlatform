@@ -14,6 +14,11 @@
 </head>
 
 <body>
+    <?php if (isset($_SESSION["username"])) : ?>
+        <div style="text-align: center;">
+            <h1>CIAO <?= $_SESSION["username"] ?></h1>
+        </div>
+    <?php endif; ?>
     <div style="display:flex; justify-content:center;">
         <div id="myBoard" style="width: 600px; position:relative;"></div>
     </div>
@@ -36,11 +41,7 @@
 
         var localSkill = localStorage.getItem('skill')
 
-        var localColor = localStorage.getItem('color')
-
         var localColorOpp = localStorage.getItem('colorOpp')
-
-
 
 
         $('#quit').hide()

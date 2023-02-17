@@ -96,7 +96,7 @@ function sendAjax(fen, fileName, skill) {
     url: "index.php",
     type: "GET",
     data: {
-      request: 'get_move_no_login',
+      request: 'get_move_pc',
       fen: fen,
       fileName: fileName,
       skill: skill

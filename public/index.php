@@ -1,6 +1,6 @@
 <?php
-
 session_start();
+
 require_once '../vendor/autoload.php';
 use App\controllers\AjaxController;
 use App\controllers\IndexController;
@@ -12,7 +12,8 @@ if (isset($_GET['request']) || isset($_POST['request']))
 {
     $ajaxController = new AjaxController();
     $ajaxController->handleRequest();
-    $action = 'nulla';
+    $action = '';
+    
 }
 
 if (isset($_GET['action'])) 

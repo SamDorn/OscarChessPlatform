@@ -1,4 +1,4 @@
-function checkUsernameAjax(){
+function checkUsernameAjax() {
     $.ajax({
         url: "index.php",
         type: "POST",
@@ -7,14 +7,30 @@ function checkUsernameAjax(){
             username: $("#usernameSignUp").val()
         },
         dataType: "json",
-        success: function(data){
-            $("#error").show()
-            $("#error").text(data)
+        success: function (data) {
+            $("#errorUsername").text(data)
+            if($("#usernameSignUp").val() == "")
+                $("#errorUsername").text("")
         }
     })
 }
 
-function insertUserAjax(){
+function checkEmailAjax(){
+    $.ajax({
+        url: "index.php",
+        type: "POST",
+        data: {
+            request: "checkEmail",
+            email: $("#emailSignUp").val()
+        },
+        dataType: "json",
+        success: function (data) {
+            $("#errorEmail").text(data)
+        }
+    })
+}
+
+function insertUserAjax() {
     $.ajax({
         url: "index.php",
         type: "POST",
@@ -25,12 +41,12 @@ function insertUserAjax(){
             password: $("#passwordSignUp").val()
         },
         dataType: "json",
-        success: function(){
+        success: function () {
             window.location.href = "index.php?action=login"
         }
     })
 }
-function checkUserAjax(){
+function checkUserAjax() {
     $.ajax({
         url: "index.php",
         type: "POST",
@@ -40,8 +56,12 @@ function checkUserAjax(){
             password: $("#passwordLogin").val()
         },
         dataType: "json",
-        success: function(data){
+        success: function (data) {
             alert(data)
+            console.log(data)
+            if(data !== "Wrong credentials")
+                window.location.href = "index.php"
+            
         }
     })
 }

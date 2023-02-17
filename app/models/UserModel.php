@@ -74,4 +74,18 @@ class UserModel
         else
             return false;
     }
+
+    public function checkEmail($email)
+    {
+        $query = "SELECT * FROM user WHERE email = :email";
+        $stmt = $this->con->prepare($query);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        $result = $stmt->fetch();
+
+        if($result > 0)
+            return true;
+        else
+            return false;
+    }
 }
