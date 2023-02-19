@@ -17,4 +17,8 @@ class IndexController
     {
         require_once '../app/views/login_page.php';
     }
+    public function vsPlayer()
+    {
+        require_once '../app/views/versus_player.php';
+    }
 }

@@ -28,7 +28,7 @@ class UserModel
      */
     public function addUser($username, $email, $password)
     {
-        $query = "INSERT INTO user (id, username, email, password) VALUES (null, :username, :email, :password)";
+        $query = "INSERT INTO users (id, username, email, password) VALUES (null, :username, :email, :password)";
         $stmt = $this->con->prepare($query);
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':email', $email);
@@ -48,7 +48,7 @@ class UserModel
      */
     public function checkUser($username, $password)
     {
-        $query = "SELECT * FROM user WHERE username = :username AND password = :password";
+        $query = "SELECT * FROM users WHERE username = :username AND password = :password";
         $stmt = $this->con->prepare($query);
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':password', $password);
@@ -63,7 +63,7 @@ class UserModel
 
     public function checkUsername($username)
     {
-        $query = "SELECT * FROM user WHERE username = :username";
+        $query = "SELECT * FROM users WHERE username = :username";
         $stmt = $this->con->prepare($query);
         $stmt->bindParam(':username', $username);
         $stmt->execute();
@@ -77,7 +77,7 @@ class UserModel
 
     public function checkEmail($email)
     {
-        $query = "SELECT * FROM user WHERE email = :email";
+        $query = "SELECT * FROM users WHERE email = :email";
         $stmt = $this->con->prepare($query);
         $stmt->bindParam(':email', $email);
         $stmt->execute();

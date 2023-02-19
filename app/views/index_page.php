@@ -11,8 +11,11 @@
 
 <body>
     <a href="index.php?action=vsComputer">Gioca contro il PC</a>
+    <?php if (isset($_SESSION["username"])) : ?>
+    <a href="index.php?action=vsPlayer">Gioca online</a>
+    <?php endif; ?>
     <?php if (!isset($_SESSION["username"])) : ?>
-        <a href="index.php?action=login">Effettua il login</a>
+    <a href="index.php?action=login">Effettua il login</a>
     <?php endif; ?>
 </body>
 

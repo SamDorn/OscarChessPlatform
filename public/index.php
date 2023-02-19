@@ -4,6 +4,7 @@ session_start();
 require_once '../vendor/autoload.php';
 use App\controllers\AjaxController;
 use App\controllers\IndexController;
+use App\controllers\PVPController;
 
 $action = 'index';
 $indexController = new IndexController();
@@ -20,6 +21,11 @@ if (isset($_GET['action']))
 {
     $action = $_GET['action'];
 }
+if (isset($_POST['pvp'])) 
+{
+    $PVPController = new PVPController();
+    $PVPController->handleRequest();
+}
 
 
 
@@ -34,6 +40,10 @@ switch ($action) {
 
     case 'login':
         $indexController->login();
+        break;
+
+    case 'vsPlayer':
+        $indexController->vsPlayer();
         break;
     
     default:

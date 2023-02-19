@@ -131,7 +131,7 @@ class AjaxController
         escapeshellcmd($skill);
 
 
-        exec("py ../app/python/main.py $fileName $fen $skill"); //execute the python script
+        exec("python3 ../app/python/main.py $fileName $fen $skill"); //execute the python script
 
         $file = fopen("../app/generated_files/$fileName", "r"); //open the file created by the script
 
@@ -140,7 +140,7 @@ class AjaxController
         unlink("../app/generated_files/$fileName"); //delete the file created by the python script
 
         return $new_fen; //return the new position
-
+        
     }
 
 

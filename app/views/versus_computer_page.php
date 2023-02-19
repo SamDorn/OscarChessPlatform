@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <?php if (isset($_SESSION["username"])) : ?>
+    <?php if (isset($_SESSION["username"])): ?>
         <div style="text-align: center;">
             <h1>CIAO <?= $_SESSION["username"] ?></h1>
         </div>
@@ -23,7 +23,7 @@
         <div id="myBoard" style="width: 600px; position:relative;"></div>
     </div>
     <div>
-        <input type="number" name="skill" id="skill">
+        <input type="text" inputmode="numeric" pattern="[0-9]+" id="skill">
         <button id="selectSkill">Select level difficulty</button>
         <button id="quit">Quit game</button>
         <button id="restart">Restart</button>
@@ -36,6 +36,18 @@
     var colorOpp = undefined
 
     $(document).ready(function() {
+
+        $("#skill").keydown(function(event) {
+            // Allow only backspace, delete, tab, and arrow keys
+            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 37 || event.keyCode == 39) {
+                return true;
+            } else {
+                // Ensure that it is a number and check the input length
+                if ((event.keyCode < 48 || event.keyCode > 57) ) {
+                    event.preventDefault();
+                }
+            }
+        });
 
         var localFen = localStorage.getItem('fen')
 
@@ -50,8 +62,6 @@
             $('#restart').hide()
             removeQuit()
             resetGame()
-
-
 
         });
 
