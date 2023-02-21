@@ -131,7 +131,7 @@ class AjaxController
         escapeshellcmd($skill);
 
 
-        exec("python3 ../app/python/main.py $fileName $fen $skill"); //execute the python script
+        exec("py ../app/python/main.py $fileName $fen $skill"); //execute the python script
 
         $file = fopen("../app/generated_files/$fileName", "r"); //open the file created by the script
 

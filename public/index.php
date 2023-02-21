@@ -25,6 +25,7 @@ if (isset($_POST['pvp']))
 {
     $PVPController = new PVPController();
     $PVPController->handleRequest();
+    $action = '';
 }
 
 

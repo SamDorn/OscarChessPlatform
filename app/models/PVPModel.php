@@ -18,7 +18,7 @@ class PVPModel
 
     public function createGame($username)
     {
-        $query = "INSERT INTO games_pvp (id, username_1, username_2, last_fen, white) VALUES (null, :username_1, null, 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', NULL)";
+        $query = "INSERT INTO games_pvp (id, username_1, username_2, last_fen, white, status) VALUES (null, :username_1, null, 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', NULL, 'waiting for a second player')";
         $stmt = $this->con->prepare($query);
         $stmt->bindParam(':username_1', $username);
         $stmt->execute();
@@ -43,9 +43,39 @@ class PVPModel
 
     public function enterGame($username)
     {
-        $query = "UPDATE games_pvp SET username_2 = :username_2 WHERE username_2 IS NULL";
+        $query = "UPDATE games_pvp SET username_2 = :username_2, status = 'ready to start' WHERE username_2 IS NULL AND username_1 != :username_1";
+        $stmt = $this->con->prepare($query);
+        $stmt->bindParam(':username_2', $username);
+        $stmt->bindParam(':username_1', $username);
+        $stmt->execute();
+    }
+    public function checkStatus($username)
+    {
+        $query = "SELECT status from games_pvp WHERE username_1 = :username_1";
+        $stmt = $this->con->prepare($query);
+        $stmt->bindParam(':username_1', $username);
+        $stmt->execute();
+        $result = $stmt->fetch();
+
+        return $result;
+    }
+    public function insertLastFen($username, $fen)
+    {
+        $query = "UPDATE games_pvp SET last_fen = :fen WHERE username_1 = :username_1";
+        $stmt = $this->con->prepare($query);
+        $stmt->bindParam(':username_1', $username);
+        $stmt->bindParam(':fen', $fen);
+        $stmt->execute();
+    }
+
+    public function getLastFen($username)
+    {
+        $query = "SELECT last_fen from games_pvp WHERE username_2 = :username_2";
         $stmt = $this->con->prepare($query);
         $stmt->bindParam(':username_2', $username);
         $stmt->execute();
+        $result = $stmt->fetch();
+
+        return $result;
     }
 }

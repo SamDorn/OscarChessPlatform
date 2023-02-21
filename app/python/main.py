@@ -1,7 +1,6 @@
 import sys
 from stockfish import Stockfish
-import os
-stockfish = Stockfish(path="../app/executable/stockfish")
+stockfish = Stockfish(path="../app/executable/stockfish.exe")
 
 #sys.argv[1] contains the first argument provided which will be the username of 
 #the player who is playing against the pc

@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php require_once "pages.php"?>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OscarChessPlatform</title>
-    <link rel="stylesheet" href="js/libraries/chessboardjs-1.0.0/css/chessboard-1.0.0.css">
-    <script src="js/libraries/jQuery/jquery-3.6.3.min.js"></script>
-    <script src="js/libraries/chess.js/chess.js"></script>
-    <script src="js/libraries/chessboardjs-1.0.0/js/chessboard-1.0.0.js"></script>
+    <?php htmlHead()?>
     <script src="js/scripts/vsPlayer.js"></script>
 </head>
 
@@ -16,24 +8,33 @@
     <div style="display:flex; justify-content:center;">
         <div id="myBoard" style="width: 600px; position:relative;"></div>
     </div>
-</body>
-<script>
-    board = Chessboard("myBoard", config)
+    <div>
+        <h1 id="prova" style="text-align: center;">Searching for a player...</h1> 
+    </div>
+    <div style="display:flex; justify-content:center;">
+        <button id="rigioca">Find another opponent</button>
+    </div>
+    <script>
+        board = Chessboard("myBoard", config)
+        $("#prova").hide()
+        $("#myBoard").hide()
+        $("#rigioca").hide()
 
-    $(document).ready(function(){
-        $.ajax({
-            url: "index.php",
-            data: {
-                pvp: "new_game",
-                username: "<?= $_SESSION["username"] ?>",
-            },
-            type: "POST",
-            dataType: "json",
-            success: function(){
-                alert("ok")
+        $(document).ready(function () {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({ gameId: gameId, fen: game.fen() }));
+            } else {
+                socket.addEventListener('open', function (event) {
+                    socket.send(JSON.stringify({ gameId: gameId, fen: game.fen() }));
+                });
             }
-        })
-    })
-</script>
+            $("#rigioca").click(function(e){
+                e.preventDefault()
+                window.location.href = "index.php?action=vsPlayer"
+            })
+        });
+
+    </script>
+</body>
 
 </html>

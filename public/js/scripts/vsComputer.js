@@ -86,10 +86,6 @@ function onSnapEnd() {
 
   }
 
-
-
-
-
 }
 function sendAjax(fen, fileName, skill) {
   $.ajax({

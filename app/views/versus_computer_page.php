@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php require_once "pages.php"?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OscarChessPlatform</title>
-    <link rel="stylesheet" href="js/libraries/chessboardjs-1.0.0/css/chessboard-1.0.0.css">
-    <script src="js/libraries/jQuery/jquery-3.6.3.min.js"></script>
-    <script src="js/libraries/chess.js/chess.js"></script>
-    <script src="js/libraries/chessboardjs-1.0.0/js/chessboard-1.0.0.js"></script>
+    <?php htmlHead()?>
     <script src="js/scripts/vsComputer.js"></script>
 </head>
 
@@ -22,7 +13,7 @@
     <div style="display:flex; justify-content:center;">
         <div id="myBoard" style="width: 600px; position:relative;"></div>
     </div>
-    <div>
+    <div style="display:flex; justify-content:center;">
         <input type="text" inputmode="numeric" pattern="[0-9]+" id="skill">
         <button id="selectSkill">Select level difficulty</button>
         <button id="quit">Quit game</button>
@@ -86,7 +77,6 @@
                 colorOpp = 'b'
             } else {
                 colorOpp = 'w'
-
             }
 
             if (colorOpp == 'w') {

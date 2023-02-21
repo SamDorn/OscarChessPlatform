@@ -2,8 +2,8 @@
 class Database
 {
     private $host = "127.0.0.1";
-    private $user = "prova";
-    private $password = "prova";
+    private $user = "root";
+    private $password = "";
     private $db_name = "OscarChessPlatform";
     public $con;
 
@@ -15,7 +15,7 @@ class Database
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
         $this->con = new PDO("mysql:host=$this->host;dbname=$this->db_name;", $this->user, $this->password, $options);
-        $this->createTables();
+        //$this->createTables();
     }
 
     public function getConnection()
@@ -23,7 +23,7 @@ class Database
         return $this->con;
     }
 
-    private function createTables()
+    /*private function createTables()
     {
         $cmd = "CREATE TABLE IF NOT EXISTS users(id INT NOT NULL AUTO_INCREMENT,
             username VARCHAR(30) NOT NULL, 
@@ -39,5 +39,5 @@ class Database
             
         $this->con->exec($cmd);
         $this->con->exec($cmd2);
-    }
+    }*/
 }
