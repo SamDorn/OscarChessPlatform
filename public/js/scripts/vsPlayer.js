@@ -1,6 +1,6 @@
 var board = null
 var game = new Chess()
-var socket = new WebSocket('ws://localhost:8080');
+var socket = new WebSocket('ws://192.168.112.17:5000');
 
 var whiteSquareGrey = '#a9a9a9'
 var blackSquareGrey = '#696969'

@@ -21,12 +21,7 @@ if (isset($_GET['action']))
 {
     $action = $_GET['action'];
 }
-if (isset($_POST['pvp'])) 
-{
-    $PVPController = new PVPController();
-    $PVPController->handleRequest();
-    $action = '';
-}
+
 
 
 
