@@ -9,6 +9,7 @@
     <script src="js/libraries/jQuery/jquery-3.6.3.min.js"></script>
     <script src="js/scripts/login.js"></script>
 </head>
+
 <body>
     <div id="loginForm" style="display:flex; justify-content:center;">
         <form action="">
@@ -78,13 +79,13 @@
             else
                 $("#errorPassword").text("")
         })
-        $("#passwordSignUpVerify").keyup(function(e){
-            if($(this).val() != $("#passwordSignUp").val())
+        $("#passwordSignUpVerify").keyup(function(e) {
+            if ($(this).val() != $("#passwordSignUp").val())
                 $("#errorPasswordVerify").text("Password doesn't match")
             else
                 $("#errorPasswordVerify").text("")
         })
-        
+
     })
 </script>
 

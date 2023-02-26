@@ -1,7 +1,12 @@
-<?php require_once "pages.php"?>
-<head>
-    <?php htmlHead()?>
-    <script src="js/scripts/vsPlayer.js"></script>
+<?php
+require_once "pages.php";
+if (!isset($_SESSION["username"])) {
+    header('Location: index.php');
+}
+?>
+
+<?php htmlHead() ?>
+<script src="js/scripts/vsPlayer.js"></script>
 </head>
 
 <body>
@@ -9,7 +14,7 @@
         <div id="myBoard" style="width: 600px; position:relative;"></div>
     </div>
     <div>
-        <h1 id="prova" style="text-align: center;">Searching for a player...</h1> 
+        <h1 id="prova" style="text-align: center;">Searching for a player...</h1>
     </div>
     <div style="display:flex; justify-content:center;">
         <button id="rigioca">Find another opponent</button>
@@ -19,21 +24,28 @@
         $("#prova").hide()
         $("#myBoard").hide()
         $("#rigioca").hide()
-
-        $(document).ready(function () {
+        var username = '<?= $_SESSION['username'] ?>'
+        $(document).ready(function() {
             if (socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({ gameId: gameId, fen: game.fen() }));
+                socket.send(JSON.stringify({
+                    gameId: gameId,
+                    fen: game.fen(),
+                    username: username
+                }));
             } else {
-                socket.addEventListener('open', function (event) {
-                    socket.send(JSON.stringify({ gameId: gameId, fen: game.fen() }));
+                socket.addEventListener('open', function(event) {
+                    socket.send(JSON.stringify({
+                        gameId: gameId,
+                        fen: game.fen(),
+                        username: username
+                    }));
                 });
             }
-            $("#rigioca").click(function(e){
+            $("#rigioca").click(function(e) {
                 e.preventDefault()
                 window.location.href = "index.php?action=vsPlayer"
             })
         });
-
     </script>
 </body>
 

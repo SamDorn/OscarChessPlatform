@@ -2,8 +2,8 @@
 
 namespace App\controllers;
 
-use \App\models\UserModel;
-use Exception;
+use App\models\UserModel;
+use App\controllers\UserController;
 
 class AjaxController
 {
@@ -18,7 +18,7 @@ class AjaxController
     /**
      * This function will handle the ajax request sent to perform various actions
      * Every time an ajax request is sent, it comes with a string request to
-     * distinguish to action.
+     * distinguish the action.
      * The request is then handled with a switch and for every possible request
      * a function will take care of the request and provide the data
      *
@@ -26,61 +26,36 @@ class AjaxController
      */
     public function handleRequest()
     {
-        if (isset($_GET['request']))
-            $request = $_GET['request'];
+        /**
+         * This code uses the ternary operator to take the values from the superGlobal variables
+         * $_GET and $_POST. It is use to not make redundancy code because not always there are
+         * username, email and password.
+         */
+        $request = $_POST['request'];
+        $username = isset($_POST['username']) ? $_POST['username'] : null;
+        $email = isset($_POST['email']) ? $_POST['email'] : null;
+        $password = isset($_POST['password']) ? hash("sha512", $_POST["password"]) : null;
 
-        if (isset($_POST['request']))
-            $request = $_POST['request'];
+        $user = new UserController($username, $email, $password);
 
 
-        if (isset($_POST['username']))
-            $username = $_POST['username'];
 
-        if (isset($_POST['email']))
-            $email = $_POST['email'];
         /**
          * This portion of the code is for the player vs PC. It gets the values
          * sent which are a file name which will be the session_id, 
          * the current position on the board and the skill level
          */
-        if (isset($_GET['fileName']) && isset($_GET['fen'])) {
 
-            $fileName = $_GET["fileName"] . ".txt";
+        $fileName = isset($_POST['fileName']) ? $_POST['fileName'] : null;
+        $fen = isset($_POST['fen']) ? $_POST['fen'] : null;
+        $skill = isset($_POST['skill']) ? $_POST['skill'] : null;
 
-            $fen = '"' . $_GET["fen"] . '"';
-
-            $skill = $_GET["skill"];
-        }
-
-        if (isset($_POST['username'])  && isset($_POST['password']) && !isset($_POST['email'])) {
-
-            $username = $_POST["username"];
-
-            $password = hash("sha512", $_POST["password"]);
-        }
-
-
-        /**
-         * This portion of the code is for the signUp.
-         * It gets the username, email and password
-         * Things might change in the future, maybe more field for
-         * the registration.
-         */
-        if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password'])) {
-
-            $username = $_POST["username"];
-
-            $email = $_POST["email"];
-
-            $password = hash("sha512", $_POST["password"]);
-        }
-
+        $fileName = "$fileName.txt";
+        $fen = '"' . $fen . '"';
 
 
         /**
          * This is the switch that handle the request.
-         * Currently the are 5 possible request but it is expected that
-         * there will be more like for chess PVP and more.
          */
         switch ($request) {
             case 'get_move_pc':
@@ -88,22 +63,19 @@ class AjaxController
                 break;
 
             case 'login':
-                $this->response = $this->check($username, $password);
+                $this->response = $user->check();
                 break;
 
             case 'signUp':
-                $this->response = $this->add($username, $email, $password);
+                $this->response = $user->add();
                 break;
 
             case 'checkUsername':
-                $this->response = $this->checkUsername($username);
+                $this->response = $user->checkUsername();
                 break;
 
             case 'checkEmail':
-                $this->response = $this->checkEmail($email);
-                break;
-            default:
-                $this->response = 'Invalid request';
+                $this->response = $user->checkEmail();
                 break;
         }
 
@@ -140,84 +112,6 @@ class AjaxController
         unlink("../app/generated_files/$fileName"); //delete the file created by the python script
 
         return $new_fen; //return the new position
-        
-    }
 
-
-    /** 
-     * This function calls the checkUser function of the UserModel
-     * class with checks if the username and password match with a 
-     * record in the database
-     *
-     * @param string $username
-     * @param string $password
-     * @return string success or fail
-     */
-    private function check($username, $password)
-    {
-        try {
-            if ($this->userModel->checkUser($username, $password)) {
-                $_SESSION["username"] = $username;
-                return "OK";
-            } else
-                return "Wrong credentials";
-        } catch (Exception) {
-
-            return "Something went wrong";
-        }
-    }
-
-
-    /**
-     * This function add the user in the database
-     * It calls the addUser method from the UserModel class
-     * It takes $username, $email and $password which are taken from
-     * the post request.
-     *
-     * @param string $username
-     * @param string $email
-     * @param string $password
-     * @return string success or fail
-     */
-    private function add($username, $email, $password)
-    {
-        try {
-            $this->userModel->addUser($username, $email, $password);
-            return "User Signed-Up";
-        } catch (Exception) {
-            return "Something went wrong";
-        }
-    }
-
-    /**
-     * This function calls the function checkUsername of the UserModel class
-     * and checks if the username that the user is typing is available and it is
-     * not used by another user.
-     *
-     * @param string $username
-     * @return string is available or not
-     */
-    private function checkUsername($username)
-    {
-        try {
-            if ($this->userModel->checkUsername($username))
-                return "Username already taken";
-            else
-                return "Username available";
-        } catch (Exception) {
-            return "Something went wrong";
-        }
-    }
-
-    private function checkEmail($email)
-    {
-        try {
-            if ($this->userModel->checkEmail($email))
-                return "Email already used";
-            else
-                return;
-        } catch (Exception) {
-            return "Something went wrong";
-        }
     }
 }

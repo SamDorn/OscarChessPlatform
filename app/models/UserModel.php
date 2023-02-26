@@ -26,13 +26,13 @@ class UserModel
      * @param string $password
      * @return void
      */
-    public function addUser($username, $email, $password)
+    public function addUser($user)
     {
         $query = "INSERT INTO users (id, username, email, password) VALUES (null, :username, :email, :password)";
         $stmt = $this->con->prepare($query);
-        $stmt->bindParam(':username', $username);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $password);
+        $stmt->bindValue(':username', $user->getUsername());
+        $stmt->bindValue(':email', $user->getEmail());
+        $stmt->bindValue(':password', $user->getPassword());
         $stmt->execute();
     }
 
@@ -60,7 +60,14 @@ class UserModel
         else
             return false;
     }
-
+    /**
+     * This function is used to check if a the user who is creating a new account is 
+     * using an available username, if there is already a user with that username
+     * is returned false otherwise is returned true.
+     *
+     * @param string $username
+     * @return bool true if available, false otherwise is there is already a user with that username
+     */
     public function checkUsername($username)
     {
         $query = "SELECT * FROM users WHERE username = :username";
@@ -75,6 +82,13 @@ class UserModel
             return false;
     }
 
+    /**
+     * This function is used to check if the user who is creating a new account is 
+     * using an email never used before.
+     *
+     * @param string $email
+     * @return bool true if available, false is there is already a user with that email
+     */
     public function checkEmail($email)
     {
         $query = "SELECT * FROM users WHERE email = :email";

@@ -1,13 +1,13 @@
-<?php require_once "pages.php"?>
+<?php require_once "pages.php" ?>
 
-    <?php htmlHead()?>
-    <script src="js/scripts/vsComputer.js"></script>
+<?php htmlHead() ?>
+<script src="js/scripts/vsComputer.js"></script>
 </head>
 
 <body>
-    <?php if (isset($_SESSION["username"])): ?>
+    <?php if (isset($_SESSION["username"])) : ?>
         <div style="text-align: center;">
-            <h1>CIAO <?= $_SESSION["username"] ?></h1>
+            <h1>HELLO <?= $_SESSION["username"] ?></h1>
         </div>
     <?php endif; ?>
     <div style="display:flex; justify-content:center;">
@@ -18,6 +18,7 @@
         <button id="selectSkill">Select level difficulty</button>
         <button id="quit">Quit game</button>
         <button id="restart">Restart</button>
+        <button id="menu">Back to menu</button>
     </div>
 </body>
 <script>
@@ -34,7 +35,7 @@
                 return true;
             } else {
                 // Ensure that it is a number and check the input length
-                if ((event.keyCode < 48 || event.keyCode > 57) ) {
+                if ((event.keyCode < 48 || event.keyCode > 57)) {
                     event.preventDefault();
                 }
             }
@@ -46,7 +47,6 @@
 
         var localColorOpp = localStorage.getItem('colorOpp')
 
-
         $('#quit').hide()
         $('#restart').hide();
         $('#restart').click(function() {
@@ -54,9 +54,14 @@
             removeQuit()
             resetGame()
 
-        });
+        })
+
+        $('#menu').click(function() {
+            location.href = "index.php"
+        })
 
         $('#selectSkill').click(function() {
+            $('#menu').hide()
 
             skill = $('#skill').val()
 
@@ -90,6 +95,7 @@
 
         $('#quit').click(function() {
 
+            $('#menu').show()
             removeLocalStorage()
 
             resetGame()
@@ -104,7 +110,7 @@
         board.clear(false)
 
         if (localStorage.getItem('fen') != null) {
-            const response = confirm("Cliccare su OK se si vuole continuare la partita, cliccando su ANNULLA se ne potra avviare un'altra")
+            const response = confirm("Do you want to continue the match from where you left? yes(OK) no(Annulla)")
             if (response) {
 
                 colorOpp = localStorage.getItem("colorOpp")
@@ -113,8 +119,6 @@
                     board.orientation('black')
 
                 }
-
-
 
                 game.load(localFen)
                 board.position(localFen)

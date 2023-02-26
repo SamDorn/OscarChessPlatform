@@ -30,7 +30,7 @@ When it will be finished you should be able to:\
 - [ ] Make a pgn on the side of the chessboard
 - [x] Create the index page where the user will land
 - [x] Make the site using MVC pattern.
-- [ ] Login/signup with database 
+- [x] Login/signup with database 
 - [ ] Play against another player
 - [ ] Live chat during online matches
 - [ ] Learn section
@@ -56,7 +56,10 @@ When it will be finished you should be able to:\
 
 ### Against player
 
-  To define
+  It uses webSocket to connect two player. If there are zero games with no second \
+  opponents the server will create a new game. Every time a player makes a move \
+  a message is sent to the server with the new position of the board and the server \
+  will then send a message to the other player to update the chessboard and the game.
 
 ### Learn section
 

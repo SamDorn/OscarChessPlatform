@@ -1,6 +1,6 @@
 var board = null
 var game = new Chess()
-var socket = new WebSocket('ws://192.168.112.17:5000');
+var socket = new WebSocket('ws://192.168.1.2:8080');
 
 var whiteSquareGrey = '#a9a9a9'
 var blackSquareGrey = '#696969'
@@ -36,7 +36,7 @@ function onDragStart(source, piece, position, orientation) {
     // do not pick up pieces if the game is over
     if (game.game_over()) return false
 
-    if(color == "white")
+    if (color == "white")
         colorOpp = "b"
     else
         colorOpp = "w"
@@ -79,6 +79,7 @@ var gameId = null
 function onSnapEnd() {
     board.position(game.fen())
     console.log(gameId)
+
     socket.send(JSON.stringify({ gameId: gameId, fen: game.fen() }))
 }
 
@@ -93,29 +94,32 @@ var config = {
 var color = null
 socket.onmessage = function (e) {
     var data = JSON.parse(e.data)
-    if(data.status == "game terminated"){
+    if (data.status == "game terminated") {
         var turn = game.turn()
-        if(turn == 'b')
+        if (turn == 'b')
             turn = 'Il bianco'
-        else if(turn == 'w')
+        else if (turn == 'w')
             turn = 'Il nero'
-        console.log("gioco finito. Ha vinto " + turn)
+        alert("Gioco finito. Ha vinto " + turn)
     }
     board.orientation(data.color)
-    if(data.color !== undefined)
+    if (data.color !== undefined)
         color = data.color
     if (data.status === "searching for a second player")
         $("#prova").show()
-    else{
+    else {
         $("#myBoard").show()
         $("#prova").hide()
 
     }
     gameId = data.gameId
+
+    //document.cookie = "gameId=" + gameId + "; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+
     board.position(data.fen)
     game.load(data.fen)
-    if(game.game_over()){
-        socket.send(JSON.stringify({gameId: gameId, status: "game_over"}))
+    if (game.game_over()) {
+        socket.send(JSON.stringify({ gameId: gameId, status: "game_over" }))
         $("#rigioca").show()
     }
 }

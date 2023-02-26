@@ -4,9 +4,9 @@ namespace App\models;
 
 use Database;
 
-require_once '../config/db_connection.php';
+require_once "../../config/db_connection.php";
 
-class PVPModel
+class PvpModel
 {
     private $con;
 
@@ -15,67 +15,21 @@ class PVPModel
         $database = new Database();
         $this->con = $database->getConnection();
     }
-
     public function createGame($username)
     {
-        $query = "INSERT INTO games_pvp (id, username_1, username_2, last_fen, white, status) VALUES (null, :username_1, null, 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', NULL, 'waiting for a second player')";
+        $query = "INSERT INTO games_pvp (id, username_1, username_2, last_fen, white, status)
+            VALUES (null, :username_1, null, null, null, 'Waiting for a second player')";
         $stmt = $this->con->prepare($query);
         $stmt->bindParam(':username_1', $username);
         $stmt->execute();
     }
-    /**
-     * This function check if there is already a new game with only one player
-     *
-     * @return bool true if there is
-     */
-    public function checkNewGame()
+    public function addUsername($username_1, $username_2)
     {
-        $query = "SELECT * FROM games_pvp WHERE username_2 IS NULL";
+        $query = "UPDATE games_pvp SET username_2 = :username_2, status = 'ready to play'
+            WHERE username_1 = :username_1";
         $stmt = $this->con->prepare($query);
+        $stmt->bindParam(':username_1', $username_1);
+        $stmt->bindParam(':username_2', $username_2);
         $stmt->execute();
-        $result = $stmt->fetch();
-
-        if($result > 0)
-            return true;
-        else
-            return false;
-    }
-
-    public function enterGame($username)
-    {
-        $query = "UPDATE games_pvp SET username_2 = :username_2, status = 'ready to start' WHERE username_2 IS NULL AND username_1 != :username_1";
-        $stmt = $this->con->prepare($query);
-        $stmt->bindParam(':username_2', $username);
-        $stmt->bindParam(':username_1', $username);
-        $stmt->execute();
-    }
-    public function checkStatus($username)
-    {
-        $query = "SELECT status from games_pvp WHERE username_1 = :username_1";
-        $stmt = $this->con->prepare($query);
-        $stmt->bindParam(':username_1', $username);
-        $stmt->execute();
-        $result = $stmt->fetch();
-
-        return $result;
-    }
-    public function insertLastFen($username, $fen)
-    {
-        $query = "UPDATE games_pvp SET last_fen = :fen WHERE username_1 = :username_1";
-        $stmt = $this->con->prepare($query);
-        $stmt->bindParam(':username_1', $username);
-        $stmt->bindParam(':fen', $fen);
-        $stmt->execute();
-    }
-
-    public function getLastFen($username)
-    {
-        $query = "SELECT last_fen from games_pvp WHERE username_2 = :username_2";
-        $stmt = $this->con->prepare($query);
-        $stmt->bindParam(':username_2', $username);
-        $stmt->execute();
-        $result = $stmt->fetch();
-
-        return $result;
     }
 }

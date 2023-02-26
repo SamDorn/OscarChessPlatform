@@ -90,7 +90,7 @@ function onSnapEnd() {
 function sendAjax(fen, fileName, skill) {
   $.ajax({
     url: "index.php",
-    type: "GET",
+    type: "POST",
     data: {
       request: 'get_move_pc',
       fen: fen,
@@ -102,12 +102,14 @@ function sendAjax(fen, fileName, skill) {
       board.position(data)
       localStorage.setItem('fen', data)
       game.load(data)
+      console.log(game.pgn())
       if (game.game_over()) {
         removeLocalStorage()
         alert("Hai Perso")
 
         $('#quit').hide()
         $('#restart').show();
+        $('#menu').show();
 
       }
     }

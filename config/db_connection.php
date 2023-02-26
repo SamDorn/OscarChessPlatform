@@ -32,11 +32,12 @@ class Database
             PRIMARY KEY ( id ))";
         $cmd2 = "CREATE TABLE IF NOT EXISTS games_pvp(id INT NOT NULL AUTO_INCREMENT,
             username_1 VARCHAR(30) NOT NULL,
-            username_2 VARCHAR(30) NOT NULL,
-            last_fen VARCHAR(50) NOT NULL,
+            username_2 VARCHAR(30),
+            last_fen VARCHAR(50),
             white VARCHAR(30),
+            status VARCHAR(50),
             PRIMARY KEY ( id ))";
-            
+
         $this->con->exec($cmd);
         $this->con->exec($cmd2);
     }
