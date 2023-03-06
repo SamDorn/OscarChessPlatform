@@ -1,5 +1,6 @@
 <?php
 session_start();
+//var_dump($_GET['action']);
 
 require_once '../vendor/autoload.php';
 

@@ -6,3 +6,6 @@ RewriteRule (^|/)vendor(/|$) - [F]
 RewriteRule (^|/)LICENSE(/|$) - [F]
 RewriteRule (^|/)composer.json(/|$) - [F]
 RewriteRule (^|/)composer.lock(/|$) - [F]
+
+#RewriteRule ^([a-z]+)$  index.php?request=$1 [PT]
+#RewriteRule ^([a-z]+)/([a-z]+)$  index.php?request=$1&param=$2 [PT]

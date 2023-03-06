@@ -61,35 +61,46 @@
         })
 
         $('#selectSkill').click(function() {
-            $('#menu').hide()
+            if($("#skill").val() <=20 && $("#skill").val() >=0  && $("#skill").val().length > 0)
+            {
+                $('#menu').hide()
 
-            skill = $('#skill').val()
+                skill = $('#skill').val()
 
-            removeSkill()
+                removeSkill()
 
-            board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+                board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 
-            localStorage.setItem("skill", skill)
+                localStorage.setItem("skill", skill)
 
-            color = Math.floor(Math.random() * 2)
+                color = Math.floor(Math.random() * 2)
 
-            if (color == 0) {
-                color = 'w'
-            } else
-                color = 'b'
+                if (color == 0) {
+                    color = 'w'
+                } else
+                    color = 'b'
 
-            if (color == 'w') {
-                colorOpp = 'b'
-            } else {
-                colorOpp = 'w'
+                if (color == 'w') {
+                    colorOpp = 'b'
+                } else {
+                    colorOpp = 'w'
+                }
+
+                if (colorOpp == 'w') {
+                    board.orientation('black')
+                    localStorage.setItem("colorOpp", colorOpp)
+                    sendAjax(game.fen(), sessionId, skill)
+
+                }
             }
-
-            if (colorOpp == 'w') {
-                board.orientation('black')
-                localStorage.setItem("colorOpp", colorOpp)
-                sendAjax(game.fen(), sessionId, skill)
-
+            else if($("#skill").val().length === 0){
+                alert("Type a level between 0 and 20")
             }
+            else{
+                alert("Skill value not valid")
+            }
+            
+        
 
         })
 
