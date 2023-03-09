@@ -1,19 +1,76 @@
 <?php
 
 namespace App\models;
+use App\models\Model;
 
-use Database;
+ 
 
-require_once '../config/db_connection.php';
-
-class UserModel
+class UserModel extends Model
 {
-    private $con;
+    private $username;
+    private $email;
+    private $password;
 
     public function __construct()
     {
-        $database = new Database();
-        $this->con = $database->getConnection();
+        parent::__construct();
+    }
+    /**
+     * Undocumented function
+     *
+     * @param [type] $username
+     * @return void
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+    /**
+     * Undocumented function
+     *
+     * @param [type] $email
+     * @return void
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+    /**
+     * Undocumented function
+     *
+     * @param [type] $password
+     * @return void
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function getPassword()
+    {
+        return $this->password;
     }
 
     /**
@@ -26,13 +83,13 @@ class UserModel
      * @param string $password
      * @return void
      */
-    public function addUser($user)
+    public function addUser()
     {
         $query = "INSERT INTO users (id, username, email, password) VALUES (null, :username, :email, :password)";
-        $stmt = $this->con->prepare($query);
-        $stmt->bindValue(':username', $user->getUsername());
-        $stmt->bindValue(':email', $user->getEmail());
-        $stmt->bindValue(':password', $user->getPassword());
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':username', $this->username);
+        $stmt->bindValue(':email', $this->email);
+        $stmt->bindValue(':password', $this->password);
         $stmt->execute();
     }
 
@@ -46,12 +103,12 @@ class UserModel
      * @param string $password
      * @return bool
      */
-    public function checkUser($username, $password)
+    public function checkUser()
     {
         $query = "SELECT * FROM users WHERE username = :username AND password = :password";
-        $stmt = $this->con->prepare($query);
-        $stmt->bindParam(':username', $username);
-        $stmt->bindParam(':password', $password);
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':username', $this->username);
+        $stmt->bindParam(':password', $this->password);
         $stmt->execute();
         $result = $stmt->fetch();
 
@@ -68,11 +125,11 @@ class UserModel
      * @param string $username
      * @return bool true if available, false otherwise is there is already a user with that username
      */
-    public function checkUsername($username)
+    public function checkUsername()
     {
         $query = "SELECT * FROM users WHERE username = :username";
-        $stmt = $this->con->prepare($query);
-        $stmt->bindParam(':username', $username);
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':username', $this->username);
         $stmt->execute();
         $result = $stmt->fetch();
 
@@ -89,11 +146,11 @@ class UserModel
      * @param string $email
      * @return bool true if available, false is there is already a user with that email
      */
-    public function checkEmail($email)
+    public function checkEmail()
     {
         $query = "SELECT * FROM users WHERE email = :email";
-        $stmt = $this->con->prepare($query);
-        $stmt->bindParam(':email', $email);
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':email', $this->email);
         $stmt->execute();
         $result = $stmt->fetch();
 
@@ -103,3 +160,4 @@ class UserModel
             return false;
     }
 }
+?>

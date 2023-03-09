@@ -1,36 +1,57 @@
 <?php
 
 namespace App\controllers;
-use App\models\PvpModel;
 
 class PvpController
 {
-    private $pvpModel;
-    public $username_1;
-    public $username_2;
-    private $white;
-    private $status;
+    private $pvpInProgressModel;
 
-    public function __construct()
+    public function __construct($pvpInProgressModel)
     {
-        $this->pvpModel = new PvpModel();
-        $this->username_1 = null;
-        $this->username_2 = null;
-        $this->white = null;
-        $this->status = null;
+        $this->pvpInProgressModel = $pvpInProgressModel;
     }
-
-    public function setUsername($username)
+    /**
+     * Undocumented function
+     *
+     * @param [type] $username_1
+     * @param [type] $color
+     * @return void
+     */
+    public function setUsername_1($username_1, $color)
     {
-        $this->username_1 = is_null($this->username_1) ? $username : $this->username_1;
-        $this->username_2 = $this->username_1 != $username ? $username : null;
+        $this->pvpInProgressModel->setUsername_1($username_1,$color);
     }
-    public function createGame()
+    /**
+     * Undocumented function
+     *
+     * @param [type] $username_2
+     * @param [type] $color
+     * @return void
+     */
+    public function setUsername_2($username_2, $color)
     {
-        $this->pvpModel->createGame($this->username_1);
+        $this->pvpInProgressModel->setUsername_2($username_2,$color);
     }
-    public function addSecondUsername()
+    /**
+     * Undocumented function
+     *
+     * @param [type] $username_1
+     * @param [type] $color
+     * @return void
+     */
+    public function setStatus($status)
     {
-        $this->pvpModel->addUsername($this->username_1, $this->username_2);
+        $this->pvpInProgressModel->setStatus($status);
+    }
+    /**
+     * Undocumented function
+     *
+     * @param [type] $pgn
+     * @return void
+     */
+    public function setPgn($pgn)
+    {
+        $this->pvpInProgressModel->setPgn($pgn);
     }
 }
+?>

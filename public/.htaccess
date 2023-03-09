@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteRule ^([a-z]+)$  index.php?action=$1 [PT,NC]
+RewriteRule index.php/^([a-z]+)$  index.php?action=$1 [PT,NC]
+RewriteRule ^([a-z]+)/([a-z]+)$  index.php?action=$1&param=$2 [PT]

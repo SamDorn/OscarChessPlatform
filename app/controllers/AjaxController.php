@@ -34,9 +34,13 @@ class AjaxController
         $request = $_POST['request'];
         $username = isset($_POST['username']) ? $_POST['username'] : null;
         $email = isset($_POST['email']) ? $_POST['email'] : null;
-        $password = isset($_POST['password']) ? hash("sha512", $_POST["password"]) : null;
+        $password = isset($_POST['password']) ? hash("sha512",$_POST["password"]) : null;
 
-        $user = new UserController($username, $email, $password);
+        $this->userModel->setUsername($username);
+        $this->userModel->setEmail($email);
+        $this->userModel->setPassword($password);
+
+        $user = new UserController($this->userModel);
 
 
 
@@ -115,3 +119,4 @@ class AjaxController
 
     }
 }
+?>

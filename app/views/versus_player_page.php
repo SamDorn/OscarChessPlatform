@@ -10,7 +10,7 @@ if (!isset($_SESSION["username"])) {
 </head>
 
 <body>
-    <div style="display:flex; justify-content:center;">
+    <div style="display:flex; justify-content:center; width:800px;" >
         <div id="myBoard" style="width: 600px; position:relative;"></div>
     </div>
     <div>
@@ -28,25 +28,22 @@ if (!isset($_SESSION["username"])) {
         $(document).ready(function() {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({
-                    gameId: gameId,
-                    fen: game.fen(),
+                    request: "play",
                     username: username
                 }));
             } else {
-                socket.addEventListener('open', function(event) {
+                socket.addEventListener('open', function() {
                     socket.send(JSON.stringify({
-                        gameId: gameId,
-                        fen: game.fen(),
+                        request: "play",
                         username: username
                     }));
                 });
             }
             $("#rigioca").click(function(e) {
                 e.preventDefault()
-                window.location.href = "index.php?action=vsPlayer"
+                window.location.href = "vsPlayer"
             })
         });
     </script>
 </body>
-
 </html>

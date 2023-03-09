@@ -1,6 +1,6 @@
 var board = null
 var game = new Chess()
-var socket = new WebSocket('ws://192.168.1.2:8080');
+var socket = new WebSocket('ws://192.168.1.3:8080');
 
 var whiteSquareGrey = '#a9a9a9'
 var blackSquareGrey = '#696969'
@@ -94,6 +94,7 @@ var config = {
 var color = null
 socket.onmessage = function (e) {
     var data = JSON.parse(e.data)
+    console.log(data)
     if (data.status == "game terminated") {
         var turn = game.turn()
         if (turn == 'b')
@@ -105,7 +106,7 @@ socket.onmessage = function (e) {
     board.orientation(data.color)
     if (data.color !== undefined)
         color = data.color
-    if (data.status === "searching for a second player")
+    if (data.status === "Waiting for a second player")
         $("#prova").show()
     else {
         $("#myBoard").show()

@@ -34,7 +34,7 @@ class Dispatcher
                 break;
 
             case 'vsPlayer':
-                require_once("../app/views/versus_player.php");
+                require_once("../app/views/versus_player_page.php");
                 break;
 
             case 'login':

@@ -14,3 +14,4 @@ if (isset($_GET['request']) || isset($_POST['request'])) {
     $ajaxController = new AjaxController();
     $ajaxController->handleRequest();
 }
+?>
