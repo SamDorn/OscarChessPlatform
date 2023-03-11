@@ -153,6 +153,16 @@ class PvpInProgressModel extends Model
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
     }
+    public function getConnectionFromUsername()
+    {
+        $query = 
+        $query = "SELECT connection_1, connection_2 FROM games_pvp_in_progress WHERE username_1= :username_1 OR username_2 = :username_2";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+        $result = $stmt->fetch();
+
+    }
     /**
      * Undocumented function
      *
@@ -194,6 +204,21 @@ class PvpInProgressModel extends Model
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
 
+    }
+    /**
+     * Undocumented function
+     *
+     * @param [type] $resourceConnections
+     * @return void
+     */
+    public function UpdateConnections($resourceConnections)
+    {
+        $query = "UPDATE games_pvp_in_progress SET connection_1 = :connection_1, connection_2 = :connection_2 WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':connection_1', $resourceConnections['connection_1']);
+        $stmt->bindParam(':connection_2', $resourceConnections['connection_2']);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
     }
 
     /**

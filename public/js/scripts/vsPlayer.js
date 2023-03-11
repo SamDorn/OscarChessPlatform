@@ -1,6 +1,6 @@
 var board = null
 var game = new Chess()
-var socket = new WebSocket('ws://192.168.1.3:8080');
+var socket = new WebSocket('ws://192.168.112.17:8080');
 
 var whiteSquareGrey = '#a9a9a9'
 var blackSquareGrey = '#696969'
@@ -22,7 +22,6 @@ function removeGreySquares() {
 
 function greySquare(square) {
     var $square = $('#myBoard .square-' + square)
-
     var background = whiteSquareGrey
     if ($square.hasClass('black-3c85d')) {
         background = blackSquareGrey

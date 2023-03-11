@@ -5,17 +5,20 @@ namespace App;
 require_once '../../vendor/autoload.php';
 
 use App\models\PvpInProgressModel;
+use App\models\UserInPvpModel;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
 class Chess implements MessageComponentInterface
 {
     private $pvpInProgressModel;
+    private $userInPvpModel;
     private $connections;
     private $clients;
     public function __construct()
     {
         $this->pvpInProgressModel = new PvpInProgressModel();
+        $this->userInPvpModel = new UserInPvpModel;
         $this->clients = new \SplObjectStorage;
         echo "Server Started\n";
     }
@@ -47,7 +50,9 @@ class Chess implements MessageComponentInterface
                 if ($id != "") {
                     echo "\nUtente è già in un game esistente";
                     $this->pvpInProgressModel->setId($id); // set the id of the game
+                    $resourceConnection = $this->pvpInProgressModel->getConnectionFromUsername();
                     $from->send(json_encode(array( // send the player the position of the game
+                        "status" => "Waiting for a second player",
                         "pgn" => $this->pvpInProgressModel->getGameById() //return the pgn of the current game
                     )));
                 } else { // if the user is not in an existing game
