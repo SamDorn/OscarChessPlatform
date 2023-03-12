@@ -48,6 +48,11 @@ class UserInPvpModel extends Model
         $this->connection = $connection;
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function addUsername()
     {
         $query = "INSERT INTO users_in_games_pvp_in_progress (id, id_game, username, connection)
@@ -59,6 +64,20 @@ class UserInPvpModel extends Model
         $stmt->bindParam(':connection', $this->connection);
         $stmt->execute();
 
+    }
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function getConnectionByUsername()
+    {
+        $query = "SELECT connection FROM users_in_games_pvp_in_progress WHERE username = :username";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':username', $this->username);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        $this->connection = $result['connection'];
     }
 
 }

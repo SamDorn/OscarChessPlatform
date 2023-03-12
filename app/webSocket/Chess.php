@@ -42,14 +42,17 @@ class Chess implements MessageComponentInterface
             case 'play':
                 $username = $data->username;
                 echo $username;
+                $this->userInPvpModel->setUsername($username);
+                $this->userInPvpModel->setConnection($from->resourceId);
                 $this->pvpInProgressModel->setUsername($username); //set the username
                 //echo $this->pvpInProgressModel->getUsername();
 
-                $id = $this->pvpInProgressModel->checkIsInGame(); // check if the user is in an existing game and returns the id of the game or empty string
+                $this->pvpInProgressModel->checkIsInGame(); // check if the user is in an existing game and returns the id of the game or empty string
                 //echo $id;
-                if ($id != "") {
+                if (!is_null($this->pvpInProgressModel->getId())) {
+                    echo $this->pvpInProgressModel->getId();
                     echo "\nUtente è già in un game esistente";
-                    $this->pvpInProgressModel->setId($id); // set the id of the game
+                    //$this->pvpInProgressModel->setId($id); // set the id of the game
                     $resourceConnection = $this->pvpInProgressModel->getConnectionFromUsername();
                     $from->send(json_encode(array( // send the player the position of the game
                         "status" => "Waiting for a second player",

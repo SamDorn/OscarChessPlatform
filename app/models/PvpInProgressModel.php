@@ -93,12 +93,7 @@ class PvpInProgressModel extends Model
         $stmt->execute();
 
         $result = $stmt->fetch();
-        if($result > 0){
-            return $result['id'];
-        }
-        else{
-            return "";
-        }
+        $this->id = $result['id'];
     }
     /**
      * Undocumented function
