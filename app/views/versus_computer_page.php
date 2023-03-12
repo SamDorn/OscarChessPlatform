@@ -1,6 +1,7 @@
-<?php require_once "pages.php" ?>
-
-<?php htmlHead() ?>
+<?php 
+require_once "pages.php";
+htmlHead()
+?>
 <script src="js/scripts/vsComputer.js"></script>
 </head>
 

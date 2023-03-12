@@ -16,6 +16,7 @@
     <?php if (!isset($_SESSION["username"])) : ?>
         <a href="login">Effettua il login</a>
     <?php endif; ?>
+    <a href="puzzle">Resolve puzzles</a>
 </body>
 
 </html>

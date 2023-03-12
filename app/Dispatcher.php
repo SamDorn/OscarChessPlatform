@@ -40,6 +40,8 @@ class Dispatcher
             case 'login':
                 require_once("../app/views/login_page.php");
                 break;
+            case 'puzzle':
+                require_once("../app/views/puzzles_page.php");
         }
     }
 }

@@ -99,9 +99,21 @@ function sendAjax(fen, fileName, skill) {
     },
     dataType: "json",
     success: function (data) {
-      board.position(data)
-      localStorage.setItem('fen', data)
-      game.load(data)
+      let numIndex = data.search(/\d/) + 1;
+      var prova = []
+      // Extract the two values using the substring method
+      let value1 = data.substring(0, numIndex);
+      let value2 = data.substring(numIndex);
+
+      // Update the original array with the new values
+      prova = [value1, value2];
+      console.log(prova[0])
+      game.move({
+        from: prova[0],
+        to: prova[1]
+      })
+      board.position(game.fen())
+      localStorage.setItem('fen', game.fen())
       console.log(game.pgn())
       if (game.game_over()) {
         removeLocalStorage()
@@ -128,7 +140,7 @@ var config = {
   position: 'start',
   onDragStart: onDragStart,
   onDrop: onDrop,
-  onSnapEnd: onSnapEnd,
+  onSnapEnd: onSnapEnd
 }
 
 
