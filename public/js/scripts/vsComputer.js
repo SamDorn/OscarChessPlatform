@@ -1,147 +1,116 @@
-var board = null
-var game = new Chess()
+import { Chess } from "./../libraries/chess.js/chess.js";
+import { INPUT_EVENT_TYPE, COLOR, Chessboard } from "./../libraries/cm-chessboard/Chessboard.js"
+import { MARKER_TYPE, Markers } from "./../libraries/cm-chessboard/extensions/markers/Markers.js"
+import { PromotionDialog } from "./../libraries/cm-chessboard/extensions/promotion-dialog/PromotionDialog.js"
+import { FEN } from "./../libraries/cm-chessboard/model/Position.js"
 
-var whiteSquareGrey = '#a9a9a9'
-var blackSquareGrey = '#696969'
-var prova = '#fff'
-
-function removeGreySquares() {
-  $('#myBoard .square-55d63').css('background', '')
-}
-
-/*function highlight(square, target){
-  var $square = $('#myBoard .square-' + square)
-  var $target = $('#myBoard .square-' + target)
-
-
-  $square.addClass("highlight-white")
-  $target.addClass("highlight-white")
-}*/
-
-
-function greySquare(square) {
-  var $square = $('#myBoard .square-' + square)
-
-  var background = whiteSquareGrey
-  if ($square.hasClass('black-3c85d')) {
-    background = blackSquareGrey
-  }
-
-  $square.css('background', background)
-}
+var audio = new Audio("audio/move.mp3")
+var chess = new Chess()
+var board = new Chessboard(document.getElementById("board"), {
+  position: FEN.start,
+  sprite: {
+    url: "images/chessboard/chessboard-sprite.svg"
+  },
+  extensions: [{
+    class: Markers,
+    props: {}
+  },
+  {
+    class: PromotionDialog,
+    props: {}
+  }]
+})
 
 
-function onDragStart(source, piece) {
-  if (game.game_over()) return false
+var result = null
+const color = Math.floor(Math.random() * 2) === 0 ? COLOR.black : COLOR.white
+board.setOrientation(color)
 
-  if (game.turn() === colorOpp || (piece.search(new RegExp('^' + colorOpp)) !== -1)) return false
-
-  var moves = game.moves({
-    square: source,
-    verbose: true,
-  })
-
-  if (moves.lenght == 0) return
-
-  greySquare(source)
-
-  for (var i = 0; i < moves.length; i++) {
-    greySquare(moves[i].to)
-  }
-}
-
-function onDrop(source, target) {
-  removeGreySquares();
-
-  var move = game.move({
-    from: source,
-    to: target,
-    promotion: 'q' // NOTE: always promote to a queen for example simplicity
-  })
-
-  // illegal move
-  if (move === null) return 'snapback';
+color === COLOR.black ? sendAjax(chess.fen()) : null
 
 
-  //highlight(source, target)
+function inputHandler(event) {
+  event.chessboard.removeMarkers(MARKER_TYPE.dot)
+  if (event.type === INPUT_EVENT_TYPE.moveInputStarted) {
+    const moves = chess.moves({ square: event.square, verbose: true });
+    for (const move of moves) { // draw dots on possible squares
+      event.chessboard.addMarker(MARKER_TYPE.dot, move.to)
+    }
+    return moves.length > 0
+  } else if (event.type === INPUT_EVENT_TYPE.validateMoveInput) {
+    if (event.squareTo.charAt(1) == "8" && event.piece.charAt(1) === "p") {
+      var move = event.squareFrom + event.squareTo
+      board.showPromotionDialog(event.squareTo, color, (event) => {
+        if (event.piece) {
+          move = move + event.piece[1]
+          chess.move(move)
+          board.setPosition(chess.fen(), true)
+          //audio.play()
+          event.chessboard.addMarker(MARKER_TYPE.square, event.squareFrom)
+          sendAjax(chess.fen())
 
-}
-
-function onSnapEnd() {
-  board.position(game.fen())
-
-  if (game.game_over()) {
-
-    removeLocalStorage()
-
-    alert("Hai Vinto")
-
-    $('#quit').hide()
-    $('#restart').show();
-  }
-
-
-  if (!game.game_over()) {
-    sendAjax(game.fen(), sessionId, skill)
-
-  }
-
-}
-function sendAjax(fen, fileName, skill) {
-  $.ajax({
-    url: "index.php",
-    type: "POST",
-    data: {
-      request: 'get_move_pc',
-      fen: fen,
-      fileName: fileName,
-      skill: skill
-    },
-    dataType: "json",
-    success: function (data) {
-      let numIndex = data.search(/\d/) + 1;
-      var prova = []
-      // Extract the two values using the substring method
-      let value1 = data.substring(0, numIndex);
-      let value2 = data.substring(numIndex);
-
-      // Update the original array with the new values
-      prova = [value1, value2];
-      console.log(prova[0])
-      game.move({
-        from: prova[0],
-        to: prova[1]
+        } else {
+          board.setPosition(board.getPosition())
+        }
       })
-      board.position(game.fen())
-      localStorage.setItem('fen', game.fen())
-      console.log(game.pgn())
-      if (game.game_over()) {
-        removeLocalStorage()
-        alert("Hai Perso")
+    }
+    else {
+      const move = { from: event.squareFrom, to: event.squareTo }
+      try {
+        result = chess.move(move)
+      }
+      catch (error) {
+        result = null
+      }
+      if (result) {
+        this.chessboard.state.moveInputProcess.then(() => {
+          board.removeMarkers(MARKER_TYPE.square)
+          board.setPosition(chess.fen(), true)
+          //audio.play()
+          event.chessboard.addMarker(MARKER_TYPE.square, event.squareFrom)
+          event.chessboard.addMarker(MARKER_TYPE.square, event.squareTo)
+          sendAjax(chess.fen())
+          //audio.play()
 
-        $('#quit').hide()
-        $('#restart').show();
-        $('#menu').show();
-
+        })
       }
     }
-  })
-}
-function removeLocalStorage() {
-
-  localStorage.removeItem('fen')
-  localStorage.removeItem('skill')
-  localStorage.removeItem('colorOpp')
-
+    return result
+  }
 }
 
-var config = {
-  draggable: true,
-  position: 'start',
-  onDragStart: onDragStart,
-  onDrop: onDrop,
-  onSnapEnd: onSnapEnd
+board.enableMoveInput(inputHandler, color)
+
+
+function sendAjax(fen) {
+  $.ajax({
+    type: "POST",
+    url: "index.php",
+    data: {
+      request: "get_move_pc",
+      fen: fen,
+      fileName: sessionId,
+      skill: 0
+    },
+    dataType: "json",
+    success: function (response) {
+      
+      setTimeout(() => { board.removeMarkers(MARKER_TYPE.square) }, 1500)
+      //audio.play()
+      chess.move(response)
+      setTimeout(() => { board.setPosition(chess.fen(), true) }, 1500)
+      
+      setTimeout(() => { board.addMarker(MARKER_TYPE.square, response[0] + response[1]) }, 1500)
+      setTimeout(() => { board.addMarker(MARKER_TYPE.square, response[2] + response[3]) }, 1500)
+    }
+  });
 }
+$(document).ready(function () {
+
+  $('#board').on('scroll touchmove touchend touchstart contextmenu', function (e) {
+    e.preventDefault();
+  });
+})
 
 
 
