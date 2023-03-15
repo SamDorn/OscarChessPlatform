@@ -15,15 +15,15 @@ htmlHead()
         <div id="board" style="width: 600px; position:relative;"></div>
     </div>
     <div style="display:flex; justify-content:center;">
-        <input type="text" inputmode="numeric" pattern="[0-9]+" id="skill">
+        <!-- <input type="text" inputmode="numeric" pattern="[0-9]+" id="skill"> 
         <button id="selectSkill">Select level difficulty</button>
         <button id="quit">Quit game</button>
         <button id="restart">Restart</button>
-        <button id="menu">Back to menu</button>
+        <button id="menu">Back to menu</button>-->
     </div>
 </body>
 <script>
-    var sessionId = "<?= session_id()?>"
+    var sessionId = "<?= session_id() ?>"
 </script>
 
 </html>

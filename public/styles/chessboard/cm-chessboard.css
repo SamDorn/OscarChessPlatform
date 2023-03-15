@@ -17,7 +17,7 @@
 
 .cm-chessboard .markers .marker.markerDot, .cm-chessboard .markers .marker.marker-dot {
   fill: green;
-  opacity: 0.3; }
+  opacity: 0.6; }
 
 .cm-chessboard .markers .marker.markerCircle, .cm-chessboard .markers .marker.marker-circle {
   stroke: #000055;

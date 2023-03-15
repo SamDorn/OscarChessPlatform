@@ -1,7 +1,10 @@
-<?php 
+<?php
 require_once "pages.php";
 htmlHead();
 ?>
+<script src="js/scripts/login.js"></script>
+<style>
+</style>
 </head>
 
 <body>

@@ -14,19 +14,14 @@ fen = sys.argv[2]
 
 skill = int(sys.argv[3])
 
-time = int(skill)
 
 
 if skill < 10:
     moveOverhead = 0
+    time = 1
 else:
     moveOverhead = int(skill)
-
-
-
-
-if time == 0:
-    time = 1
+    time = skill
 
 
 file = open(f"../app/generated_files/{fileName}", "w")

@@ -53,6 +53,7 @@ class AjaxController
         $fileName = isset($_POST['fileName']) ? $_POST['fileName'] : null;
         $fen = isset($_POST['fen']) ? $_POST['fen'] : null;
         $skill = isset($_POST['skill']) ? $_POST['skill'] : null;
+        
 
         $fileName = "$fileName.txt";
         $fen = '"' . $fen . '"';
@@ -97,6 +98,8 @@ class AjaxController
      * @param string $fileName
      * @param string $fen
      * @param string $skill
+     * @param string $wTime
+     * @param string $bTime
      * @param boolean $login
      * @return string $new_fen
      */
