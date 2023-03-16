@@ -3,7 +3,7 @@ import { INPUT_EVENT_TYPE, COLOR, Chessboard } from "./../libraries/cm-chessboar
 import { MARKER_TYPE, Markers } from "./../libraries/cm-chessboard/extensions/markers/Markers.js"
 import { PromotionDialog } from "./../libraries/cm-chessboard/extensions/promotion-dialog/PromotionDialog.js"
 import { FEN } from "./../libraries/cm-chessboard/model/Position.js"
-
+import { ARROW_TYPE, Arrows } from "./../libraries/cm-chessboard/extensions/arrows/Arrows.js"
 
 /*
 var time_in_minutes = 0.5;
@@ -68,8 +68,9 @@ run_clock('min1', deadline);
 
 
 var chess = new Chess() //chess move validator
+chess.load("rnbqkbnr/pPpppppp/8/8/8/8/PP1PPPPP/RNBQKBNR w KQkq - 0 1")
 var board = new Chessboard(document.getElementById("board"), { //chessboard
-  position: FEN.start,
+  position: "rnbqkbnr/pPpppppp/8/8/8/8/PP1PPPPP/RNBQKBNR w KQkq - 0 1",
   sprite: {
     url: "images/chessboard/chessboard-sprite.svg" //url to chess pieces images
   },
@@ -84,13 +85,23 @@ var board = new Chessboard(document.getElementById("board"), { //chessboard
     {
       class: PromotionDialog,
       props: {}
-    }]
+    },
+    {
+      class: Arrows,
+      props: {
+        sprite: {
+          url: "images/chessboard/arrows.svg"
+        }
+      }
+    }
+  ]
 })
 
 var result = null
 
 //uses the ternary operator to casually generate the color
-const color = Math.floor(Math.random() * 2) === 0 ? COLOR.black : COLOR.white
+//const color = Math.floor(Math.random() * 2) === 0 ? COLOR.black : COLOR.white
+var color = COLOR.white
 
 board.setOrientation(color) //set the orientation of the board based on the color
 
@@ -121,7 +132,6 @@ function inputHandler(event) {
 
       var move = event.squareFrom + event.squareTo //define the variable move that will be needed to tell the chess object which move was played
 
-      console.log(event.squareTo)
       board.showPromotionDialog(event.squareTo, color, (event) => { //function that shows the promotion dialog
 
         if (event.piece) {
@@ -131,13 +141,17 @@ function inputHandler(event) {
 
           board.setPosition(chess.fen(), true) //make the animation
 
-          board.addMarker(MARKER_TYPE.square, move[0]+move[1]) //add the square type marker of the last move
-          board.addMarker(MARKER_TYPE.square, move[2]+move[3]) //add the square type marker of the last move
-
-          sendAjax(chess.fen()) //calls sendAjax
+          board.addMarker(MARKER_TYPE.square, move[0] + move[1]) //add the square type marker of the last move
+          board.addMarker(MARKER_TYPE.square, move[2] + move[3]) //add the square type marker of the last move
+          if (chess.isGameOver()) {
+            $("#finish").text("Congratulazioni. Hai vinto")
+          }
+          else {
+            sendAjax(chess.fen()) //calls sendAjax
+          }
 
         } else { //if the user didn't clicked any of the piece showd in the promotion dialog
-          board.setPosition(board.getPosition()) //set the position to its original
+          board.setPosition(chess.fen()) //set the position to its original
         }
       })
     }
@@ -165,7 +179,20 @@ function inputHandler(event) {
           event.chessboard.addMarker(MARKER_TYPE.square, event.squareFrom) //add the square type marker of the last move
           event.chessboard.addMarker(MARKER_TYPE.square, event.squareTo) //add the square type marker of the last move
 
-          sendAjax(chess.fen()) //calls thefunction to get the pc move and update the chessboard
+          if (chess.isGameOver()) {
+            if (chess.isDraw()) {
+
+              $("#finish").text("Pareggio. Nessuno vince")
+
+            }
+            else {
+
+              $("#finish").text("Congratulazioni. Hai vinto")
+            }
+          }
+          else {
+            sendAjax(chess.fen()) //calls thefunction to get the pc move and update the chessboard
+          }
 
         })
       }
@@ -204,12 +231,22 @@ function sendAjax(fen) {
 
       setTimeout(() => { board.removeMarkers(MARKER_TYPE.square) }, 1500) //removes the markers of the previous move
 
-      chess.move(response) //make the move received from the script
+      setTimeout(() => { chess.move(response) }, 1500) //make the move received from the script
 
       setTimeout(() => { board.setPosition(chess.fen(), true) }, 1500) //make theanimation of the move
 
       setTimeout(() => { board.addMarker(MARKER_TYPE.square, response[0] + response[1]) }, 1500) //add the square type marker of the last move
       setTimeout(() => { board.addMarker(MARKER_TYPE.square, response[2] + response[3]) }, 1500) //add the square type marker of the last move
+
+      if (chess.isGameOver()) {
+        if (chess.isDraw()) {
+          setTimeout(() => { $("#finish").text("Pareggio. Nessuno vince") }, 1500)
+        }
+        else {
+          setTimeout(() => { $("#finish").text("Sembra che hai perso. Allenati ancora un pó") }, 1500)
+
+        }
+      }
     }
   });
 }
@@ -220,7 +257,63 @@ function sendAjax(fen) {
 $(document).ready(function () {
 
   $('#board').on('scroll touchmove touchend touchstart contextmenu', function (e) {
-    e.preventDefault();
+    //e.preventDefault();
 
-  });
+  })
+})
+
+$('#hint').click(function (e) {
+  board.removeArrows()
+  var c = color === COLOR.black ? "b" : "w"
+  if (chess.turn() === c) {
+    $.ajax({
+      type: "POST",
+      url: "index.php",
+      data: {
+        request: "get_move_pc",
+        skill: 20,
+        filename: sessionId,
+        fen: chess.fen()
+      },
+      dataType: "json",
+      success: function (response) {
+        var from = response[0] + response[1]
+        var to = response[2] + response[3]
+        board.addArrow(ARROW_TYPE.pointy, from, to)
+
+      }
+    })
+  }
+
+})
+var prova = null
+
+$("#board").click(function (e) {
+   e.preventDefault();
+  board.removeArrows()
+  board.removeMarkers(MARKER_TYPE.circle)
+})
+$("#board").mousedown(function (e) {
+  if (e.which !== 3)
+    return
+  prova = e.target.dataset.square
+})
+$("#board").mouseup(function (e) {
+  //console.log(e.target.dataset.square)
+  if (e.which !== 3)
+    return
+
+  if (prova === e.target.dataset.square) {
+    board.addMarker(MARKER_TYPE.circle, e.target.dataset.square)
+  }
+  else {
+    board.addArrow(ARROW_TYPE.default, prova, e.target.dataset.square)
+  }
+}
+
+
+);
+$("#board").contextmenu(function (e) {
+  return
+
 })

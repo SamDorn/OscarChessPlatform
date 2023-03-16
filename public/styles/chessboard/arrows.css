@@ -1,0 +1,42 @@
+.cm-chessboard .arrow-default .arrow-head {
+  pointer-events: none;
+  fill: green;
+  fill-rule: nonzero;
+  fill-opacity: 1; }
+
+.cm-chessboard .arrow-default .arrow-line {
+  pointer-events: none;
+  z-index: -1;
+  stroke: green;
+  stroke-linecap: round;
+  opacity: 0.5; }
+
+.cm-chessboard .arrow-danger .arrow-head {
+  pointer-events: none;
+  z-index: -1;
+  fill: red;
+  fill-rule: nonzero;
+  fill-opacity: 1; }
+
+.cm-chessboard .arrow-danger .arrow-line {
+  pointer-events: none;
+  z-index: -1;
+  stroke: red;
+  stroke-linecap: round;
+  opacity: 0.5; }
+
+.cm-chessboard .arrow-pointy .arrow-head {
+  pointer-events: none;
+  z-index: -1;
+  fill: black;
+  fill-rule: nonzero;
+  fill-opacity: 1; }
+
+.cm-chessboard .arrow-pointy .arrow-line {
+  pointer-events: none;
+  z-index: -1;
+  stroke: black;
+  stroke-linecap: round;
+  opacity: 0.5; }
+
+/*# sourceMappingURL=arrows.css.map */

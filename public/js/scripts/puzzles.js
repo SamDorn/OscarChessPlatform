@@ -2,6 +2,7 @@ import { Chess } from "./../libraries/chess.js/chess.js"
 import { INPUT_EVENT_TYPE, COLOR, Chessboard } from "./../libraries/cm-chessboard/Chessboard.js"
 import { MARKER_TYPE, Markers } from "./../libraries/cm-chessboard/extensions/markers/Markers.js"
 import { PromotionDialog } from "./../libraries/cm-chessboard/extensions/promotion-dialog/PromotionDialog.js"
+import { ARROW_TYPE, Arrows } from "./../libraries/cm-chessboard/extensions/arrows/Arrows.js"
 
 var chess = new Chess() //chess move validator
 var board = null //chessboard
@@ -15,18 +16,18 @@ var counter = 0 //
 
 
 //function that calls the api to get the daily puzzles
-function callApi(){
+function callApi() {
     $.ajax({
         type: "GET",
         url: "https://lichess.org/api/puzzle/daily", //endpoint that gets the information needed
         dataType: "json",
         success: function (response) {
             chess.loadPgn(response.game.pgn) //load the chess object with the pgn from the response
-    
+
             //usage of the ternary operator to determine if the color the user is playing 
             //is white or black. If the color to move is black it will be black otherwise white
             color = chess.turn() == 'b' ? COLOR.black : COLOR.white
-    
+
             //create a new Chessboard object where the position will be the position of the 
             //chess object which was populated with the moves received
             board = new Chessboard(document.getElementById("board"), {
@@ -34,8 +35,8 @@ function callApi(){
                 sprite: {
                     url: "images/chessboard/chessboard-sprite.svg" //url to chess pieces images
                 },
-    
-    
+
+
                 extensions: [
                     //extension to allow the drawing of the dots for legal move and to display
                     //the last move played
@@ -47,19 +48,28 @@ function callApi(){
                     {
                         class: PromotionDialog,
                         props: {}
-                    }]
+                    },
+                    {
+                        class: Arrows,
+                        props: {
+                          sprite: {
+                            url: "images/chessboard/arrows.svg"
+                          }
+                        }
+                      }
+                ]
             })
             board.setOrientation(color) //set the orientation of the board based on the color
-    
+
             //enable the move input calling the input handler and the color
             //so that the user can only pick up pieces from its color
             board.enableMoveInput(inputHandler, color)
-    
+
             //array that contains all the moves that need to be played
             //both by the player and the computer
             solution = response.puzzle.solution
-    
-    
+
+
             /**
              * We know that the first move will be played by the user
              * so we can create two array. One for the moves that needs
@@ -119,8 +129,10 @@ function inputHandler(event) {
 
                         board.setPosition(chess.fen(), true) //make the animation 
 
-                        board.addMarker(MARKER_TYPE.square, move[0]+move[1]) //add the square type marker of the last move
-                        board.addMarker(MARKER_TYPE.square, move[2]+move[3]) //add the square type marker of the last move
+                        board.removeMarkers(MARKER_TYPE.square)
+
+                        board.addMarker(MARKER_TYPE.square, move[0] + move[1]) //add the square type marker of the last move
+                        board.addMarker(MARKER_TYPE.square, move[2] + move[3]) //add the square type marker of the last move
 
                         makePcMove() //calls the makePcMove
 
@@ -128,6 +140,10 @@ function inputHandler(event) {
                     }
 
                     else { //if it isn't the right move
+
+                        $("#state").removeClass("right");
+                        $("#state").text("Loser,\nyou made the wrong move");
+                        $("#state").addClass("fail");
 
                         //still makes an animation and uses the chess.undo() function to delete the last move.
                         //it's a quick animation
@@ -140,7 +156,7 @@ function inputHandler(event) {
 
                 } else { //if the user didn't clicked any of the piece showd in the promotion dialog
 
-                    board.setPosition(board.getPosition()) //set the position to its original
+                    board.setPosition(chess.fen()) //set the position to its original
                 }
             })
         }
@@ -229,10 +245,49 @@ function makePcMove() {
 $(document).ready(function () {
 
     $('#board').on('scroll touchmove touchend touchstart contextmenu', function (e) {
-      e.preventDefault();
-  
+        //e.preventDefault();
+
     });
-  })
+})
+var prova = null
+
+$("#board").click(function (e) {
+  // e.preventDefault();
+  board.removeArrows()
+  board.removeMarkers(MARKER_TYPE.circle)
+})
+$("#board").mousedown(function (e) {
+  if (e.which !== 3)
+    return
+  prova = e.target.dataset.square
+})
+$("#board").mouseup(function (e) {
+  //console.log(e.target.dataset.square)
+  if (e.which !== 3)
+    return
+
+  if (prova === e.target.dataset.square) {
+    board.addMarker(MARKER_TYPE.circle, e.target.dataset.square)
+  }
+  else {
+    board.addArrow(ARROW_TYPE.default, prova, e.target.dataset.square)
+  }
+}
+
+
+);
+$("#board").contextmenu(function (e) {
+    e.preventDefault()
+  return
+
+})
+const buttons = document.querySelectorAll('.cm-chess-promotion-dialog button');
+buttons.forEach(button => {
+button.addEventListener('touchstart', () => {
+button.click();
+});
+});
+
 
 
 

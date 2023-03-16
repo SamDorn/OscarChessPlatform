@@ -20,9 +20,9 @@
   opacity: 0.6; }
 
 .cm-chessboard .markers .marker.markerCircle, .cm-chessboard .markers .marker.marker-circle {
-  stroke: #000055;
+  stroke: green;
   stroke-width: 3px;
-  opacity: 0.4; }
+  opacity: 0.7; }
 
 .cm-chessboard .markers .marker.markerCircleRed, .cm-chessboard .markers .marker.marker-circle-red {
   stroke: #aa0000;
