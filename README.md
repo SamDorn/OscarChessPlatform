@@ -1,6 +1,5 @@
 # OscarChessPlatform
 - [What is it?](#what-is-it)
-- [Roadmap](#roadmap)
 - [How does it work?](#how-does-it-work)
   * [Against computer](#against-computer)
   * [Against player](#against-player)
@@ -22,23 +21,6 @@ When it will be finished you should be able to:\
 -Watch another player's game in live. 
 
 
-## Roadmap
-- [x] Play against computer
-- [x] Select level computer
-- [x] Make random to be black or white
-- [ ] Make button to see previous move
-- [ ] Make a pgn on the side of the chessboard
-- [x] Create the index page where the user will land
-- [x] Make the site using MVC pattern.
-- [x] Login/signup with database 
-- [ ] Play against another player
-- [ ] Live chat during online matches
-- [ ] Learn section
-- [ ] Watch section
-- [ ] Gui
-- [ ] Watch games played
-- [ ] Create api 
-- [x] Solution for files created (player vs PC)
 
 
 ## How does it work?
@@ -75,7 +57,7 @@ When it will be finished you should be able to:\
 | Name              | Author                |Link                                                                  |
 | ---------------   | --------------------- | ---------------------------- |
 | Chess.js| https://github.com/jhlywa|https://github.com/jhlywa/chess.js |
-| Chessboard.js | https://chrisoakman.com/ | https://chessboardjs.com/ |
+| cm-chessboard | https://github.com/shaack/ | https://github.com/shaack/cm-chessboard |
 | Stockfish.py | https://github.com/zhelyabuzhsky | https://github.com/zhelyabuzhsky/stockfish |
 | Stockfish 15 | https://github.com/official-stockfish | https://github.com/official-stockfish/Stockfish |
 | jQuery | https://github.com/jquery | https://github.com/jquery/jquery |

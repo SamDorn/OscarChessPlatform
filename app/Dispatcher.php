@@ -9,7 +9,7 @@ class Dispatcher
 
     public function __construct()
     {
-        $this->action = "index";
+        $this->action = "home";
     }
 
     /**
@@ -24,9 +24,9 @@ class Dispatcher
             $this->action = $_GET['action'];
         }
         switch ($this->action) {
-            case 'index':
+            case 'home':
                 if (!isset($_GET['request']) && !isset($_POST['request']))
-                    require_once("../app/views/index_page.php");
+                    require_once("../app/views/home_page.php");
                 break;
 
             case 'vsComputer':

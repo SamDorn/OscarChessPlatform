@@ -123,7 +123,7 @@ class UserModel extends Model
      * is returned false otherwise is returned true.
      *
      * @param string $username
-     * @return bool true if available, false otherwise is there is already a user with that username
+     * @return bool true if available
      */
     public function checkUsername()
     {

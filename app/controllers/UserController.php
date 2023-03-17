@@ -1,7 +1,6 @@
 <?php
 
 namespace App\controllers;
-use Exception;
 
 class UserController
 {
@@ -28,7 +27,7 @@ class UserController
         try {
             $this->userModel->addUser();
             return "User Signed-Up";
-        } catch (Exception) {
+        } catch (\Exception) {
             return "Something went wrong";
         }
     }
@@ -49,7 +48,7 @@ class UserController
                 return "OK";
             } else
                 return "Wrong credentials";
-        } catch (Exception) {
+        } catch (\Exception) {
 
             return "Something went wrong";
         }
@@ -70,7 +69,7 @@ class UserController
                 return "Username already taken";
             else
                 return "Username available";
-        } catch (Exception) {
+        } catch (\Exception) {
             return "Something went wrong";
         }
     }
@@ -88,7 +87,7 @@ class UserController
                 return "Email already used";
             else
                 return;
-        } catch (Exception) {
+        } catch (\Exception) {
             return "Something went wrong";
         }
     }

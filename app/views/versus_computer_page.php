@@ -78,17 +78,16 @@ htmlHead()
         </div>
     <?php endif; ?>
     <div style="display:flex; justify-content:center;">
-        <div id="board" style="width: 600px; position:relative;"></div>
+        <div id="board"></div>
     </div>
     <div style="display:flex; justify-content:center;">
-        <a href="index">Torna al menu</a>
+        <a href="home" style="width: fit-content;">Torna al menu</a>
         <button id="hint">Mostra mossa migliore</button>
     </div>
     <div id="finish"></div>
 </body>
 <script>
     var sessionId = "<?= session_id() ?>"
-   
 </script>
 
 </html>

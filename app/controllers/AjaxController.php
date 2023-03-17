@@ -3,16 +3,19 @@
 namespace App\controllers;
 
 use App\models\UserModel;
+use App\models\PuzzleModel;
 use App\controllers\UserController;
 
 class AjaxController
 {
     private $userModel;
+    private $puzzleModel;
     private $response = "";
 
     public function __construct()
     {
         $this->userModel = new UserModel();
+        $this->puzzleModel = new PuzzleModel();
     }
 
     /**
@@ -31,7 +34,7 @@ class AjaxController
          * $_GET and $_POST. It is use to not make redundancy code because not always there are
          * username, email and password.
          */
-        $request = $_POST['request'];
+        $request = isset($_POST['request']) ? $_POST['request']: $_GET['request'];
         $username = isset($_POST['username']) ? $_POST['username'] : null;
         $email = isset($_POST['email']) ? $_POST['email'] : null;
         $password = isset($_POST['password']) ? hash("sha512",$_POST["password"]) : null;
@@ -41,6 +44,11 @@ class AjaxController
         $this->userModel->setPassword($password);
 
         $user = new UserController($this->userModel);
+
+        $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : null;
+
+        $this->puzzleModel->setKeywords($keyword);
+        
 
 
 
@@ -82,6 +90,10 @@ class AjaxController
             case 'checkEmail':
                 $this->response = $user->checkEmail();
                 break;
+
+            case 'get_id_puzzle':
+                $this->puzzleModel->getPuzzleId();
+                $this->response = $this->puzzleModel->getId();
         }
 
         echo json_encode($this->response);

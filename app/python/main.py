@@ -36,8 +36,6 @@ stockfish.set_depth(skill)
 
 stockfish.set_fen_position(fen)
 
-#stockfish.make_moves_from_current_position([stockfish.get_best_move_time(time)])
-
 file.write(stockfish.get_best_move_time(time))
 
 file.close()

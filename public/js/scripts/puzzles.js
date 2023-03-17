@@ -5,7 +5,34 @@ import { PromotionDialog } from "./../libraries/cm-chessboard/extensions/promoti
 import { ARROW_TYPE, Arrows } from "./../libraries/cm-chessboard/extensions/arrows/Arrows.js"
 
 var chess = new Chess() //chess move validator
-var board = null //chessboard
+board = new Chessboard(document.getElementById("board"), {
+    sprite: {
+        url: "images/chessboard/chessboard-sprite.svg" //url to chess pieces images
+    },
+
+
+    extensions: [
+        //extension to allow the drawing of the dots for legal move and to display
+        //the last move played
+        {
+            class: Markers,
+            props: {}
+        },
+        //extension to allow the view of the promotion dialog when a pawn is getting promoted
+        {
+            class: PromotionDialog,
+            props: {}
+        },
+        {
+            class: Arrows,
+            props: {
+                sprite: {
+                    url: "images/chessboard/arrows.svg"
+                }
+            }
+        }
+    ]
+}) //chessboard
 var result = null //stores the object move. Can be null if the move is invalid
 var solution = null //solution of the problem
 var color = null //color that determine if the user is white or black
@@ -16,10 +43,10 @@ var counter = 0 //
 
 
 //function that calls the api to get the daily puzzles
-function callApi() {
+function callApi(data) {
     $.ajax({
         type: "GET",
-        url: "https://lichess.org/api/puzzle/daily", //endpoint that gets the information needed
+        url: "https://lichess.org/api/puzzle/" + data, //endpoint that gets the information needed
         dataType: "json",
         success: function (response) {
             chess.loadPgn(response.game.pgn) //load the chess object with the pgn from the response
@@ -27,38 +54,9 @@ function callApi() {
             //usage of the ternary operator to determine if the color the user is playing 
             //is white or black. If the color to move is black it will be black otherwise white
             color = chess.turn() == 'b' ? COLOR.black : COLOR.white
+            color === COLOR.white ? $("#player").text("muove il bianco") : $("#player").text("Muove il nero")
 
-            //create a new Chessboard object where the position will be the position of the 
-            //chess object which was populated with the moves received
-            board = new Chessboard(document.getElementById("board"), {
-                position: chess.fen(),
-                sprite: {
-                    url: "images/chessboard/chessboard-sprite.svg" //url to chess pieces images
-                },
-
-
-                extensions: [
-                    //extension to allow the drawing of the dots for legal move and to display
-                    //the last move played
-                    {
-                        class: Markers,
-                        props: {}
-                    },
-                    //extension to allow the view of the promotion dialog when a pawn is getting promoted
-                    {
-                        class: PromotionDialog,
-                        props: {}
-                    },
-                    {
-                        class: Arrows,
-                        props: {
-                          sprite: {
-                            url: "images/chessboard/arrows.svg"
-                          }
-                        }
-                      }
-                ]
-            })
+            board.setPosition(chess.fen())
             board.setOrientation(color) //set the orientation of the board based on the color
 
             //enable the move input calling the input handler and the color
@@ -76,6 +74,8 @@ function callApi() {
              * to be played by the user and one for the computer.
              * this way we can keep track of the moves
             */
+            movesPlayer = []
+            movesPc = []
             for (let i = 0; i < solution.length; i++) {
                 if (i % 2 == 0) { // if it's even it's added to the user's moves
                     movesPlayer.push(solution[i]);
@@ -83,14 +83,14 @@ function callApi() {
                     movesPc.push(solution[i]); //if it's odd it's added to the pc's moves
                 }
             }
+
+            console.log(movesPlayer)
         }
     })
 }
 
 
-callApi()
-
-
+callApi("daily")
 
 
 /**
@@ -113,7 +113,8 @@ function inputHandler(event) {
 
     } else if (event.type === INPUT_EVENT_TYPE.validateMoveInput) { //if the user has dropped the piece or has clicked another square after the first click
 
-        if ((event.squareTo.charAt(1) == "8" || event.squareTo.charAt(1) == "1") && event.piece.charAt(1) === "p") { //check if the move is a pawn promotion
+        const promo = color === COLOR.black ? '2' : '7'
+        if ((event.squareTo.charAt(1) == "8" || event.squareTo.charAt(1) == "1") && event.piece.charAt(1) === "p" && (event.squareFrom.charAt(1) === promo)) { //check if the move is a pawn promotion
 
             var move = event.squareFrom + event.squareTo //define the variable move that will be needed to tell the chess object which move was played
 
@@ -129,6 +130,7 @@ function inputHandler(event) {
 
                         board.setPosition(chess.fen(), true) //make the animation 
 
+                        board.removeArrows(ARROW_TYPE.pointy)
                         board.removeMarkers(MARKER_TYPE.square)
 
                         board.addMarker(MARKER_TYPE.square, move[0] + move[1]) //add the square type marker of the last move
@@ -179,6 +181,7 @@ function inputHandler(event) {
                     this.chessboard.state.moveInputProcess.then(() => {
 
                         board.removeMarkers(MARKER_TYPE.square) //remove all the square type markers that indicated the previous move 
+                        board.removeArrows(ARROW_TYPE.pointy)
 
                         board.setPosition(chess.fen(), true) //set the animation of the move
 
@@ -234,6 +237,7 @@ function makePcMove() {
     //if this is triggered the user has solved the puzzle because the array wil be out of index
     //and the variable will not be defined
     catch (err) {
+        counter = 0
 
         $("#state").removeClass("right");
         $("#state").text("Congratulation,\nyou solved the puzzle");
@@ -245,49 +249,73 @@ function makePcMove() {
 $(document).ready(function () {
 
     $('#board').on('scroll touchmove touchend touchstart contextmenu', function (e) {
-        //e.preventDefault();
-
+        e.preventDefault();
     });
 })
 var prova = null
 
 $("#board").click(function (e) {
-  // e.preventDefault();
-  board.removeArrows()
-  board.removeMarkers(MARKER_TYPE.circle)
+    e.preventDefault();
+    board.removeArrows(ARROW_TYPE.default)
+    board.removeMarkers(MARKER_TYPE.circle)
 })
 $("#board").mousedown(function (e) {
-  if (e.which !== 3)
-    return
-  prova = e.target.dataset.square
+    if (e.which !== 3)
+        return
+    prova = e.target.dataset.square
 })
 $("#board").mouseup(function (e) {
-  //console.log(e.target.dataset.square)
-  if (e.which !== 3)
-    return
+    if (e.which !== 3)
+        return
 
-  if (prova === e.target.dataset.square) {
-    board.addMarker(MARKER_TYPE.circle, e.target.dataset.square)
-  }
-  else {
-    board.addArrow(ARROW_TYPE.default, prova, e.target.dataset.square)
-  }
-}
-
-
-);
+    if (prova === e.target.dataset.square) {
+        board.addMarker(MARKER_TYPE.circle, e.target.dataset.square)
+    }
+    else {
+        board.addArrow(ARROW_TYPE.default, prova, e.target.dataset.square)
+    }
+})
 $("#board").contextmenu(function (e) {
     e.preventDefault()
-  return
-
+    return
 })
-const buttons = document.querySelectorAll('.cm-chess-promotion-dialog button');
-buttons.forEach(button => {
-button.addEventListener('touchstart', () => {
-button.click();
-});
-});
 
+$("#hint").click(function () {
+    board.removeArrows(ARROW_TYPE.pointy)
+    board.addArrow(ARROW_TYPE.pointy, movesPlayer[counter][0] + movesPlayer[counter][1], movesPlayer[counter][2] + movesPlayer[counter][3])
+})
+function callApiCategory(category) {
+
+    $("#" + category).click(function () {
+        board.removeArrows()
+        board.removeMarkers()
+
+        $("#state").text("");
+        $("#title").text("Puzzle category:" + category);
+        $("#loading").removeClass("remove");
+        $("#board").addClass("remove");
+
+        $.ajax({
+            type: "GET",
+            url: "index.php",
+            data: {
+                request: "get_id_puzzle",
+                keyword: category
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(response)
+                
+                callApi(response)
+                $("#loading").addClass("remove");
+                $("#board").removeClass("remove");
+            }
+        });
+    })
+}
+callApiCategory("opening")
+callApiCategory("middlegame")
+callApiCategory("endgame")
 
 
 

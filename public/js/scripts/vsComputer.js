@@ -128,7 +128,9 @@ function inputHandler(event) {
     return moves.length > 0
 
   } else if (event.type === INPUT_EVENT_TYPE.validateMoveInput) {
-    if ((event.squareTo.charAt(1) == "8" || event.squareTo.charAt(1) == "1") && event.piece.charAt(1) === "p") { //check if the move is a pawn promotion
+    const promo = color === COLOR.black ? '2' : '7'
+
+    if ((event.squareTo.charAt(1) == "8" || event.squareTo.charAt(1) == "1") && event.piece.charAt(1) === "p" && (event.squareFrom.charAt(1) === promo)) { //check if the move is a pawn promotion
 
       var move = event.squareFrom + event.squareTo //define the variable move that will be needed to tell the chess object which move was played
 
@@ -289,8 +291,8 @@ $('#hint').click(function (e) {
 var prova = null
 
 $("#board").click(function (e) {
-   e.preventDefault();
-  board.removeArrows()
+  e.preventDefault();
+  board.removeArrows(ARROW_TYPE.default)
   board.removeMarkers(MARKER_TYPE.circle)
 })
 $("#board").mousedown(function (e) {
@@ -314,6 +316,7 @@ $("#board").mouseup(function (e) {
 
 );
 $("#board").contextmenu(function (e) {
+  e.preventDefault()
   return
 
 })
