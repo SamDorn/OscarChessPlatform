@@ -1,8 +1,3 @@
-<?php
-require_once "pages.php";
-htmlHead();
-?>
-<link rel="stylesheet" href="styles/chessboard/arrows.css">
 <script src="js/scripts/puzzles.js" type="module"></script>
 <style>
     @media only screen and (max-width: 600px) {

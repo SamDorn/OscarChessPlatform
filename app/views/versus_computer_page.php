@@ -1,7 +1,3 @@
-<?php
-require_once "pages.php";
-htmlHead()
-?>
 <link rel="stylesheet" href="styles/chessboard/arrows.css">
 <script src="js/scripts/vsComputer.js" type="module"></script>
 <style>
@@ -77,11 +73,11 @@ htmlHead()
             <h1>HELLO <?= $_SESSION["username"] ?></h1>
         </div>
     <?php endif; ?>
-    <div style="display:flex; justify-content:center;">
+    <div">
         <div id="board"></div>
     </div>
-    <div style="display:flex; justify-content:center;">
-        <a href="home" style="width: fit-content;">Torna al menu</a>
+    <div">
+        <a>Torna al menu</a>
         <button id="hint">Mostra mossa migliore</button>
     </div>
     <div id="finish"></div>

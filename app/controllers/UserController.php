@@ -24,12 +24,9 @@ class UserController
      */
     public function add()
     {
-        try {
-            $this->userModel->addUser();
-            return "User Signed-Up";
-        } catch (\Exception) {
-            return "Something went wrong";
-        }
+            
+        return $this->userModel->addUser();
+       
     }
     /** 
      * This function calls the checkUser function of the UserModel

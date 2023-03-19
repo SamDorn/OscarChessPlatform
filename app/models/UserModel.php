@@ -1,15 +1,17 @@
 <?php
 
 namespace App\models;
-use App\models\Model;
 
- 
+use App\models\Model;
 
 class UserModel extends Model
 {
+    private $id;
     private $username;
     private $email;
     private $password;
+    private $avatar;
+    private $type;
 
     public function __construct()
     {
@@ -18,7 +20,17 @@ class UserModel extends Model
     /**
      * Undocumented function
      *
-     * @param [type] $username
+     * @param string $id
+     * @return void
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+    /**
+     * Undocumented function
+     *
+     * @param string $username
      * @return void
      */
     public function setUsername($username)
@@ -28,7 +40,7 @@ class UserModel extends Model
     /**
      * Undocumented function
      *
-     * @param [type] $email
+     * @param string $email
      * @return void
      */
     public function setEmail($email)
@@ -38,37 +50,41 @@ class UserModel extends Model
     /**
      * Undocumented function
      *
-     * @param [type] $password
+     * @param string $password
      * @return void
      */
     public function setPassword($password)
     {
         $this->password = $password;
     }
+    public function setAvatar($avatar)
+    {
+        $this->avatar = $avatar;
+    }
     /**
      * Undocumented function
      *
-     * @return void
+     * @return string
      */
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->username;
     }
     /**
      * Undocumented function
      *
-     * @return void
+     * @return string
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
     /**
      * Undocumented function
      *
-     * @return void
+     * @return string
      */
-    public function getPassword()
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -77,30 +93,35 @@ class UserModel extends Model
      * This function add the user to the database 
      * It uses a prepared statement and bindParam
      * to avoid SQL Injection
-     *
-     * @param string $username
-     * @param string $email
-     * @param string $password
-     * @return void
+     * 
+     * @return string 
      */
-    public function addUser()
+    public function addUser(): string
     {
         $query = "INSERT INTO users (id, username, email, password) VALUES (null, :username, :email, :password)";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(':username', $this->username);
-        $stmt->bindValue(':email', $this->email);
-        $stmt->bindValue(':password', $this->password);
-        $stmt->execute();
+        try {
+            $this->conn->beginTransaction();
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindValue(':username', $this->username);
+            $stmt->bindValue(':email', $this->email);
+            $stmt->bindValue(':password', $this->password);
+            $stmt->execute();
+            $this->conn->commit();
+
+            return "User added correctly in the database";
+        } catch (\PDOException) {
+            
+            return "There was a problem adding the user in the database";
+        }
     }
+
 
 
     /**
      * This function check if the user is in the database
      * It uses a prepared statement and bindParam
      * to avoid SQL Injection
-     *
-     * @param string $username
-     * @param string $password
+     * 
      * @return bool
      */
     public function checkUser()
@@ -112,7 +133,7 @@ class UserModel extends Model
         $stmt->execute();
         $result = $stmt->fetch();
 
-        if($result > 0)
+        if ($result > 0)
             return true;
         else
             return false;
@@ -121,8 +142,7 @@ class UserModel extends Model
      * This function is used to check if a the user who is creating a new account is 
      * using an available username, if there is already a user with that username
      * is returned false otherwise is returned true.
-     *
-     * @param string $username
+     * 
      * @return bool true if available
      */
     public function checkUsername()
@@ -133,7 +153,7 @@ class UserModel extends Model
         $stmt->execute();
         $result = $stmt->fetch();
 
-        if($result > 0)
+        if ($result > 0)
             return true;
         else
             return false;
@@ -143,8 +163,7 @@ class UserModel extends Model
      * This function is used to check if the user who is creating a new account is 
      * using an email never used before.
      *
-     * @param string $email
-     * @return bool true if available, false is there is already a user with that email
+     * @return bool true if available
      */
     public function checkEmail()
     {
@@ -154,10 +173,9 @@ class UserModel extends Model
         $stmt->execute();
         $result = $stmt->fetch();
 
-        if($result > 0)
+        if ($result > 0)
             return true;
         else
             return false;
     }
 }
-?>

@@ -1,11 +1,3 @@
-<?php
-require_once "pages.php";
-if (!isset($_SESSION["username"])) {
-    header('Location: index.php');
-}
-?>
-
-<?php htmlHead() ?>
 <script src="js/scripts/vsPlayer.js"></script>
 </head>
 

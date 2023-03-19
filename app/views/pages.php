@@ -10,8 +10,17 @@ function htmlHead()
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>OscarChessPlatform</title>
+        <script src="js/libraries/jQuery/jquery-3.6.3.min.js"></script>
+
+    <?php
+}
+
+function scriptsChessboard()
+{
+    ?>
         <link rel="stylesheet" href="styles/chessboard/cm-chessboard.css">
         <link rel="stylesheet" href="styles/chessboard/promotion-dialog.css">
-        <script src="js/libraries/jQuery/jquery-3.6.3.min.js"></script>
+        <link rel="stylesheet" href="styles/chessboard/arrows.css">
     <?php
+
 }

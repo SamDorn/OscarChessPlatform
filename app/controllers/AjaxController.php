@@ -8,12 +8,14 @@ use App\controllers\UserController;
 
 class AjaxController
 {
+    private $request;
+    private $response;
     private $userModel;
     private $puzzleModel;
-    private $response = "";
 
-    public function __construct()
+    public function __construct($request)
     {
+        $this->request = $request;
         $this->userModel = new UserModel();
         $this->puzzleModel = new PuzzleModel();
     }
@@ -34,7 +36,6 @@ class AjaxController
          * $_GET and $_POST. It is use to not make redundancy code because not always there are
          * username, email and password.
          */
-        $request = isset($_POST['request']) ? $_POST['request']: $_GET['request'];
         $username = isset($_POST['username']) ? $_POST['username'] : null;
         $email = isset($_POST['email']) ? $_POST['email'] : null;
         $password = isset($_POST['password']) ? hash("sha512",$_POST["password"]) : null;
@@ -70,7 +71,7 @@ class AjaxController
         /**
          * This is the switch that handle the request.
          */
-        switch ($request) {
+        switch ($this->request) {
             case 'get_move_pc':
                 $this->response = $this->get_move_pc($fileName, $fen, $skill);
                 break;

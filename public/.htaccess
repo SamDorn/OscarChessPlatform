@@ -1,4 +1,6 @@
 RewriteEngine On
-RewriteRule ^([a-z]+)$  index.php?action=$1 [PT,NC]
-RewriteRule index.php/^([a-z]+)$  index.php?action=$1 [PT,NC]
-RewriteRule ^([a-z]+)/([a-z]+)$  index.php?action=$1&param=$2 [PT]
+
+RewriteRule ^$ /oscarchessplatform/public/home [R=301,L]
+
+RewriteRule ^([a-zA-Z]+)$  index.php?action=$1 [PT,NC,QSA]
+RewriteRule ^([a-zA-Z]+)/([a-z]+)$  index.php?action=$1&param=$2 [PT]

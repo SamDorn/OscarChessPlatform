@@ -41,8 +41,10 @@ function insertUserAjax() {
             password: $("#passwordSignUp").val()
         },
         dataType: "json",
-        success: function () {
-            window.location.href = "index.php?action=login"
+        success: function (response) {
+            if(response === "User added correctly in the database")
+                window.location.href = "login?error=01"
+            //window.location.href = "login"
         }
     })
 }
@@ -60,7 +62,7 @@ function checkUserAjax() {
             alert(data)
             console.log(data)
             if(data !== "Wrong credentials")
-                window.location.href = "index.php"
+                window.location.href = "home"
             
         }
     })

@@ -2,46 +2,66 @@
 
 namespace App;
 
+use App\controllers\AjaxController;
+use App\controllers\GameController;
+use App\controllers\GoogleController;
+use App\controllers\HomeController;
+
 class Dispatcher
 {
     private $action;
     private $args; // to define. Example /player/matthew
 
-    public function __construct()
-    {
-        $this->action = "home";
-    }
+    
 
     /**
-     * This function of the dispatcher handles the action of the user.
-     * It display a certain view based on the action that the user require.
+     * Undocumented function
      *
      * @return void
      */
     public function handleAction()
     {
-        if (isset($_GET['action'])) {
-            $this->action = $_GET['action'];
-        }
+        $this->action = isset($_GET['action']) ? ($_GET['action']) : "request";
+
         switch ($this->action) {
             case 'home':
-                if (!isset($_GET['request']) && !isset($_POST['request']))
-                    require_once("../app/views/home_page.php");
+                $homeController = new HomeController();
+                $homeController->home();
                 break;
 
             case 'vsComputer':
-                require_once("../app/views/versus_computer_page.php");
+                $gameController = new GameController();
+                $gameController->vsComputer();
                 break;
 
             case 'vsPlayer':
-                require_once("../app/views/versus_player_page.php");
+                $gameController = new GameController();
+                $gameController->vsPlayer();
                 break;
 
             case 'login':
-                require_once("../app/views/login_page.php");
+                $homeController = new HomeController();
+                $homeController->login();
                 break;
             case 'puzzle':
-                require_once("../app/views/puzzles_page.php");
+                $gameController = new GameController();
+                $gameController->puzzle();
+                break;
+
+            case 'google':
+                $code = $_GET["code"];
+                $googleController = new GoogleController($code);
+                $googleController->handleLogin();
+                break;
+            case 'request':
+                $request = isset($_POST['request']) ? $_POST['request'] : $_GET['request'];
+                $ajaxController = new AjaxController($request);
+                $ajaxController->handleRequest();
+                break;
+            default:
+                http_response_code(404);
+                break;
+
         }
     }
 }

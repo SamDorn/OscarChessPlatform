@@ -5,7 +5,7 @@ import { PromotionDialog } from "./../libraries/cm-chessboard/extensions/promoti
 import { ARROW_TYPE, Arrows } from "./../libraries/cm-chessboard/extensions/arrows/Arrows.js"
 
 var chess = new Chess() //chess move validator
-board = new Chessboard(document.getElementById("board"), {
+var board = new Chessboard(document.getElementById("board"), {
     sprite: {
         url: "images/chessboard/chessboard-sprite.svg" //url to chess pieces images
     },
@@ -84,7 +84,6 @@ function callApi(data) {
                 }
             }
 
-            console.log(movesPlayer)
         }
     })
 }

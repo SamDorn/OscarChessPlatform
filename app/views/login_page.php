@@ -1,19 +1,18 @@
-<?php
-require_once "pages.php";
-htmlHead();
-?>
 <script src="js/scripts/login.js"></script>
 <style>
 </style>
 </head>
-
 <body>
     <div id="loginForm" style="display:flex; justify-content:center;">
         <form action="">
             <input type="text" name="username" id="usernameLogin" placeholder="username" required><br>
             <input type="password" name="password" id="passwordLogin" placeholder="password" required><br>
             <input type="submit" value="Accedi" id="submitLogin">
+            <a href="<?= $googleController->getUrl()?>" id="google">Sign in with google</a>
             <a href="" id="goSignUp">Nuovo utente?</a>
+            <?php if(isset($error)):?>
+                <h1>Problema nella registrazione</h1>
+            <?php endif;?>
         </form>
     </div>
     <div id="registerForm" style="display:flex; justify-content:center;">
@@ -28,6 +27,7 @@ htmlHead();
             <span id="errorPasswordVerify"></span><br>
             <input type="submit" value="Registrati" id="submitSignUp">
             <a href="" id="goLogin">Già registrato?</a>
+            
         </form>
     </div>
 </body>
