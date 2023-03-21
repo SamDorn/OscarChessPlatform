@@ -3,7 +3,9 @@
 - [How does it work?](#how-does-it-work)
   * [Against computer](#against-computer)
   * [Against player](#against-player)
-  * [Learn secton](#laern-section)
+  * [Learn secton](#learn-section)
+    + [Puzzle](#puzzle)
+ 
   * [Watch another player](#watch-another-player)
   
 - [Credits](#credits)
@@ -12,7 +14,7 @@
 
 ## What is it?
 It's a web application that allow you to do different things.\
-For now you can play against a computer which is set at the minimum level.\
+For now you can play against a computer which is set at the maximum level.\
 When it will be finished you should be able to:\
 -Play against the computer at differents levels;\
 -Play against another player (only if sign-in);\
@@ -38,14 +40,16 @@ When it will be finished you should be able to:\
 
 ### Against player
 
-  It uses webSocket to connect two player. If there are zero games with no second \
-  opponents the server will create a new game. Every time a player makes a move \
-  a message is sent to the server with the new position of the board and the server \
-  will then send a message to the other player to update the chessboard and the game.
+  The idea is to use webSocket to connect 2 players. If there are no games\
+  with second player null it will craete a new game.\
+  Still in designing process.
 
 ### Learn section
 
-  To define
+#### Puzzle
+  Uses lichess.org api to get the information to display the puzzle by sending a get\
+  request. Example https://lichess.org/api/puzzle/00008. The ids are stored in the database\
+  with the elo which rapresent the dificulty and keywords that defines the category.
 
 ### Watch another player
 
@@ -61,3 +65,5 @@ When it will be finished you should be able to:\
 | Stockfish.py | https://github.com/zhelyabuzhsky | https://github.com/zhelyabuzhsky/stockfish |
 | Stockfish 15 | https://github.com/official-stockfish | https://github.com/official-stockfish/Stockfish |
 | jQuery | https://github.com/jquery | https://github.com/jquery/jquery |
+| Php Ratchet | https://github.com/ratchetphp | https://github.com/ratchetphp/Ratchet |
+| Google auth | https://github.com/googleapis | https://github.com/googleapis/google-auth-library-php |
