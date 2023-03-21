@@ -1,49 +1,127 @@
 <style>
     body {
-
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
-        font-family: Arial, sans-serif;
+        justify-content: center;
         height: 100vh;
-        margin: 0;
+        background-color: #f2f2f2;
     }
 
-    a {
-        text-align: center;
+    #play-buttons {
+        display: none;
+        flex-direction: row;
+        margin: 10px auto;
+        border: 0px;
+    }
+
+    a.play-button {
         display: inline-block;
-        width: 140px;
         padding: 10px 20px;
-        margin: 10px;
-        font-size: 18px;
-        font-weight: bold;
+        font-size: 24px;
+        text-align: center;
         text-decoration: none;
-        border: 2px solid black;
         border-radius: 10px;
-        color: #000;
+        border: 2px solid #222;
+        color: #222;
+        background-color: #fff;
+        transition: all 0.3s ease;
+        margin: 10px;
     }
 
-    a:hover {
-        background-color: #000;
+    a.play-button:hover {
+        cursor: pointer;
+        background-color: #222;
         color: #fff;
     }
+
+    #learn-buttons {
+        display: none;
+        flex-direction: row;
+        margin: 10px auto;
+    }
+
+    a.learn-button {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 24px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 10px;
+        border: 2px solid #4CAF50;
+        color: #4CAF50;
+        background-color: #fff;
+        transition: all 0.3s ease;
+        margin: 10px;
+    }
+
+    a.learn-button:hover {
+        cursor: pointer;
+        background-color: #4CAF50;
+        color: #fff;
+    }
+
+    a.login-button {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 24px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 10px;
+        border: 2px solid #2196F3;
+        color: #2196F3;
+        background-color: #fff;
+        transition: all 0.3s ease;
+        margin: 10px;
+    }
+
+    a.login-button:hover {
+        cursor: pointer;
+        background-color: #2196F3;
+        color: #fff;
+    }
+
 </style>
 </head>
 
 <body>
-    <a href="vsComputer">Gioca contro il PC</a>
-    <?php if (isset($_SESSION["username"])) : ?>
-        <a href="vsPlayer">Gioca online</a>
-    <?php endif; ?>
+    <a class="play-button" id="play-button">Play</a>
+    <div id="play-buttons">
+        <a class="play-button" id="computer-button">Vs Computer</a>
+        <a class="play-button" id="online-button">Vs Player</a>
+    </div>
+    <a class="learn-button" id="learn-button">Learn</a>
+    <div id="learn-buttons">
+        <a class="learn-button" id="puzzle-button">Resolve puzzles</a>
+        </a>
+    </div>
     <?php if (!isset($_SESSION["username"])) : ?>
-        <a href="login">Effettua il login</a>
-    <?php endif;
-    @var_dump($_SESSION["email"]);
-    ?>
-
-
-    <a href="puzzle">Resolve puzzles</a>
+        <a class="login-button" id="login">Login</a>
+    <?php endif; ?>
 </body>
+
+<script>
+    $("#play-button").click(function(e) {
+        $("#play-buttons").css("display") === "block" ? $("#play-buttons").css("display", "none") : $("#play-buttons").css("display", "block")
+
+    })
+    $("#learn-button").click(function(e) {
+        $("#learn-buttons").css("display") === "block" ? $("#learn-buttons").css("display", "none") : $("#learn-buttons").css("display", "block")
+
+    })
+    $("#login").click(function() {
+        location.href = "login"
+    })
+    $("#puzzle-button").click(function (e) { 
+        location.href = "puzzle"
+    })
+    $("#computer-button").click(function (e) { 
+        location.href = "vsComputer"
+    })
+    $("#online-button").click(function (e) { 
+        location.href = "vsPlayer"
+        
+    });
+</script>
 
 </html>

@@ -15,7 +15,8 @@ class Dispatcher
     
 
     /**
-     * Undocumented function
+     * Every request that isn't an ajax request will havfe an action, if it doesn't
+     * it will be an ajax request.
      *
      * @return void
      */

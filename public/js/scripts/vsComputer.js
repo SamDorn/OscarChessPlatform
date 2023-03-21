@@ -68,9 +68,8 @@ run_clock('min1', deadline);
 
 
 var chess = new Chess() //chess move validator
-chess.load("rnbqkbnr/pPpppppp/8/8/8/8/PP1PPPPP/RNBQKBNR w KQkq - 0 1")
 var board = new Chessboard(document.getElementById("board"), { //chessboard
-  position: "rnbqkbnr/pPpppppp/8/8/8/8/PP1PPPPP/RNBQKBNR w KQkq - 0 1",
+  position: FEN.start,
   sprite: {
     url: "images/chessboard/chessboard-sprite.svg" //url to chess pieces images
   },
@@ -139,6 +138,7 @@ function inputHandler(event) {
         if (event.piece) {
           move = move + event.piece[1] //the piece (q,r,b,n) is added to the move
 
+          board.removeArrows(ARROW_TYPE.pointy)
           chess.move(move) //make the move
 
           board.setPosition(chess.fen(), true) //make the animation
@@ -173,6 +173,7 @@ function inputHandler(event) {
       }
       if (result) { //if result isn't null
         this.chessboard.state.moveInputProcess.then(() => {
+          board.removeArrows(ARROW_TYPE.pointy)
 
           board.removeMarkers(MARKER_TYPE.square) //removes the markers of the previous move
 
@@ -318,5 +319,7 @@ $("#board").mouseup(function (e) {
 $("#board").contextmenu(function (e) {
   e.preventDefault()
   return
-
 })
+$("#menu").click(function (e) { 
+  location.href = "home"
+});

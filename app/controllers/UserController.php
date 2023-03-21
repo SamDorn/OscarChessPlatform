@@ -14,15 +14,9 @@ class UserController
     /**
      * This function add the user in the database
      * It calls the addUser method from the UserModel class
-     * It takes $username, $email and $password which are taken from
-     * the post request.
-     *
-     * @param string $username
-     * @param string $email
-     * @param string $password
-     * @return string success or fail
+     * @return string
      */
-    public function add()
+    public function add() : string
     {
             
         return $this->userModel->addUser();
@@ -33,11 +27,9 @@ class UserController
      * class with checks if the username and password match with a 
      * record in the database
      *
-     * @param string $username
-     * @param string $password
-     * @return string success or fail
+     * @return string
      */
-    public function check()
+    public function check() : string
     {
         try {
             if ($this->userModel->checkUser()) {
@@ -56,10 +48,9 @@ class UserController
      * and checks if the username that the user is typing is available and it is
      * not used by another user.
      *
-     * @param string $username
-     * @return string is available or not
+     * @return string 
      */
-    public function checkUsername()
+    public function checkUsername() : string
     {
         try {
             if ($this->userModel->checkUsername())
@@ -74,8 +65,7 @@ class UserController
      * This function check if the email that the user is trying to sign up with is
      * already used.
      *
-     * @param string $email
-     * @return void
+     * @return mixed
      */
     public function checkEmail()
     {

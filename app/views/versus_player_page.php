@@ -1,4 +1,4 @@
-<script src="js/scripts/vsPlayer.js"></script>
+<!-- <script src="js/scripts/vsPlayer.js"></script>
 </head>
 
 <body>
@@ -38,4 +38,4 @@
         });
     </script>
 </body>
-</html>
+</html> -->

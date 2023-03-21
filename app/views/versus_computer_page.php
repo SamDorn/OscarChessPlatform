@@ -76,8 +76,8 @@
     <div">
         <div id="board"></div>
     </div>
-    <div">
-        <a>Torna al menu</a>
+    <div>
+        <a id="menu">Torna al menu</a>
         <button id="hint">Mostra mossa migliore</button>
     </div>
     <div id="finish"></div>

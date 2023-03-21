@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * TO REDESIGN
+ */
 namespace App\models;
 
 class UserInPvpModel extends Model
