@@ -1,6 +1,6 @@
 RewriteEngine On
 
-RewriteRule ^$ /oscarchessplatform/public/home [R=301,L]
+RewriteRule ^$ /OscarChessPlatform/public/home [R=301,L]
 
 RewriteRule ^([a-zA-Z]+)$  index.php?action=$1 [PT,NC,QSA]
 RewriteRule ^([a-zA-Z]+)/([a-z]+)$  index.php?action=$1&param=$2 [PT]

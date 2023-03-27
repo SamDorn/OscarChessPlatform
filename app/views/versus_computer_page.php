@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="styles/chessboard/cm-chessboard.css">
+<link rel="stylesheet" href="styles/chessboard/promotion-dialog.css">
 <link rel="stylesheet" href="styles/chessboard/arrows.css">
 <script src="js/scripts/vsComputer.js" type="module"></script>
 <style>
@@ -65,6 +67,7 @@
         color: #000;
         font-size: x-large;
     }
+    
 </style>
 </head>
 <body>
@@ -81,6 +84,9 @@
         <button id="hint">Mostra mossa migliore</button>
     </div>
     <div id="finish"></div>
+    <input type="color" name="" id="color1">
+    <input type="color" name="" id="color2">
+
 </body>
 <script>
     var sessionId = "<?= session_id() ?>"

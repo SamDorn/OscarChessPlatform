@@ -1,26 +1,36 @@
 <?php
+
+
 class Database
 {
     private $host = "127.0.0.1";
     private $user = "root";
     private $password = "";
     private $db_name = "OscarChessPlatform";
-    public $con;
+    private static $instance;
 
-    public function __construct()
+    private function __construct()
     {
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
-        $this->con = new PDO("mysql:host=$this->host;dbname=$this->db_name;", $this->user, $this->password, $options);
+        self::$instance = new PDO("mysql:host=$this->host;dbname=$this->db_name;", $this->user, $this->password, $options);
         $this->createTables();
     }
 
-    public function getConnection()
+    /**
+     * Uses singleton pattern so that there is only one database instance
+     * throughout the application.
+     *
+     * @return void
+     */
+    public static function getInstance()
     {
-        return $this->con;
+        if(!isset(self::$instance))
+            new Database;
+        return self::$instance;
     }
 
     private function createTables()
@@ -42,7 +52,7 @@ class Database
             white VARCHAR(30),
             PRIMARY KEY ( id ))";
 
-        $this->con->exec($cmd);
-        $this->con->exec($cmd2);
+        self::$instance->exec($cmd);
+        self::$instance->exec($cmd2);
     }
 }

@@ -5,6 +5,15 @@ import { PromotionDialog } from "./../libraries/cm-chessboard/extensions/promoti
 import { FEN } from "./../libraries/cm-chessboard/model/Position.js"
 import { ARROW_TYPE, Arrows } from "./../libraries/cm-chessboard/extensions/arrows/Arrows.js"
 
+function playAudio(move){
+  move.san.indexOf("x") > -1 ? audioCapture.play() : null
+  move.san.indexOf("O") > -1 ? audioCastle.play() : null
+  move.san.indexOf("O") === -1 && move.san.indexOf("x") === -1 ? audioMove.play() : null
+  
+}
+$("#change").click(function (e) { 
+  $(".square.white").css("fill", "#fff");
+});
 /*
 var time_in_minutes = 0.5;
 var current_time = Date.parse(new Date());
@@ -65,7 +74,9 @@ run_clock('min1', deadline);
 
 */
 
-
+var audioMove = new Audio("audio/chess_move.mp3")
+var audioCastle = new Audio("audio/chess_castle.mp3")
+var audioCapture = new Audio("audio/chess_capture.mp3")
 
 var chess = new Chess() //chess move validator
 var board = new Chessboard(document.getElementById("board"), { //chessboard
@@ -99,14 +110,13 @@ var board = new Chessboard(document.getElementById("board"), { //chessboard
 var result = null
 
 //uses the ternary operator to casually generate the color
-//const color = Math.floor(Math.random() * 2) === 0 ? COLOR.black : COLOR.white
-var color = COLOR.white
+const color = Math.floor(Math.random() * 2) === 0 ? COLOR.black : COLOR.white
 
 board.setOrientation(color) //set the orientation of the board based on the color
 
 //uses the ternary operator to see if the user is black.
 //if it is it calls the sendAjax which will make the first move as white
-//color === COLOR.black ? sendAjax(chess.fen()) : null
+color === COLOR.black ? sendAjax(chess.fen()) : null
 
 /**
  * Handles the input of the user
@@ -139,9 +149,11 @@ function inputHandler(event) {
           move = move + event.piece[1] //the piece (q,r,b,n) is added to the move
 
           board.removeArrows(ARROW_TYPE.pointy)
-          chess.move(move) //make the move
+          let prova = chess.move(move) //make the move
 
+          playAudio(prova)
           board.setPosition(chess.fen(), true) //make the animation
+
 
           board.addMarker(MARKER_TYPE.square, move[0] + move[1]) //add the square type marker of the last move
           board.addMarker(MARKER_TYPE.square, move[2] + move[3]) //add the square type marker of the last move
@@ -164,6 +176,7 @@ function inputHandler(event) {
       try { //need a try catch because chess.js library fires an exception if a move is not valid
 
         result = chess.move(move) //return the object move. It's a valid move
+        console.log(result)
 
       }
       catch (error) {
@@ -176,8 +189,9 @@ function inputHandler(event) {
           board.removeArrows(ARROW_TYPE.pointy)
 
           board.removeMarkers(MARKER_TYPE.square) //removes the markers of the previous move
-
+          playAudio(result)
           board.setPosition(chess.fen(), true) //make the animation
+          
 
           event.chessboard.addMarker(MARKER_TYPE.square, event.squareFrom) //add the square type marker of the last move
           event.chessboard.addMarker(MARKER_TYPE.square, event.squareTo) //add the square type marker of the last move
@@ -227,16 +241,17 @@ function sendAjax(fen) {
       request: "get_move_pc",
       fen: fen,
       fileName: sessionId,
-      skill: 0
+      skill: 20
     },
     dataType: "json",
     success: function (response) {
+      let move = undefined
+      setTimeout(() => {move = chess.move(response)}, 1500) //make the move received from the script
 
       setTimeout(() => { board.removeMarkers(MARKER_TYPE.square) }, 1500) //removes the markers of the previous move
 
-      setTimeout(() => { chess.move(response) }, 1500) //make the move received from the script
-
       setTimeout(() => { board.setPosition(chess.fen(), true) }, 1500) //make theanimation of the move
+      setTimeout(() => { playAudio(move)  }, 1500)
 
       setTimeout(() => { board.addMarker(MARKER_TYPE.square, response[0] + response[1]) }, 1500) //add the square type marker of the last move
       setTimeout(() => { board.addMarker(MARKER_TYPE.square, response[2] + response[3]) }, 1500) //add the square type marker of the last move
@@ -267,8 +282,7 @@ $(document).ready(function () {
 
 $('#hint').click(function (e) {
   board.removeArrows()
-  var c = color === COLOR.black ? "b" : "w"
-  if (chess.turn() === c) {
+  if (chess.turn() === color) {
     $.ajax({
       type: "POST",
       url: "index.php",
@@ -292,7 +306,10 @@ $('#hint').click(function (e) {
 var prova = null
 
 $("#board").click(function (e) {
-  e.preventDefault();
+  console.log(colorWhite)
+  $(".square.white").css("fill", colorWhite)
+  //e.preventDefault();
+
   board.removeArrows(ARROW_TYPE.default)
   board.removeMarkers(MARKER_TYPE.circle)
 })
@@ -302,7 +319,6 @@ $("#board").mousedown(function (e) {
   prova = e.target.dataset.square
 })
 $("#board").mouseup(function (e) {
-  //console.log(e.target.dataset.square)
   if (e.which !== 3)
     return
 
@@ -317,9 +333,52 @@ $("#board").mouseup(function (e) {
 
 );
 $("#board").contextmenu(function (e) {
+
   e.preventDefault()
   return
 })
-$("#menu").click(function (e) { 
+$("#menu").click(function () { 
   location.href = "home"
 });
+
+
+var colorPicker1 = document.getElementById("color1")
+var colorPicker2 = document.getElementById("color2")
+
+colorPicker1.addEventListener("input", updateFirst, false)
+colorPicker2.addEventListener("input", updateFirst1, false)
+colorPicker1.addEventListener("change", setCss1, false)
+colorPicker2.addEventListener("change", setCss2, false)
+
+var colorBlack = null;
+var colorWhite = null
+
+function updateFirst(event) {
+  colorWhite = event.target.value
+  $(".cm-chessboard.default, .board, .square.white").css("fill", event.target.value);
+  $(".cm-chessboard.chessboard-js, .board, .square.white").css("fill", event.target.value);
+  $(".cm-chessboard.chessboard-js.border-type-thin, .board, .border").css("fill", event.target.value);
+  $(".cm-chessboard.chessboard-js.border-type-none, .board, .border").css("fill", event.target.value);
+  $(".cm-chessboard.chessboard-js.border-type-frame, .board, .border").css("fill", event.target.value);
+  $(".cm-chessboard.chessboard-js, .coordinates, .coordinate.black").css("fill", event.target.value);
+
+
+}
+function updateFirst1(event) {
+  $(".square.black").css("fill", event.target.value);
+}
+function setCss1(){
+  $(".cm-chessboard.default, .board, .square.white").css("fill", event.target.value);
+  $(".cm-chessboard.chessboard-js, .board, .square.white").css("fill", event.target.value);
+  $(".cm-chessboard.chessboard-js.border-type-thin, .board, .border").css("fill", event.target.value);
+  $(".cm-chessboard.chessboard-js.border-type-none, .board, .border").css("fill", event.target.value);
+  $(".cm-chessboard.chessboard-js.border-type-frame, .board, .border").css("fill", event.target.value);
+  $(".cm-chessboard.chessboard-js, .coordinates, .coordinate.black").css("fill", event.target.value);
+
+  
+  //$(".square.white").css("fill", event.target.value);
+}
+function setCss2(){
+  //$(".square.black").css("fill", event.target.value);
+  $(".square.black").css("fill", event.target.value);
+}

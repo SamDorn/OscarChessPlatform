@@ -9,12 +9,10 @@ use Database;
 
 class Model
 {
-    protected $conn;
+    protected \PDO $conn;
 
     public function __construct()
     {
-        $database = new Database();
-        $this->conn = $database->getConnection();
+        $this->conn = Database::getInstance();
     }
 }
-?>

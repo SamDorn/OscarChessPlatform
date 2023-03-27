@@ -6,12 +6,12 @@ use App\models\Model;
 
 class UserModel extends Model
 {
-    private $id;
-    private $username;
-    private $email;
-    private $password;
-    private $avatar;
-    private $type;
+    private int $id;
+    private ?string $username;
+    private ?string $email;
+    private ?string $password;
+    private ?string $avatar;
+    private ?string $type;
 
     public function __construct()
     {
@@ -20,40 +20,40 @@ class UserModel extends Model
     /**
      * Undocumented function
      *
-     * @param string $id
+     * @param int $id
      * @return void
      */
-    public function setId($id)
+    public function setId(int $id) : void
     {
         $this->id = $id;
     }
     /**
      * Undocumented function
      *
-     * @param string $username
+     * @param ?string $username
      * @return void
      */
-    public function setUsername($username)
+    public function setUsername(?string $username) : void
     {
         $this->username = $username;
     }
     /**
      * Undocumented function
      *
-     * @param string $email
+     * @param ?string $email
      * @return void
      */
-    public function setEmail($email)
+    public function setEmail(?string $email) : void
     {
         $this->email = $email;
     }
     /**
      * Undocumented function
      *
-     * @param string $password
+     * @param ?string $password
      * @return void
      */
-    public function setPassword($password)
+    public function setPassword(?string $password) : void
     {
         $this->password = $password;
     }
@@ -104,13 +104,12 @@ class UserModel extends Model
             $stmt = $this->conn->prepare($query);
             $stmt->bindValue(':username', $this->username);
             $stmt->bindValue(':email', $this->email);
-            $stmt->bindValue(':password', $this->password);
+            $stmt->bindValue(':password', password_hash($this->password, PASSWORD_BCRYPT));
             $stmt->execute();
             $this->conn->commit();
 
             return "User added correctly in the database";
         } catch (\PDOException) {
-            
             return "There was a problem adding the user in the database";
         }
     }
@@ -124,28 +123,31 @@ class UserModel extends Model
      * 
      * @return bool
      */
-    public function checkUser()
+    public function checkUser() : bool
     {
-        $query = "SELECT * FROM users WHERE username = :username AND password = :password";
+        $query = "SELECT * FROM users WHERE username = :username";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':username', $this->username);
-        $stmt->bindParam(':password', $this->password);
         $stmt->execute();
         $result = $stmt->fetch();
 
-        if ($result > 0)
-            return true;
+        if ($result > 0){
+            if(password_verify($this->password, $result["password"]))
+                return true;
+            else
+                return false;
+        }
         else
             return false;
     }
     /**
-     * This function is used to check if a the user who is creating a new account is 
+     * This function is used to check if the user who is creating a new account is
      * using an available username, if there is already a user with that username
      * is returned false otherwise is returned true.
      * 
      * @return bool true if available
      */
-    public function checkUsername()
+    public function checkUsername() : bool
     {
         $query = "SELECT * FROM users WHERE username = :username";
         $stmt = $this->conn->prepare($query);
@@ -165,7 +167,7 @@ class UserModel extends Model
      *
      * @return bool true if available
      */
-    public function checkEmail()
+    public function checkEmail() : bool
     {
         $query = "SELECT * FROM users WHERE email = :email";
         $stmt = $this->conn->prepare($query);

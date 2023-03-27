@@ -8,10 +8,10 @@ use App\controllers\UserController;
 
 class AjaxController
 {
-    private $request;
-    private $response;
-    private $userModel;
-    private $puzzleModel;
+    private string $request;
+    private string $response;
+    private UserModel $userModel;
+    private PuzzleModel $puzzleModel;
 
     public function __construct($request)
     {
@@ -27,18 +27,18 @@ class AjaxController
      * The request is then handled with a switch and for every possible request
      * a function will take care of the request and provide the data
      *
-     * @return string $response
+     * @return void $response
      */
-    public function handleRequest()
+    public function handleRequest() : void
     {
         /**
          * This code uses the ternary operator to take the values from the superGlobal variables
-         * $_GET and $_POST. It is use to not make redundancy code because not always there are
+         * $_GET and $_POST. It is used to not make redundancy code because not always there are
          * username, email and password.
          */
-        $username = isset($_POST['username']) ? $_POST['username'] : null;
-        $email = isset($_POST['email']) ? $_POST['email'] : null;
-        $password = isset($_POST['password']) ? hash("sha512",$_POST["password"]) : null;
+        $username = $_POST['username'] ?? null;
+        $email = $_POST['email'] ?? null;
+        $password = $_POST["password"] ?? null;
 
         $this->userModel->setUsername($username);
         $this->userModel->setEmail($email);
@@ -46,7 +46,7 @@ class AjaxController
 
         $user = new UserController($this->userModel);
 
-        $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : null;
+        $keyword = $_GET['keyword'] ?? null;
 
         $this->puzzleModel->setKeywords($keyword);
         
@@ -59,9 +59,9 @@ class AjaxController
          * the current position on the board and the skill level
          */
 
-        $fileName = isset($_POST['fileName']) ? $_POST['fileName'] : null;
-        $fen = isset($_POST['fen']) ? $_POST['fen'] : null;
-        $skill = isset($_POST['skill']) ? $_POST['skill'] : null;
+        $fileName = $_POST['fileName'] ?? null;
+        $fen = $_POST['fen'] ?? null;
+        $skill = $_POST['skill'] ?? null;
         
 
         $fileName = "$fileName.txt";
@@ -73,7 +73,7 @@ class AjaxController
          */
         switch ($this->request) {
             case 'get_move_pc':
-                $this->response = $this->get_move_pc($fileName, $fen, $skill);
+                $this->response = $this->getMove($fileName, $fen, $skill);
                 break;
 
             case 'login':
@@ -111,12 +111,9 @@ class AjaxController
      * @param string $fileName
      * @param string $fen
      * @param string $skill
-     * @param string $wTime
-     * @param string $bTime
-     * @param boolean $login
      * @return string $new_fen
      */
-    private function get_move_pc($fileName, $fen, $skill)
+    private function getMove(string $fileName, string $fen, string $skill) : string
     {
         escapeshellcmd($fileName);
         escapeshellcmd($fen);
@@ -135,4 +132,4 @@ class AjaxController
 
     }
 }
-?>
+

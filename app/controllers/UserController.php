@@ -4,7 +4,7 @@ namespace App\controllers;
 
 class UserController
 {
-    private $userModel;
+    private  $userModel;
 
     public function __construct($userModel)
     {
@@ -65,18 +65,17 @@ class UserController
      * This function check if the email that the user is trying to sign up with is
      * already used.
      *
-     * @return mixed
+     * @return string
      */
-    public function checkEmail()
+    public function checkEmail() : string
     {
         try {
             if ($this->userModel->checkEmail())
                 return "Email already used";
             else
-                return;
+                return "";
         } catch (\Exception) {
             return "Something went wrong";
         }
     }
 }
-?>

@@ -2,31 +2,24 @@
 
 namespace App\controllers;
 
-require_once "../app/views/pages.php";
-
+use App\core\Controller;
 
 class GameController
 {
-    public function vsComputer()
+    public function vsComputer() : void
     {
-        htmlHead();
-        scriptsChessboard();
-        require_once "../app/views/versus_computer_page.php";
+        Controller::render("versus_computer_page");
     }
 
-    public function vsPlayer()
+    public function vsPlayer() : void
     {
         if (!isset($_SESSION["username"])) {
             header('Location: index.php');
         }
-        htmlHead();
-        scriptsChessboard();
-        require_once "../app/views/versus_player.php";
+        Controller::render("versus_player_page");
     }
-    public function puzzle()
+    public function puzzle() : void
     {
-        htmlHead();
-        scriptsChessboard();
-        require_once "../app/views/puzzles_page.php";
+        Controller::render("puzzles_page");
     }
 }

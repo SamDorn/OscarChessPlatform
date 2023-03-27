@@ -42,9 +42,9 @@ function insertUserAjax() {
         },
         dataType: "json",
         success: function (response) {
-            if(response === "User added correctly in the database")
+            if(response !== "User added correctly in the database")
                 window.location.href = "login?error=01"
-            //window.location.href = "login"
+            window.location.href = "login"
         }
     })
 }

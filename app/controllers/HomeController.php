@@ -2,21 +2,22 @@
 
 namespace App\controllers;
 
-require_once "../app/views/pages.php";
+use App\core\Controller;
 
 class HomeController
 {
-    public function home()
+    public function home() : void
     {
-        htmlHead();
-        require_once "../app/views/home_page.php";
+        Controller::render("home_page");
     }
-    public function login()
+    public function login() : void
     {
-        $error = isset($_GET['error']) ? $_GET['error'] : null;
+        $error = $_GET['error'] ?? null;
         $googleController = new GoogleController(null);
-        htmlHead();
-        require_once "../app/views/login_page.php";
+        
+        Controller::render("login_page", array(
+            "error" => $error,
+            "googleController" => $googleController
+        ));
     }
 }
-?>

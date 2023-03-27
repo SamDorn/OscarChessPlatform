@@ -9,22 +9,21 @@ use App\controllers\HomeController;
 
 class Dispatcher
 {
-    private $action;
-    private $args; // to define. Example /player/matthew
+    private string $args; // to define. Example /player/matthew
 
     
 
     /**
-     * Every request that isn't an ajax request will havfe an action, if it doesn't
+     * Every request that isn't an ajax request will have an action, if it doesn't
      * it will be an ajax request.
      *
      * @return void
      */
-    public function handleAction()
+    public function handleAction() : void
     {
-        $this->action = isset($_GET['action']) ? ($_GET['action']) : "request";
+        $action = isset($_GET['action']) ? ($_GET['action']) : "request";
 
-        switch ($this->action) {
+        switch ($action) {
             case 'home':
                 $homeController = new HomeController();
                 $homeController->home();
@@ -55,7 +54,7 @@ class Dispatcher
                 $googleController->handleLogin();
                 break;
             case 'request':
-                $request = isset($_POST['request']) ? $_POST['request'] : $_GET['request'];
+                $request = $_POST['request'] ?? $_GET['request'];
                 $ajaxController = new AjaxController($request);
                 $ajaxController->handleRequest();
                 break;

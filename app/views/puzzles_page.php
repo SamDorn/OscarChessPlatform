@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="styles/chessboard/cm-chessboard.css">
+<link rel="stylesheet" href="styles/chessboard/promotion-dialog.css">
+<link rel="stylesheet" href="styles/chessboard/arrows.css">
 <script src="js/scripts/puzzles.js" type="module"></script>
 <style>
     @media only screen and (max-width: 600px) {
@@ -18,7 +21,6 @@
 
         .button-group {
             flex-direction: row;
-            flex-wrap: wrap;
             justify-content: center;
         }
     }

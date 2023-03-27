@@ -7,26 +7,26 @@ use Google;
 
 class GoogleController
 {
-    private $clientId = '';
-    private $clientSecret = '';
-    private $redirectUri = 'http://localhost/oscarchessplatform/public/google';
-    private $googleClient;
-    private $code;
-    private $userModel;
+    private const CLIENT_ID = '3016701451-ijgbje181303kr9m7b49gq0ocqcfiqaj.apps.googleusercontent.com';
+    private const CLIENT_SECRET = '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';
+    private const REDIRECT_URI = 'http://localhost/google';
+    private Google\Client $googleClient;
+    private ?string $code;
+    private UserModel $userModel;
 
     public function __construct($code)
     {
         $this->googleClient = new Google\Client();
-        $this->googleClient->setClientId($this->clientId);
-        $this->googleClient->setClientSecret($this->clientSecret);
-        $this->googleClient->setRedirectUri($this->redirectUri);
+        $this->googleClient->setClientId(self::CLIENT_ID);
+        $this->googleClient->setClientSecret(self::CLIENT_SECRET);
+        $this->googleClient->setRedirectUri(self::REDIRECT_URI);
         $this->googleClient->addScope('email');
         $this->googleClient->addScope('profile');
         $this->code = $code;
         $this->userModel = new UserModel();
     }
 
-    public function handleLogin()
+    public function handleLogin() : void
     {
         $token = $this->googleClient->fetchAccessTokenWithAuthCode($this->code);
         $this->googleClient->setAccessToken($token);
@@ -39,10 +39,9 @@ class GoogleController
         
         //header("Location: home");
     }
-    public function getUrl()
+    public function getUrl() : string
     {
         return $this->googleClient->createAuthUrl();
     }
 
 }
-?>
