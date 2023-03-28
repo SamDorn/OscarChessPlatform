@@ -1,6 +1,5 @@
+AddType application/javascript .js
 RewriteEngine On
-
-RewriteRule ^$ /OscarChessPlatform/public/home [R=301,L]
-
-RewriteRule ^([a-zA-Z]+)$  index.php?action=$1 [PT,NC,QSA]
-RewriteRule ^([a-zA-Z]+)/([a-z]+)$  index.php?action=$1&param=$2 [PT]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]

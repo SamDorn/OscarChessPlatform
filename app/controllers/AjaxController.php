@@ -13,9 +13,9 @@ class AjaxController
     private UserModel $userModel;
     private PuzzleModel $puzzleModel;
 
-    public function __construct($request)
+    public function __construct()
     {
-        $this->request = $request;
+        $this->request = $_GET['request'] ?? $_POST['request'];
         $this->userModel = new UserModel();
         $this->puzzleModel = new PuzzleModel();
     }
@@ -29,7 +29,7 @@ class AjaxController
      *
      * @return void $response
      */
-    public function handleRequest() : void
+    public function handleRequest(): void
     {
         /**
          * This code uses the ternary operator to take the values from the superGlobal variables
@@ -49,7 +49,8 @@ class AjaxController
         $keyword = $_GET['keyword'] ?? null;
 
         $this->puzzleModel->setKeywords($keyword);
-        
+
+
 
 
 
@@ -59,10 +60,10 @@ class AjaxController
          * the current position on the board and the skill level
          */
 
-        $fileName = $_POST['fileName'] ?? null;
-        $fen = $_POST['fen'] ?? null;
-        $skill = $_POST['skill'] ?? null;
-        
+        $fileName = $_GET['fileName'] ?? null;
+        $fen = $_GET['fen'] ?? null;
+        $skill = $_GET['skill'] ?? null;
+
 
         $fileName = "$fileName.txt";
         $fen = '"' . $fen . '"';
@@ -113,7 +114,7 @@ class AjaxController
      * @param string $skill
      * @return string $new_fen
      */
-    private function getMove(string $fileName, string $fen, string $skill) : string
+    private function getMove(string $fileName, string $fen, string $skill): string
     {
         escapeshellcmd($fileName);
         escapeshellcmd($fen);
@@ -132,4 +133,3 @@ class AjaxController
 
     }
 }
-

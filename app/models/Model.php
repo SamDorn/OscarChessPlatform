@@ -2,10 +2,9 @@
 
 namespace App\models;
 
-use Database;
+use App\database\Database;
 
-@include_once '../../config/db_connection.php';
-@include_once '../config/db_connection.php';
+
 
 class Model
 {

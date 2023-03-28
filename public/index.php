@@ -3,14 +3,20 @@
 session_start();
 
 require_once '../vendor/autoload.php';
-//var_dump($_SERVER["REQUEST_URI"]);
 
-use App\Dispatcher;
 use App\core\Application;
+use App\controllers\AjaxController;
+use App\controllers\SiteController;
+use App\controllers\GoogleController;
 
-$dispatcher = new Dispatcher();
-$dispatcher->handleAction();
-//$app = new Application();
-//$app->router->
-//$app->run();
+$app = new Application(dirname(__DIR__));
+$app->router->get('/home', [SiteController::class, 'home']);
+$app->router->get('/vsComputer', [SiteController::class, 'vsComputer']);
+$app->router->get('/vsPlayer', [SiteController::class, 'vsPlayer']);
+$app->router->get('/puzzles', [SiteController::class, 'puzzles']);
+$app->router->get('/login', [SiteController::class, 'login']);
+$app->router->get('/ajax', [AjaxController::class, 'handleRequest']);
+$app->router->post('/ajax', [AjaxController::class, 'handleRequest']);
+$app->router->get('/google', [GoogleController::class, 'handleLogin']);
+$app->run();
 ?>

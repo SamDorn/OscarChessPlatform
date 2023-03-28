@@ -1,6 +1,6 @@
 function checkUsernameAjax() {
     $.ajax({
-        url: "index.php",
+        url: "/ajax",
         type: "POST",
         data: {
             request: "checkUsername",
@@ -17,7 +17,7 @@ function checkUsernameAjax() {
 
 function checkEmailAjax(){
     $.ajax({
-        url: "index.php",
+        url: "/ajax",
         type: "POST",
         data: {
             request: "checkEmail",
@@ -32,7 +32,7 @@ function checkEmailAjax(){
 
 function insertUserAjax() {
     $.ajax({
-        url: "index.php",
+        url: "/ajax",
         type: "POST",
         data: {
             request: "signUp",
@@ -50,7 +50,7 @@ function insertUserAjax() {
 }
 function checkUserAjax() {
     $.ajax({
-        url: "index.php",
+        url: "/ajax",
         type: "POST",
         data: {
             request: "login",

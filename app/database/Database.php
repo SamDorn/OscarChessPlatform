@@ -1,6 +1,8 @@
 <?php
 
+namespace App\database;
 
+use PDO;
 class Database
 {
     private $host = "127.0.0.1";
@@ -24,9 +26,9 @@ class Database
      * Uses singleton pattern so that there is only one database instance
      * throughout the application.
      *
-     * @return void
+     * @return PDO instance
      */
-    public static function getInstance()
+    public static function getInstance() : PDO
     {
         if(!isset(self::$instance))
             new Database;

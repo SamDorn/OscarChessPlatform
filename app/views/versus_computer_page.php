@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="styles/chessboard/cm-chessboard.css">
 <link rel="stylesheet" href="styles/chessboard/promotion-dialog.css">
 <link rel="stylesheet" href="styles/chessboard/arrows.css">
-<script src="js/scripts/vsComputer.js" type="module"></script>
+<script src="js/scripts/gameLogic/vsComputer.js" type="module"></script>
 <style>
     @media only screen and (max-width: 600px) {
         #board {
@@ -22,7 +22,6 @@
         justify-content: center;
         align-items: center;
         font-family: Arial, sans-serif;
-        overflow-y: hidden;
     }
 
     a {
@@ -86,7 +85,9 @@
     <div id="finish"></div>
     <input type="color" name="" id="color1">
     <input type="color" name="" id="color2">
-
+    <textarea name="" id="pgn" cols="30" rows="10"></textarea>
+        <button style="font-size:3rem" id="previous"><</button>
+        <button style="font-size:3rem" id="next">></button>
 </body>
 <script>
     var sessionId = "<?= session_id() ?>"

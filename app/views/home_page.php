@@ -113,7 +113,7 @@
         location.href = "login"
     })
     $("#puzzle-button").click(function (e) { 
-        location.href = "puzzle"
+        location.href = "puzzles"
     })
     $("#computer-button").click(function (e) { 
         location.href = "vsComputer"
