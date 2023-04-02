@@ -80,7 +80,6 @@
         background-color: #2196F3;
         color: #fff;
     }
-
 </style>
 </head>
 
@@ -112,15 +111,15 @@
     $("#login").click(function() {
         location.href = "login"
     })
-    $("#puzzle-button").click(function (e) { 
+    $("#puzzle-button").click(function(e) {
         location.href = "puzzles"
     })
-    $("#computer-button").click(function (e) { 
+    $("#computer-button").click(function(e) {
         location.href = "vsComputer"
     })
-    $("#online-button").click(function (e) { 
+    $("#online-button").click(function(e) {
         location.href = "vsPlayer"
-        
+
     });
 </script>
 

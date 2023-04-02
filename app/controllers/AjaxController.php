@@ -36,9 +36,9 @@ class AjaxController
          * $_GET and $_POST. It is used to not make redundancy code because not always there are
          * username, email and password.
          */
-        $username = $_POST['username'] ?? null;
-        $email = $_POST['email'] ?? null;
-        $password = $_POST["password"] ?? null;
+        $username = filter_input(INPUT_POST,'username', FILTER_SANITIZE_SPECIAL_CHARS) ?? null;
+        $email = filter_input(INPUT_POST,'email', FILTER_SANITIZE_SPECIAL_CHARS) ?? null;
+        $password = filter_input(INPUT_POST,'password', FILTER_SANITIZE_SPECIAL_CHARS) ?? null;
 
         $this->userModel->setUsername($username);
         $this->userModel->setEmail($email);
@@ -46,7 +46,7 @@ class AjaxController
 
         $user = new UserController($this->userModel);
 
-        $keyword = $_GET['keyword'] ?? null;
+        $keyword = filter_input(INPUT_GET,'keyword', FILTER_SANITIZE_SPECIAL_CHARS) ?? null;
 
         $this->puzzleModel->setKeywords($keyword);
 
@@ -60,9 +60,9 @@ class AjaxController
          * the current position on the board and the skill level
          */
 
-        $fileName = $_GET['fileName'] ?? null;
-        $fen = $_GET['fen'] ?? null;
-        $skill = $_GET['skill'] ?? null;
+        $fileName = filter_input(INPUT_GET, 'fileName', FILTER_SANITIZE_SPECIAL_CHARS) ?? null;
+        $fen = filter_input(INPUT_GET, 'fen', FILTER_SANITIZE_SPECIAL_CHARS) ?? null;
+        $skill = filter_input(INPUT_GET, 'skill', FILTER_SANITIZE_SPECIAL_CHARS) ?? null;
 
 
         $fileName = "$fileName.txt";
@@ -109,27 +109,27 @@ class AjaxController
      * will be returned. Need to implement if the user is logged in. Infact if the user
      * is logged in it needs to connect to the database to update the current game
      *
-     * @param string $fileName
-     * @param string $fen
-     * @param string $skill
-     * @return string $new_fen
+     * @param string filename
+     * @param string the fen string
+     * @param string skill level
+     * @return string the move generated
      */
     private function getMove(string $fileName, string $fen, string $skill): string
     {
-        escapeshellcmd($fileName);
-        escapeshellcmd($fen);
-        escapeshellcmd($skill);
+        $fileName = escapeshellcmd($fileName);
+        $fen = escapeshellcmd($fen);
+        $skill = escapeshellcmd($skill);
 
 
         exec("py ../app/python/main.py $fileName $fen $skill"); //execute the python script
 
         $file = fopen("../app/generated_files/$fileName", "r"); //open the file created by the script
 
-        $new_fen = fread($file, filesize("../app/generated_files/$fileName")); //assign to a variable the content
+        $move = fread($file, filesize("../app/generated_files/$fileName")); //assign to a variable the content
 
         unlink("../app/generated_files/$fileName"); //delete the file created by the python script
 
-        return $new_fen; //return the new position
+        return $move; //return the new position
 
     }
 }

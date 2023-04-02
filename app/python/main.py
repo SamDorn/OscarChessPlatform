@@ -1,5 +1,6 @@
 import sys
 from stockfish import Stockfish
+
 stockfish = Stockfish(path="../app/executable/stockfish.exe")
 
 #sys.argv[1] contains the first argument provided which will be the username of 
@@ -12,7 +13,11 @@ fileName = sys.argv[1]
 
 fen = sys.argv[2]
 
+#sys.argv[3] contains the the skill level which need to be parsed
+
 skill = int(sys.argv[3])
+
+
 
 
 
@@ -24,18 +29,22 @@ else:
     time = skill
 
 
+#Creates a new file 
+
 file = open(f"../app/generated_files/{fileName}", "w")
 
+#Update the stockfish parameters and set the skill and depht
+
 stockfish.update_engine_parameters({"Move Overhead": moveOverhead,"UCI_LimitStrength": "true"})
-
 stockfish.set_skill_level(skill)
-
 stockfish.set_depth(skill)
 
 
+#Set the board with the fen
 
 stockfish.set_fen_position(fen)
 
-file.write(stockfish.get_best_move_time(time))
+#Calculate the best move and write it in the file
 
+file.write(stockfish.get_best_move_time(time))
 file.close()

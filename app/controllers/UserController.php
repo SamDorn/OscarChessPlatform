@@ -2,13 +2,17 @@
 
 namespace App\controllers;
 
+use App\core\Application;
+use App\core\Request;
+use App\models\UserModel;
+
 class UserController
 {
     private  $userModel;
 
-    public function __construct($userModel)
+    public function __construct()
     {
-        $this->userModel = $userModel;
+        $this->userModel = new UserModel();
     }
 
     /**
@@ -16,11 +20,19 @@ class UserController
      * It calls the addUser method from the UserModel class
      * @return string
      */
-    public function add() : string
+
+
+    public function addUser(Request $request): void
     {
-            
+        $this->userModel->loadData($request->getBody());
+        echo '<pre>';
+        var_dump($this->userModel);
+        echo '</pre>';
+    }
+    public function add(): string
+    {
+
         return $this->userModel->addUser();
-       
     }
     /** 
      * This function calls the checkUser function of the UserModel
@@ -29,7 +41,7 @@ class UserController
      *
      * @return string
      */
-    public function check() : string
+    public function check(): string
     {
         try {
             if ($this->userModel->checkUser()) {
@@ -42,7 +54,7 @@ class UserController
             return "Something went wrong";
         }
     }
-    
+
     /**
      * This function calls the function checkUsername of the UserModel class
      * and checks if the username that the user is typing is available and it is
@@ -50,16 +62,12 @@ class UserController
      *
      * @return string 
      */
-    public function checkUsername() : string
+    public function checkUsername(): string
     {
-        try {
-            if ($this->userModel->checkUsername())
-                return "Username already taken";
-            else
-                return "Username available";
-        } catch (\Exception) {
-            return "Something went wrong";
-        }
+        if ($this->userModel->checkUsername())
+            return "Username already taken";
+        else
+            return "Username available";
     }
     /**
      * This function check if the email that the user is trying to sign up with is
@@ -67,7 +75,7 @@ class UserController
      *
      * @return string
      */
-    public function checkEmail() : string
+    public function checkEmail(): string
     {
         try {
             if ($this->userModel->checkEmail())

@@ -14,7 +14,7 @@ class Controller
      * 
      * @return string The rendered view.
      */
-    public function render(string $view, array $params = []) : string
+    public function render(string $view, array $params = []): string
     {
         extract($params);
         ob_start();

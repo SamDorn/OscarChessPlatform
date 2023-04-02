@@ -1,6 +1,5 @@
-<!-- <script src="js/scripts/vsPlayer.js"></script>
+<script src="js/scripts/vsPlayer.js"></script>
 </head>
-
 <body>
     <div style="display:flex; justify-content:center; width:800px;" >
         <div id="myBoard" style="width: 600px; position:relative;"></div>
@@ -38,4 +37,4 @@
         });
     </script>
 </body>
-</html> -->
+</html>

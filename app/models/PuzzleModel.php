@@ -2,6 +2,9 @@
 
 namespace App\models;
 
+use App\core\Model;
+
+
 class PuzzleModel extends Model
 {
     private $id;
@@ -29,9 +32,7 @@ class PuzzleModel extends Model
     }
     public function getPuzzleId() : void
     {
-        $total = $this->getPuzzleCount();
-        $rand = rand(0, (int)($total));
-        $query = "SELECT id FROM puzzles WHERE keywords LIKE :keywords LIMIT 1 OFFSET $rand";
+        $query = "SELECT id FROM puzzles WHERE keywords LIKE :keywords ORDER BY RAND() LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $var = "%" . $this->keywords . "%";
         $stmt->bindParam(':keywords', $var, \PDO::PARAM_STR);
@@ -39,17 +40,7 @@ class PuzzleModel extends Model
         $result = $stmt->fetch();
         $this->id = $result['id'];
     }
-    private function getPuzzleCount() : string
-    {
-
-        $query = "SELECT COUNT(id) as total FROM puzzles WHERE keywords LIKE :keywords";
-        $stmt = $this->conn->prepare($query);
-        $var = "%" . $this->keywords . "%";
-        $stmt->bindParam(':keywords', $var, \PDO::PARAM_STR);
-        $stmt->execute();
-        $result = $stmt->fetch();
-        return $result['total'];
-    }
+    
 
 }
 ?>

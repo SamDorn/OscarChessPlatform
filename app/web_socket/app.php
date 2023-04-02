@@ -4,9 +4,8 @@ use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 
-use App\Chess;
+use App\web_socket\Chess;
 
-require_once 'Chess.php';
 
 require_once '../../vendor/autoload.php';
 

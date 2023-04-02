@@ -10,26 +10,24 @@ class Request
      * 
      * @return string path of the request.
      */
-    public function parseUrl() : array
+    public function parseUrl($routes) : array
     {
-        return explode('/',filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));    
-    }
-    /**
-     * It returns the part of the URL after the second slash.
-     * 
-     * @return string The path of the request.
-     */
-    public function getParam(): string
-    {
-        $path = $_SERVER['REQUEST_URI'] ?? '/';
-        $position = strpos($path, '/', 1);
+        $callback = null;
+        // Get the path from the URL localhost/something. Gets the /something
+        //$path = $this->request->parseUrl()[0];
+        $path = trim($_SERVER['REQUEST_URI'], '/');
         
-        if (!$position) {
-            return $path;
+        $params = array();
+
+        foreach($routes[$this->getMethod()] as $route => $handler){
+            if(preg_match("%^$route%", $path, $matches) === 1){
+                $callback = $handler;
+                unset($matches[0]);
+                $params = $matches;
+                break;
+            }
         }
-        if(str_contains(substr($path, $position + 1),'/'))
-            return substr($path, $position + 1);
-        return $path = substr($path, $position + 1);
+        return array($callback, $params);
     }
 
 

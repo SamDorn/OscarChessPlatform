@@ -2,7 +2,7 @@
 /**
  * TO REDESIGN
  */
-namespace App;
+namespace App\web_socket;
 
 require_once '../../vendor/autoload.php';
 

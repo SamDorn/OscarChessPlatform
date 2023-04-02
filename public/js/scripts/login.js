@@ -1,6 +1,6 @@
 function checkUsernameAjax() {
     $.ajax({
-        url: "/ajax",
+        url: "/checkUsername",
         type: "POST",
         data: {
             request: "checkUsername",

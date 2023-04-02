@@ -2,16 +2,16 @@
 
 namespace App\models;
 
-use App\models\Model;
+use App\core\Model;
 
 class UserModel extends Model
 {
-    private int $id;
-    private ?string $username;
-    private ?string $email;
-    private ?string $password;
-    private ?string $avatar;
-    private ?string $type;
+    protected int $id;
+    protected ?string $username;
+    protected ?string $email;
+    protected ?string $password;
+    protected ?string $avatar;
+    protected ?string $type;
 
     public function __construct()
     {
@@ -23,7 +23,7 @@ class UserModel extends Model
      * @param int $id
      * @return void
      */
-    public function setId(int $id) : void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
@@ -33,7 +33,7 @@ class UserModel extends Model
      * @param ?string $username
      * @return void
      */
-    public function setUsername(?string $username) : void
+    public function setUsername(?string $username): void
     {
         $this->username = $username;
     }
@@ -43,7 +43,7 @@ class UserModel extends Model
      * @param ?string $email
      * @return void
      */
-    public function setEmail(?string $email) : void
+    public function setEmail(?string $email): void
     {
         $this->email = $email;
     }
@@ -53,13 +53,28 @@ class UserModel extends Model
      * @param ?string $password
      * @return void
      */
-    public function setPassword(?string $password) : void
+    public function setPassword(?string $password): void
     {
         $this->password = $password;
     }
+    /**
+     * Undocumented function
+     *
+     * @param [type] $avatar
+     * @return void
+     */
     public function setAvatar($avatar)
     {
         $this->avatar = $avatar;
+    }
+    /**
+     * Undocumented function
+     *
+     * @return string
+     */
+    public function getAvatar(): string
+    {
+        return $this->avatar;
     }
     /**
      * Undocumented function
@@ -113,6 +128,14 @@ class UserModel extends Model
             return "There was a problem adding the user in the database";
         }
     }
+    public function rules(): array
+    {
+        return [
+            'username' => [self::RULE_REQUIRED, self::RULE_REQUIRED],
+            'password' => [self::RULE_REQUIRED, self::RULE_EMAIL],
+            ''
+        ];
+    }
 
 
 
@@ -123,7 +146,7 @@ class UserModel extends Model
      * 
      * @return bool
      */
-    public function checkUser() : bool
+    public function checkUser(): bool
     {
         $query = "SELECT * FROM users WHERE username = :username";
         $stmt = $this->conn->prepare($query);
@@ -131,13 +154,12 @@ class UserModel extends Model
         $stmt->execute();
         $result = $stmt->fetch();
 
-        if ($result > 0){
-            if(password_verify($this->password, $result["password"]))
+        if ($result > 0) {
+            if (password_verify($this->password, $result["password"]))
                 return true;
             else
                 return false;
-        }
-        else
+        } else
             return false;
     }
     /**
@@ -147,7 +169,7 @@ class UserModel extends Model
      * 
      * @return bool true if available
      */
-    public function checkUsername() : bool
+    public function checkUsername(): bool
     {
         $query = "SELECT * FROM users WHERE username = :username";
         $stmt = $this->conn->prepare($query);
@@ -167,7 +189,7 @@ class UserModel extends Model
      *
      * @return bool true if available
      */
-    public function checkEmail() : bool
+    public function checkEmail(): bool
     {
         $query = "SELECT * FROM users WHERE email = :email";
         $stmt = $this->conn->prepare($query);

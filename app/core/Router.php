@@ -21,9 +21,13 @@ class Router
      * @param mixed $callback
      * @return void
      */
-    public function get(string $path, mixed $callback) : void
+    public function get(string $path, mixed $callback): void
     {
-        $this->routes['get'][substr($path,1)] = $callback;
+        //Removes the slash from the beginning and the end of the string.
+        $path = trim($path, '/');
+        //Replaces the curly braces with a regex expression.
+        $path = preg_replace('/{[^}]+}/', '(.+)', $path);
+        $this->routes['get'][$path] = $callback;
     }
     /**
      * Assign to the array routes the key
@@ -34,9 +38,9 @@ class Router
      * @param mixed $callback
      * @return void
      */
-    public function post(string $path, mixed $callback) : void
+    public function post(string $path, mixed $callback): void
     {
-        $this->routes['post'][substr($path,1)] = $callback;
+        $this->routes['post'][trim($path, '/')] = $callback;
     }
     /**
      * Based on the request made(URL) check if there
@@ -48,17 +52,16 @@ class Router
      *
      * @return mixed html page, json
      */
-    public function resolve() : mixed
+    public function resolve(): mixed
     {
-        // Get the path from the URL localhost/something. Gets the /something
-        $path = $this->request->parseUrl()[0];
         
-        // Get the method from the HTTP request.
-        $method = $this->request->getMethod();
+        $callback = $this->request->parseUrl($this->routes)[0];
+        $params = $this->request->parseUrl($this->routes)[1];
+
         //Get the param from the URL
-        $param = $this->request->parseUrl()[1] ?? false;
+        //$param = $this->request->parseUrl()[1] ?? false;
         // Assign the callable from the routes array and false if it doesn't exist
-        $callback = $this->routes[$method][$path] ?? false;
+        //$callback = $this->routes[$method][$path] ?? false;
 
         // Throws a 404 error if it doesn't exist and render the view
         if (!$callback) {
@@ -77,7 +80,7 @@ class Router
         }
 
         // If it's an array it need to 
-        if(is_array($callback)){
+        if (is_array($callback)) {
             $callback[0] = new $callback[0]();
             //Application::$app->controller = new $callback[0]();
             //$callback[0] = Application::$app->controller;
@@ -89,32 +92,6 @@ class Router
          * call_user_func allow an array as first argument only if it 
          * has two items with 0->class/object 1->method
          */
-        return call_user_func($callback, $this->request, $param,);
-    }/*
-    public function renderView($view, $params = [])
-    {
-        $layoutContent = $this->layoutContent();
-        $viewContent = $this->renderOnlyView($view , $params);
-        return str_replace("{{ content }}", $viewContent, $layoutContent);
+        return call_user_func($callback,$this->request, $params);
     }
-    public function renderContent($viewContent)
-    {
-        $layoutContent = $this->layoutContent();
-        return str_replace("{{ content }}", $viewContent, $layoutContent);
-    }
-    protected function layoutContent()
-    {
-        ob_start();
-        include_once Application::$ROOT_DIR . "/views/layouts/main.php";
-        return ob_get_clean();
-    }
-    protected function renderOnlyView($view, $params)
-    {
-        extract($params);
-        ob_start();
-        include_once Application::$ROOT_DIR . "/views/$view.php";
-        return ob_get_clean();
-    }*/
-
-
 }

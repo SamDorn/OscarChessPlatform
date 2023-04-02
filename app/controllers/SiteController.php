@@ -8,7 +8,7 @@ use App\core\Controller;
 class SiteController extends Controller
 {
     /**
-     * It returns the rendered view of the home_page.html file.
+     * It returns the rendered view of the home_page.php file.
      * 
      * @return string 
      */
