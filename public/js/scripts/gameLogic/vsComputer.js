@@ -1,10 +1,14 @@
 import { INPUT_EVENT_TYPE, COLOR } from "../../libraries/cm-chessboard/Chessboard.js"
 import { MARKER_TYPE } from "../../libraries/cm-chessboard/extensions/markers/Markers.js"
 import { ARROW_TYPE } from "../../libraries/cm-chessboard/extensions/arrows/Arrows.js"
-import { initializeChessboard, chess, board, playAudio, sendAjax, hintClick, drawArraws } from "./game.js";
+import { initializeChessboard, chess, board, playAudio, hintClick, drawArraws, getMove } from "./game.js";
 
+
+// Create a new WebSocket connection
+var socket = new WebSocket('ws://localhost:8080');
 
 initializeChessboard()
+
 
 var result = null
 
@@ -14,8 +18,10 @@ const color = Math.floor(Math.random() * 2) === 0 ? COLOR.black : COLOR.white
 board.setOrientation(color) //set the orientation of the board based on the color
 
 //uses the ternary operator to see if the user is black.
-//if it is it calls the sendAjax which will make the first move as white
-color === COLOR.black ? sendAjax(chess.fen()) : null
+//if it is it send a message to the webSocket server to make the first move
+color === COLOR.black ? getMove(socket, chess, board) : null
+
+
 
 /**
  * Handles the input of the user
@@ -60,7 +66,7 @@ function inputHandler(event) {
             $("#finish").text("Congratulazioni. Hai vinto")
           }
           else {
-            sendAjax(chess.fen()) //calls sendAjax
+            getMove(socket, chess, board) //calls the function to get the pc move and update the chessboard
           }
 
         } else { //if the user didn't clicked any of the piece showd in the promotion dialog
@@ -75,7 +81,6 @@ function inputHandler(event) {
       try { //need a try catch because chess.js library fires an exception if a move is not valid
 
         result = chess.move(move) //return the object move. It's a valid move
-        console.log(result)
 
       }
       catch (error) {
@@ -107,7 +112,7 @@ function inputHandler(event) {
             }
           }
           else {
-            sendAjax(chess.fen()) //calls the function to get the pc move and update the chessboard
+            getMove(socket, chess, board) //calls the function to get the pc move and update the chessboard
           }
 
         })
@@ -119,7 +124,7 @@ function inputHandler(event) {
 
 board.enableMoveInput(inputHandler, color) //enable the input for the color of the user
 
-hintClick(color)
+hintClick(color, socket)
 drawArraws()
 
 

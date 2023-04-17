@@ -1,7 +1,7 @@
 import sys
 from stockfish import Stockfish
 
-stockfish = Stockfish(path="../app/executable/stockfish.exe")
+stockfish = Stockfish(path="../executable/stockfish.exe")
 
 #sys.argv[1] contains the first argument provided which will be the username of 
 #the player who is playing against the pc
@@ -12,6 +12,8 @@ fileName = sys.argv[1]
 #need to do the best move
 
 fen = sys.argv[2]
+
+print(fen)
 
 #sys.argv[3] contains the the skill level which need to be parsed
 
@@ -25,13 +27,13 @@ if skill < 10:
     moveOverhead = 0
     time = 1
 else:
-    moveOverhead = int(skill)
+    moveOverhead = skill
     time = skill
 
 
 #Creates a new file 
 
-file = open(f"../app/generated_files/{fileName}", "w")
+file = open(f"../generated_files/{fileName}", "w")
 
 #Update the stockfish parameters and set the skill and depht
 

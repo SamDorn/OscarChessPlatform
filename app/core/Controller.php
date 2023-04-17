@@ -2,6 +2,8 @@
 
 namespace App\core;
 
+use App\utilitis\Jwt;
+
 class Controller
 {
 
@@ -16,6 +18,17 @@ class Controller
      */
     public function render(string $view, array $params = []): string
     {
+        $token = $_COOKIE['jwt'] ?? null;
+        if($token){
+            if(!Jwt::validate($token)){
+            
+                //Application::$app->response->setStatusCode(401);
+                unset($_COOKIE['jwt']);
+                setcookie('jwt', null, -1, '/'); 
+                header("Location: login?error=03");
+            }
+        }
+        
         extract($params);
         ob_start();
         require_once Application::$ROOT_DIR . "/app/views/layout/header.php";

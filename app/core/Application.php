@@ -18,9 +18,14 @@ class Application
         $this->request = new Request();
         $this->response = new Response();
         $this->router = new Router($this->request);
-        
     }
-    public function run() : void
+    /**
+     * Echo out the value of the resolve method of 
+     * of the router class
+     *
+     * @return void
+     */
+    public function run(): void
     {
         echo $this->router->resolve();
     }

@@ -1,11 +1,14 @@
 <style>
     body {
+        background-color: #f2f2f2;
+    }
+    .prova{
+        
+        height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100vh;
-        background-color: #f2f2f2;
     }
 
     #play-buttons {
@@ -84,19 +87,22 @@
 </head>
 
 <body>
-    <a class="play-button" id="play-button">Play</a>
-    <div id="play-buttons">
-        <a class="play-button" id="computer-button">Vs Computer</a>
-        <a class="play-button" id="online-button">Vs Player</a>
+    
+    <div class="prova">
+        <a class="play-button" id="play-button">Play</a>
+        <div id="play-buttons">
+            <a class="play-button" id="computer-button">Vs Computer</a>
+            <a class="play-button" id="online-button">Vs Player</a>
+        </div>
+        <a class="learn-button" id="learn-button">Learn</a>
+        <div id="learn-buttons">
+            <a class="learn-button" id="puzzle-button">Resolve puzzles</a>
+            </a>
+        </div>
+        <?php if (!isset($_SESSION["username"])) : ?>
+            <a class="login-button" id="login">Login</a>
+        <?php endif; ?>
     </div>
-    <a class="learn-button" id="learn-button">Learn</a>
-    <div id="learn-buttons">
-        <a class="learn-button" id="puzzle-button">Resolve puzzles</a>
-        </a>
-    </div>
-    <?php if (!isset($_SESSION["username"])) : ?>
-        <a class="login-button" id="login">Login</a>
-    <?php endif; ?>
 </body>
 
 <script>

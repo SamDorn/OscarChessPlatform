@@ -13,11 +13,9 @@ class Request
     public function parseUrl($routes) : array
     {
         $callback = null;
-        // Get the path from the URL localhost/something. Gets the /something
-        //$path = $this->request->parseUrl()[0];
+        $params = array();
         $path = trim($_SERVER['REQUEST_URI'], '/');
         
-        $params = array();
 
         foreach($routes[$this->getMethod()] as $route => $handler){
             if(preg_match("%^$route%", $path, $matches) === 1){

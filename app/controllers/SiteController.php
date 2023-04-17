@@ -41,6 +41,14 @@ class SiteController extends Controller
         ];
         return $this->render('login_page', $params);
     }
+    public function register(): string
+    {
+        $googleController = new GoogleController();
+        $params = [
+            'googleController' => $googleController
+        ];
+        return $this->render('register_page', $params);
+    }
     /**
      * It takes the request, gets the body of the request, and then dumps the body to the screen.
      * 

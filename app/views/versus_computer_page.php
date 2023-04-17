@@ -12,19 +12,13 @@
     /* For PCs */
     @media only screen and (min-width: 601px) {
         #board {
-            width: 600px;
+            display: flex;
+            width: 800px;
         }
     }
 
-    body {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        font-family: Arial, sans-serif;
-    }
-
     a {
+
         text-align: center;
         display: inline-block;
         width: 140px;
@@ -66,16 +60,22 @@
         color: #000;
         font-size: x-large;
     }
+    .prova{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
     
 </style>
 </head>
 <body>
     <?php if (isset($_SESSION["username"])) : ?>
         <div style="text-align: center;">
-            <h1>HELLO <?= $_SESSION["username"] ?></h1>
+            HELLO <?= $_SESSION["username"] ?>
         </div>
     <?php endif; ?>
-    <div">
+    <div class="prova">
         <div id="board"></div>
     </div>
     <div>
@@ -90,7 +90,7 @@
         <button style="font-size:3rem" id="next">></button>
 </body>
 <script>
-    var sessionId = "<?= session_id() ?>"
+    var sessionId = "<?= uniqid() ?>"
+    var jwt = "<?= $_COOKIE['jwt']?>"
 </script>
-
 </html>

@@ -15,6 +15,10 @@ class PuzzleModel extends Model
     {
         parent::__construct();
     }
+    public function rules(): array
+    {
+        return [];
+    }
     public function setId($id)
     {
         $this->id = $id;
@@ -30,6 +34,12 @@ class PuzzleModel extends Model
     public function getId(){
         return $this->id;
     }
+    /**
+     * Pick a random ID from the puzzles table and assign it
+     * to the id property
+     *
+     * @return void
+     */
     public function getPuzzleId() : void
     {
         $query = "SELECT id FROM puzzles WHERE keywords LIKE :keywords ORDER BY RAND() LIMIT 1";
@@ -40,7 +50,4 @@ class PuzzleModel extends Model
         $result = $stmt->fetch();
         $this->id = $result['id'];
     }
-    
-
 }
-?>

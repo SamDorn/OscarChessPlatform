@@ -1,26 +1,22 @@
 <?php
+
 /**
  * TO REDESIGN
  */
+
 namespace App\web_socket;
 
 require_once '../../vendor/autoload.php';
 
-use App\models\PvpInProgressModel;
-use App\models\UserInPvpModel;
-use Ratchet\MessageComponentInterface;
+use App\utilitis\Jwt;
 use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
 
 class Chess implements MessageComponentInterface
 {
-    private $pvpInProgressModel;
-    private $userInPvpModel;
-    private $connections;
     private $clients;
     public function __construct()
     {
-        $this->pvpInProgressModel = new PvpInProgressModel();
-        $this->userInPvpModel = new UserInPvpModel;
         $this->clients = new \SplObjectStorage;
         echo "Server Started\n";
     }
@@ -39,76 +35,27 @@ class Chess implements MessageComponentInterface
 
         $data = json_decode($msg); //decode the message
         $request = $data->request;
+        $token = $data->jwt;
+        
+        echo Jwt::getPayload($token)['user_id'];
+
 
         switch ($request) {
-            case 'play':
-                $username = $data->username;
-                echo $username;
-                $this->userInPvpModel->setUsername($username);
-                $this->userInPvpModel->setConnection($from->resourceId);
-                $this->pvpInProgressModel->setUsername($username); //set the username
-                //echo $this->pvpInProgressModel->getUsername();
+            case 'vsComputer':
+                $fen = '"' . $data->fen . '"';
+                $fileName = "$data->username.txt";
+                $skill = $data->skill;
 
-                $this->pvpInProgressModel->checkIsInGame(); // check if the user is in an existing game and returns the id of the game or empty string
-                //echo $id;
-                if (!is_null($this->pvpInProgressModel->getId())) {
-                    echo $this->pvpInProgressModel->getId();
-                    echo "\nUtente è già in un game esistente";
-                    //$this->pvpInProgressModel->setId($id); // set the id of the game
-                    $resourceConnection = $this->pvpInProgressModel->getConnectionFromUsername();
-                    $from->send(json_encode(array( // send the player the position of the game
-                        "status" => "Waiting for a second player",
-                        "pgn" => $this->pvpInProgressModel->getGameById() //return the pgn of the current game
-                    )));
-                } else { // if the user is not in an existing game
-                    echo "\nUtente non è in nessun game esistente";
-                    $id = $this->pvpInProgressModel->getGamesNoSecondPlayer(); // return empty string if there aren'tany games waiting for a second player or the id of the game
-                    if ($id != "") {
-                        echo "\nLo sto inserendo in un game esistente senza second player";
-                        $this->pvpInProgressModel->setId($id); // set the id
-                        $this->pvpInProgressModel->setConnection($from->resourceId);
-                        $this->pvpInProgressModel->AddSecondPlayer(); // add the second player
-                        $players = $this->pvpInProgressModel->getUsernamesFromId(); // get the players
-                        $rand = rand(0, 1);
-                        if ($rand == 0) {
-                            $this->pvpInProgressModel->setWhite($players['username_1']);
-                        } else {
-                            $this->pvpInProgressModel->setWhite($players['username_2']);
-                        }
-                        $this->pvpInProgressModel->setTableWhite();
-                        $resourceConnections = $this->pvpInProgressModel->getConnectionsFromId();
-                        foreach ($this->clients as $client) {
-                            if ($client->resourceId == $resourceConnections['connection_1']) {
-                                echo "vero";
-                                $this->connections = array(
-                                    1 => $client
-                                );
-                            }
-                        }
-                        foreach ($this->clients as $client) {
-                            if ($client->resourceId == $resourceConnections['connection_2']) {
-                                $this->connections = array_merge($this->connections, array(2 => $client));
-                            }
-                        }
-                        foreach($this->connections as $connection){
-                            $connection->send(json_encode(array(
-                                'status' => 'ready to play'
-                            )));
-                        }
+                $move = $this->getMove($fileName, $fen, $skill);
+                $from->send(json_encode(array(
+                    'move' => $move
+                )));
+                break;
+            case 'vsPlayer':
+                
 
 
-                        echo "\nFatto";
-                    } else {
-                        echo "\nSto creando un nuovo game";
-                        $this->pvpInProgressModel->setConnection($from->resourceId);
-                        echo $from->resourceId;
-                        $this->pvpInProgressModel->createGame();
-                        echo "ook";
-                        $from->send(json_encode(array(
-                            "status" => "Waiting for a second player"
-                        )));
-                    }
-                }
+            default:
 
                 break;
         }
@@ -123,5 +70,34 @@ class Chess implements MessageComponentInterface
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
     }
+    /**
+     * This function runs the python script found in app/python/main.py.
+     * After the python script will create a file where it stores the new position
+     * with the move made by the chess engine, this function will read the file
+     * content inside that file and will store the new position in $new_fen which
+     * will be returned. Need to implement if the user is logged in. Infact if the user
+     * is logged in it needs to connect to the database to update the current game
+     *
+     * @param string filename
+     * @param string the fen string
+     * @param string skill level
+     * @return string the move generated
+     */
+    private function getMove(string $fileName, string $fen, string $skill): string
+    {
+        $fileName = escapeshellcmd($fileName);
+        $fen = escapeshellcmd($fen);
+        $skill = escapeshellcmd($skill);
+
+        exec("py ../python/main.py $fileName $fen $skill"); //execute the python script
+
+        $file = fopen("../generated_files/$fileName", "r"); //open the file created by the script
+
+        $move = fread($file, filesize("../generated_files/$fileName")); //assign to a variable the content
+
+        unlink("../generated_files/$fileName"); //delete the file created by the python script
+
+        return $move; //return the new position
+
+    }
 }
-?>

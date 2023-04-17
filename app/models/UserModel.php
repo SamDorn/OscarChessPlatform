@@ -11,7 +11,10 @@ class UserModel extends Model
     protected ?string $email;
     protected ?string $password;
     protected ?string $avatar;
+    protected ?int $last_connectionId;
+    protected ?string $status;
     protected ?string $type;
+    protected ?bool $verified;
 
     public function __construct()
     {
@@ -63,9 +66,41 @@ class UserModel extends Model
      * @param [type] $avatar
      * @return void
      */
-    public function setAvatar($avatar)
+    public function setAvatar(?string $avatar): void
     {
         $this->avatar = $avatar;
+    }
+    public function setLast_ConnectionId(?int $last_connectionId): void
+    {
+        $this->last_connectionId = $last_connectionId;
+    }
+    public function setStatus(?string $status): void
+    {
+        $this->status = $status;
+    }
+    public function setType(?string $type): void
+    {
+        $this->type = $type;
+    }
+    public function setVerified(?bool $verified): void
+    {
+        $this->verified = $verified;
+    }
+    public function getLast_ConnectionId(): int
+    {
+        return $this->last_connectionId;
+    }
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+    public function getType(): string
+    {
+        return $this->type;
+    }
+    public function getVerified(): bool
+    {
+        return $this->verified;
     }
     /**
      * Undocumented function
@@ -103,6 +138,10 @@ class UserModel extends Model
     {
         return $this->password;
     }
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
     /**
      * This function add the user to the database 
@@ -111,33 +150,26 @@ class UserModel extends Model
      * 
      * @return string 
      */
-    public function addUser(): string
+    public function addUser(string $type, string $avatar): string
     {
-        $query = "INSERT INTO users (id, username, email, password) VALUES (null, :username, :email, :password)";
+        $this->verified = $type != "normal" ? true : false;
+        $query = "INSERT INTO users (id, username, email, password, avatar, last_connectionId,
+        status, type, verified) VALUES (null, :username, :email, :password, :avatar, null, null, :type, :verified)";
         try {
-            $this->conn->beginTransaction();
             $stmt = $this->conn->prepare($query);
             $stmt->bindValue(':username', $this->username);
             $stmt->bindValue(':email', $this->email);
             $stmt->bindValue(':password', password_hash($this->password, PASSWORD_BCRYPT));
+            $stmt->bindValue(':avatar', $avatar);
+            $stmt->bindValue(':type', $type);
+            $stmt->bindValue(':verified', $this->verified);
             $stmt->execute();
-            $this->conn->commit();
 
             return "User added correctly in the database";
         } catch (\PDOException) {
             return "There was a problem adding the user in the database";
         }
     }
-    public function rules(): array
-    {
-        return [
-            'username' => [self::RULE_REQUIRED, self::RULE_REQUIRED],
-            'password' => [self::RULE_REQUIRED, self::RULE_EMAIL],
-            ''
-        ];
-    }
-
-
 
     /**
      * This function check if the user is in the database
@@ -155,8 +187,13 @@ class UserModel extends Model
         $result = $stmt->fetch();
 
         if ($result > 0) {
-            if (password_verify($this->password, $result["password"]))
+            echo '<pre>';
+            var_dump($result);
+            echo '</pre>';
+            if (password_verify($this->password, $result["password"])){
+                $this->setId($result['id']);
                 return true;
+            }
             else
                 return false;
         } else
@@ -182,24 +219,34 @@ class UserModel extends Model
         else
             return false;
     }
-
     /**
-     * This function is used to check if the user who is creating a new account is 
-     * using an email never used before.
+     * Get all the users from the database
      *
-     * @return bool true if available
+     * @return array
      */
-    public function checkEmail(): bool
+    public function getAll(): array
     {
-        $query = "SELECT * FROM users WHERE email = :email";
+        $query = "SELECT * FROM users";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':email', $this->email);
         $stmt->execute();
         $result = $stmt->fetch();
-
-        if ($result > 0)
-            return true;
-        else
-            return false;
+        return $result;
+    }
+    /**
+     * This PHP function retrieves a user's data from the database by their ID.
+     * 
+     * @param int id The parameter "id" is an integer representing the unique identifier of a user in the
+     * database table.
+     * 
+     * @return array An array containing the user information for the user with the specified ID.
+     */
+    public function getUserById(int $id): array
+    {
+        $query = "SELECT * FROM users where id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result;
     }
 }

@@ -2,9 +2,11 @@
 
 namespace App\controllers;
 
-use App\core\Application;
 use App\core\Request;
+use App\utilitis\Jwt;
+use App\utilitis\Email;
 use App\models\UserModel;
+
 
 class UserController
 {
@@ -25,14 +27,13 @@ class UserController
     public function addUser(Request $request): void
     {
         $this->userModel->loadData($request->getBody());
-        echo '<pre>';
-        var_dump($this->userModel);
-        echo '</pre>';
-    }
-    public function add(): string
-    {
+        $response = $this->userModel->addUser("normal", "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg");
+        if ($response === "User added correctly in the database") {
 
-        return $this->userModel->addUser();
+            Email::sendEmail($this->userModel->getEmail());
+            
+        } else
+            header("Location:login?error=01");
     }
     /** 
      * This function calls the checkUser function of the UserModel
@@ -41,17 +42,18 @@ class UserController
      *
      * @return string
      */
-    public function check(): string
+    public function checkUser(Request $request): void
     {
         try {
+            $this->userModel->loadData($request->getBody());
             if ($this->userModel->checkUser()) {
-                $_SESSION["username"] = $this->userModel->getusername();
-                return "OK";
+                Jwt::createToken($this->userModel);
+                header("Location: home");
             } else
-                return "Wrong credentials";
+                echo "Wrong credentials";
         } catch (\Exception) {
 
-            return "Something went wrong";
+            echo "Qualcosa è andato storto";
         }
     }
 
@@ -60,30 +62,14 @@ class UserController
      * and checks if the username that the user is typing is available and it is
      * not used by another user.
      *
-     * @return string 
+     * @return void
      */
-    public function checkUsername(): string
+    public function checkUsername(Request $request): void
     {
+        $this->userModel->loadData($request->getBody());
         if ($this->userModel->checkUsername())
-            return "Username already taken";
+            echo json_encode("Username already taken");
         else
-            return "Username available";
-    }
-    /**
-     * This function check if the email that the user is trying to sign up with is
-     * already used.
-     *
-     * @return string
-     */
-    public function checkEmail(): string
-    {
-        try {
-            if ($this->userModel->checkEmail())
-                return "Email already used";
-            else
-                return "";
-        } catch (\Exception) {
-            return "Something went wrong";
-        }
+            echo json_encode("Username available");
     }
 }

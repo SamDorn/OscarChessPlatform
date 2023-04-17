@@ -38,6 +38,8 @@ class GoogleController
         $this->userModel->setEmail($data->email);
         $this->userModel->setUsername($data->name);
         $this->userModel->setAvatar($data->picture);
+        $this->userModel->setVerified(true);
+        
         
         //header("Location: home");
     }

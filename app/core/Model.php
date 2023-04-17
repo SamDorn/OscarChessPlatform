@@ -2,17 +2,12 @@
 
 namespace App\core;
 
-use App\database\Database;
+use App\core\Database;
 
 
 
-abstract class Model
+class Model
 {
-    public const RULE_REQUIRED = 'required';
-    public const RULE_EMAIL = 'required';
-    public const RULE_MIN = 'required';
-    public const RULE_MAX = 'required';
-    public const RULE_UNIQUE = 'required';
 
     protected \PDO $conn;
 
@@ -27,10 +22,5 @@ abstract class Model
                 $this->$key = $value;
             }
         }
-    }
-    abstract public function rules(): array;
-    public function validate()
-    {
-
     }
 }

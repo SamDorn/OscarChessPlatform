@@ -59,80 +59,24 @@ export function playAudio(move) {
 
 }
 /**
- * Send an ajax request to the index.php and the response is the best move 
- * according to the skill. It will update the chessboard
- * @param {string} fen representing the board
- */
-export function sendAjax(fen) {
-
-    $.ajax({
-        type: "GET",
-        url: "/ajax",
-        /**
-       * The script will receive 4 attributes:
-       * 1- The request which is needed to identify the ajax operation
-       * 2- The fen which is the board where the chess engine calculate the best move
-       * 3- The fileName which is the sessionId(session_id()) to have uniques filenames
-       * 4- The skill level based on the user choice at the beginning of the match
-       */
-        data: {
-            request: "get_move_pc",
-            fen: fen,
-            fileName: sessionId,
-            skill: 20
-        },
-        dataType: "json",
-        success: function (response) {
-            let move = undefined
-            setTimeout(() => { move = chess.move(response) }, 1500) //make the move received from the script
-
-            setTimeout(() => { board.removeMarkers(MARKER_TYPE.square) }, 1500) //removes the markers of the previous move
-
-            setTimeout(() => { board.setPosition(chess.fen(), true) }, 1500) //make theanimation of the move
-            setTimeout(() => { playAudio(move) }, 1500)
-
-            setTimeout(() => { $("#pgn").html(chess.pgn()) }, 1500)
-            setTimeout(() => { board.addMarker(MARKER_TYPE.square, response[0] + response[1]) }, 1500) //add the square type marker of the last move
-            setTimeout(() => { board.addMarker(MARKER_TYPE.square, response[2] + response[3]) }, 1500) //add the square type marker of the last move
-
-            if (chess.isGameOver()) {
-                if (chess.isDraw()) {
-                    setTimeout(() => { $("#finish").text("Pareggio. Nessuno vince") }, 1500)
-                }
-                else {
-                    setTimeout(() => { $("#finish").text("Sembra che hai perso. Allenati ancora un pó") }, 1500)
-
-                }
-            }
-        }
-    });
-}
-/**
  * When the user clicks the hint button, the function makes an ajax call to the server, which returns a
  * move, and then the function draws an arrow on the board to show the move.
  * @param {string} color The color of the player
  */
-export function hintClick(color) {
+export function hintClick(color, socket) {
     $('#hint').click(function () {
         board.removeArrows()
         if (chess.turn() === color) {
-            $.ajax({
-                type: "GET",
-                url: "/ajax",
-                data: {
-                    request: "get_move_pc",
-                    skill: 20,
-                    filename: sessionId,
-                    fen: chess.fen()
-                },
-                dataType: "json",
-                success: function (response) {
-                    var from = response[0] + response[1]
-                    var to = response[2] + response[3]
-                    board.addArrow(ARROW_TYPE.pointy, from, to)
-
-                }
-            })
+            socket.send(JSON.stringify({
+                request: 'vsComputer',
+                username: sessionId,
+                fen: chess.fen(),
+                skill:20
+            }))
+            socket.onmessage = function (e){
+                let object = JSON.parse(e.data)
+                board.addArrow(ARROW_TYPE.pointy, object.move[0] + object.move[1], object.move[2] + object.move[3])
+            }
         }
     })
 }
@@ -183,47 +127,47 @@ var movesPc = []
 * @param {string} color
 */
 export function getPuzzle(data, color, inputHandler) {
-   $.ajax({
-       type: "GET",
-       url: "https://lichess.org/api/puzzle/" + data, //endpoint that gets the information needed
-       dataType: "json",
-       success: function (response) {
-           chess.loadPgn(response.game.pgn) //load the chess object with the pgn from the response
+    $.ajax({
+        type: "GET",
+        url: "https://lichess.org/api/puzzle/" + data, //endpoint that gets the information needed
+        dataType: "json",
+        success: function (response) {
+            chess.loadPgn(response.game.pgn) //load the chess object with the pgn from the response
 
-           //usage of the ternary operator to determine if the color the user is playing 
-           //is white or black. If the color to move is black it will be black otherwise white
-           color = chess.turn() == 'b' ? COLOR.black : COLOR.white
-           color === COLOR.white ? $("#player").text("muove il bianco") : $("#player").text("Muove il nero")
+            //usage of the ternary operator to determine if the color the user is playing 
+            //is white or black. If the color to move is black it will be black otherwise white
+            color = chess.turn() == 'b' ? COLOR.black : COLOR.white
+            color === COLOR.white ? $("#player").text("muove il bianco") : $("#player").text("Muove il nero")
 
-           board.setPosition(chess.fen())
-           board.setOrientation(color) //set the orientation of the board based on the color
+            board.setPosition(chess.fen())
+            board.setOrientation(color) //set the orientation of the board based on the color
 
-           //enable the move input calling the input handler and the color
-           //so that the user can only pick up pieces from its color
-           board.enableMoveInput(inputHandler, color)
+            //enable the move input calling the input handler and the color
+            //so that the user can only pick up pieces from its color
+            board.enableMoveInput(inputHandler, color)
 
-           //array that contains all the moves that need to be played
-           //both by the player and the computer
-           solution = response.puzzle.solution
-           movesPlayer = []
-           movesPc = []
+            //array that contains all the moves that need to be played
+            //both by the player and the computer
+            solution = response.puzzle.solution
+            movesPlayer = []
+            movesPc = []
 
-           /**
-            * We know that the first move will be played by the user
-            * so we can create two array. One for the moves that needs
-            * to be played by the user and one for the computer.
-            * this way we can keep track of the moves
-           */
-           for (let i = 0; i < solution.length; i++) {
-               if (i % 2 == 0) { // if it's even it's added to the user's moves
-                   movesPlayer.push(solution[i]);
-               } else {
-                   movesPc.push(solution[i]); //if it's odd it's added to the pc's moves
-               }
-           }
+            /**
+             * We know that the first move will be played by the user
+             * so we can create two array. One for the moves that needs
+             * to be played by the user and one for the computer.
+             * this way we can keep track of the moves
+            */
+            for (let i = 0; i < solution.length; i++) {
+                if (i % 2 == 0) { // if it's even it's added to the user's moves
+                    movesPlayer.push(solution[i]);
+                } else {
+                    movesPc.push(solution[i]); //if it's odd it's added to the pc's moves
+                }
+            }
 
-       }
-   })
+        }
+    })
 }
 export var movesPc
 export var movesPlayer
@@ -246,9 +190,8 @@ export function getPuzzleByCategory(category, color, inputHandler) {
 
         $.ajax({
             type: "GET",
-            url: "/ajax",
+            url: "puzzle",
             data: {
-                request: "get_id_puzzle",
                 keyword: category
             },
             dataType: "json",
@@ -261,4 +204,55 @@ export function getPuzzleByCategory(category, color, inputHandler) {
             }
         });
     })
+}
+
+export function getMove(socket, chess, board) {
+
+    if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+            request: "vsComputer",
+            username: sessionId,
+            fen: chess.fen(),
+            skill: 20,
+            jwt: jwt
+        }))
+
+    }
+    else {
+        socket.addEventListener('open', function () {
+            socket.send(JSON.stringify({
+                request: "vsComputer",
+                username: sessionId,
+                fen: chess.fen(),
+                skill: 20,
+                jwt: jwt
+            })
+            )
+        })
+    }
+
+
+    socket.onmessage = function (e) {
+        let object = JSON.parse(e.data)
+        let move = chess.move(object.move)
+        setTimeout(() => { board.setPosition(chess.fen(), true) }, 1500)
+        setTimeout(() => { board.removeMarkers(MARKER_TYPE.square) }, 1500) //removes the markers of the previous move
+
+        setTimeout(() => { board.setPosition(chess.fen(), true) }, 1500) //make theanimation of the move
+        setTimeout(() => { playAudio(move) }, 1500)
+
+        setTimeout(() => { $("#pgn").html(chess.pgn()) }, 1500)
+        setTimeout(() => { board.addMarker(MARKER_TYPE.square, object.move[0] + object.move[1]) }, 1500) //add the square type marker of the last move
+        setTimeout(() => { board.addMarker(MARKER_TYPE.square, object.move[2] + object.move[3]) }, 1500) //add the square type marker of the last move
+        setTimeout(() => {
+            if (chess.isGameOver()) {
+                if (chess.isDraw()) {
+                    $("#finish").text("Pareggio. Nessuno vince")
+                }
+                else {
+                    $("#finish").text("Sembra che hai perso. Allenati ancora un pó")
+                }
+            }
+        }, 1500)
+    }
 }
