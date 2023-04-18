@@ -1,6 +1,7 @@
 <style>
     body {
-        background-color: #f2f2f2;
+        /* background-color: #161512; */
+        overflow-y: hidden;
     }
     .prova{
         

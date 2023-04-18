@@ -10,15 +10,15 @@ class Request
      * 
      * @return string path of the request.
      */
-    public function parseUrl($routes) : array
+    public function parseUrl($routes): array
     {
         $callback = null;
         $params = array();
         $path = trim($_SERVER['REQUEST_URI'], '/');
-        
 
-        foreach($routes[$this->getMethod()] as $route => $handler){
-            if(preg_match("%^$route%", $path, $matches) === 1){
+        
+        foreach ($routes[$this->getMethod()] as $route => $handler) {
+            if (preg_match("%^$route%", $path, $matches) === 1) {
                 $callback = $handler;
                 unset($matches[0]);
                 $params = $matches;
@@ -68,11 +68,14 @@ class Request
         if ($this->isGet()) {
             foreach ($_GET as $key => $value) {
                 $body[$key] = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+                $body[$key] = htmlspecialchars($body[$key]);
             }
         }
         if ($this->isPost()) {
             foreach ($_POST as $key => $value) {
+                
                 $body[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+                $body[$key] = htmlspecialchars($body[$key]);
             }
         }
         return $body;

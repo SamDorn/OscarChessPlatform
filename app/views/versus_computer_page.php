@@ -91,6 +91,6 @@
 </body>
 <script>
     var sessionId = "<?= uniqid() ?>"
-    var jwt = "<?= $_COOKIE['jwt']?>"
+    var jwt = "<?= $_COOKIE['jwt'] ?? null?>"
 </script>
 </html>

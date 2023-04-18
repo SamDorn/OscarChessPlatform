@@ -2,8 +2,9 @@
 
 namespace App\controllers;
 
-use App\models\UserModel;
 use Google;
+use App\utilitis\Jwt;
+use App\models\UserModel;
 
 class GoogleController
 {
@@ -26,26 +27,41 @@ class GoogleController
         $this->userModel = new UserModel();
     }
 
-    public function handleLogin() : void
+    public function handleLogin(): void
     {
         $token = $this->googleClient->fetchAccessTokenWithAuthCode($this->code);
         $this->googleClient->setAccessToken($token);
         $googleService = new Google\Service\Oauth2($this->googleClient);
         $data = $googleService->userinfo->get();
-        echo '<pre>';
-        var_dump($data);
-        echo '</pre>';
-        $this->userModel->setEmail($data->email);
+
         $this->userModel->setUsername($data->name);
+        $this->userModel->setEmail($data->email);
+        $this->userModel->setPassword(null);
         $this->userModel->setAvatar($data->picture);
         $this->userModel->setVerified(true);
-        
-        
-        //header("Location: home");
+
+        /**
+         * Checks if the user has already made the google login before
+         */
+        if(!$this->userModel->checkUser('google')){ 
+            $this->userModel->addUser('google');
+            $this->userModel->checkUser('google'); //set the id of the user to create the jwt token
+        }
+
+        Jwt::createToken($this->userModel);
+
+        header("Location: home");
     }
-    public function getUrl() : string
+    /**
+     * Returns the authentication URL for a Google client.
+     * The URL is generated using the `createAuthUrl()` method of the
+     * object.
+     * 
+     * @return string String of the URL for Google
+     * authentication. 
+     */
+    public function getUrl(): string
     {
         return $this->googleClient->createAuthUrl();
     }
-
 }

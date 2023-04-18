@@ -10,7 +10,7 @@ class UserModel extends Model
     protected ?string $username;
     protected ?string $email;
     protected ?string $password;
-    protected ?string $avatar;
+    protected ?string $avatar = "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg";
     protected ?int $last_connectionId;
     protected ?string $status;
     protected ?string $type;
@@ -150,7 +150,7 @@ class UserModel extends Model
      * 
      * @return string 
      */
-    public function addUser(string $type, string $avatar): string
+    public function addUser(string $type): string
     {
         $this->verified = $type != "normal" ? true : false;
         $query = "INSERT INTO users (id, username, email, password, avatar, last_connectionId,
@@ -159,8 +159,8 @@ class UserModel extends Model
             $stmt = $this->conn->prepare($query);
             $stmt->bindValue(':username', $this->username);
             $stmt->bindValue(':email', $this->email);
-            $stmt->bindValue(':password', password_hash($this->password, PASSWORD_BCRYPT));
-            $stmt->bindValue(':avatar', $avatar);
+            $stmt->bindValue(':password', $this->password != null ? password_hash($this->password, PASSWORD_BCRYPT) : null);
+            $stmt->bindValue(':avatar', $this->avatar);
             $stmt->bindValue(':type', $type);
             $stmt->bindValue(':verified', $this->verified);
             $stmt->execute();
@@ -172,13 +172,11 @@ class UserModel extends Model
     }
 
     /**
-     * This function check if the user is in the database
-     * It uses a prepared statement and bindParam
-     * to avoid SQL Injection
+     * Checks if the user is in the database
      * 
      * @return bool
      */
-    public function checkUser(): bool
+    public function checkUser(string $type): bool
     {
         $query = "SELECT * FROM users WHERE username = :username";
         $stmt = $this->conn->prepare($query);
@@ -187,20 +185,21 @@ class UserModel extends Model
         $result = $stmt->fetch();
 
         if ($result > 0) {
-            echo '<pre>';
-            var_dump($result);
-            echo '</pre>';
-            if (password_verify($this->password, $result["password"])){
+            if ($type === "normal") {
+                if (password_verify($this->password, $result["password"])) {
+                    $this->setId($result['id']);
+                    return true;
+                } else
+                    return false;
+            } else {
                 $this->setId($result['id']);
                 return true;
             }
-            else
-                return false;
         } else
             return false;
     }
     /**
-     * This function is used to check if the user who is creating a new account is
+     * Checks if the user who is creating a new account is
      * using an available username, if there is already a user with that username
      * is returned false otherwise is returned true.
      * 
@@ -233,10 +232,10 @@ class UserModel extends Model
         return $result;
     }
     /**
-     * This PHP function retrieves a user's data from the database by their ID.
+     * Retrieves a user's data from the database by their ID.
      * 
-     * @param int id The parameter "id" is an integer representing the unique identifier of a user in the
-     * database table.
+     * @param int id  Is an integer representing the unique identifier of a user in the
+     * database.
      * 
      * @return array An array containing the user information for the user with the specified ID.
      */

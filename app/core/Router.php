@@ -8,18 +8,19 @@ class Router
     private Request $request;
     public Response $response;
     public array $routes = [];
-    public function __construct($request)
+    public function __construct(Request $request)
     {
         $this->request = $request;
     }
     /**
-     * Assign to the array routes the key
-     * get and the path and the value to the mixed 
-     * callable which can be a function, a string or an array.
-     *
-     * @param string $path
-     * @param mixed $callback
-     * @return void
+     * Adds a GET route to the routes array by processing the path and callback
+     * parameters.
+     * 
+     * @param string path A string representing the URL path for the route.
+     * @param mixed callback The  parameter is a mixed type variable that represents the
+     * function or method that will be executed when the specified route is accessed with the HTTP GET
+     * method. It can be a closure, an array containing an object and a method name, or a string
+     * containing a view.
      */
     public function get(string $path, mixed $callback): void
     {
@@ -30,13 +31,13 @@ class Router
         $this->routes['get'][$path] = $callback;
     }
     /**
-     * Assign to the array routes the key
-     * post and the path and the value to the mixed 
-     * callable which can be a function, a string or an array.
-     *
-     * @param string $path
-     * @param mixed $callback
-     * @return void
+     * Adds a POST route to the routes array by processing the path and callback
+     * parameters.
+     * 
+     * @param string path A string representing the URL path for the route.
+     * @param mixed callback The  parameter is a mixed type, which means it can accept any
+     * data type. In this case, it is expected to be a function or a method that will be executed when
+     * the HTTP POST request is made to the specified path.
      */
     public function post(string $path, mixed $callback): void
     {
@@ -54,7 +55,7 @@ class Router
      */
     public function resolve(): mixed
     {
-        
+
         $callback = $this->request->parseUrl($this->routes)[0];
         $params = $this->request->parseUrl($this->routes)[1];
 
@@ -92,6 +93,6 @@ class Router
          * call_user_func allow an array as first argument only if it 
          * has two items with 0->class/object 1->method
          */
-        return call_user_func($callback,$this->request, $params);
+        return call_user_func($callback, $this->request, $params);
     }
 }

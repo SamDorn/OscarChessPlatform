@@ -1,0 +1,3 @@
+01 = problem adding the user to the database
+02 = problem with sending the email to the user
+03 = problem with the jwt token

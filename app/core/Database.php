@@ -10,7 +10,7 @@ class Database
     private $user = "root";
     private $password = "";
     private $db_name = "OscarChessPlatform";
-    private static $instance;
+    private static $connectionInstance;
 
     private function __construct()
     {
@@ -19,7 +19,7 @@ class Database
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
-        self::$instance = new PDO("mysql:host=$this->host;dbname=$this->db_name;", $this->user, $this->password, $options);
+        self::$connectionInstance = new PDO("mysql:host=$this->host;dbname=$this->db_name;", $this->user, $this->password, $options);
         $this->createTables();
     }
 
@@ -29,11 +29,11 @@ class Database
      *
      * @return PDO instance
      */
-    public static function getInstance(): PDO
+    public static function getConnection(): PDO
     {
-        if (!isset(self::$instance))
+        if (!isset(self::$connectionInstance))
             new Database;
-        return self::$instance;
+        return self::$connectionInstance;
     }
 
     private function createTables()
@@ -55,7 +55,7 @@ class Database
         //     white VARCHAR(30),
         //     PRIMARY KEY ( id ))";
 
-        self::$instance->exec($cmd);
+        self::$connectionInstance->exec($cmd);
         //self::$instance->exec($cmd2);
     }
 }

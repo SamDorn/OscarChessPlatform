@@ -11,8 +11,8 @@ class Controller
      * It takes a view name and an array of parameters, extracts the parameters, and returns the
      * rendered view
      * 
-     * @param string Name of the view to render.
-     * @param array Array of parameters that will be passed to the view.
+     * @param string view Name of the view to render.
+     * @param array parameters Array of parameters that will be passed to the view.
      * 
      * @return string The rendered view.
      */

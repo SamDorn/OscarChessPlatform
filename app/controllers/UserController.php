@@ -27,7 +27,7 @@ class UserController
     public function addUser(Request $request): void
     {
         $this->userModel->loadData($request->getBody());
-        $response = $this->userModel->addUser("normal", "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg");
+        $response = $this->userModel->addUser("normal");
         if ($response === "User added correctly in the database") {
 
             Email::sendEmail($this->userModel->getEmail());
@@ -46,7 +46,7 @@ class UserController
     {
         try {
             $this->userModel->loadData($request->getBody());
-            if ($this->userModel->checkUser()) {
+            if ($this->userModel->checkUser("normal")) {
                 Jwt::createToken($this->userModel);
                 header("Location: home");
             } else

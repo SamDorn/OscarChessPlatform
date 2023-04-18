@@ -32,4 +32,7 @@ $app->router->post('/register', [UserController::class, 'addUser']);
 $app->router->post('/login', [UserController::class, 'checkUser']);
 $app->router->post('/checkUsername', [UserController::class, 'checkUsername']);
 
+/* `->run();` is a method call that starts the application and handles the incoming HTTP request by
+matching the requested URL with the defined routes and calling the appropriate controller method to
+handle the request and return the response. */
 $app->run();
