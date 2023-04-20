@@ -8,9 +8,6 @@ use App\models\UserModel;
 
 class GoogleController
 {
-    private const CLIENT_ID = '';
-    private const CLIENT_SECRET = '';
-    private const REDIRECT_URI = 'http://localhost/google';
     private Google\Client $googleClient;
     private ?string $code;
     private UserModel $userModel;
@@ -18,9 +15,9 @@ class GoogleController
     public function __construct()
     {
         $this->googleClient = new Google\Client();
-        $this->googleClient->setClientId(self::CLIENT_ID);
-        $this->googleClient->setClientSecret(self::CLIENT_SECRET);
-        $this->googleClient->setRedirectUri(self::REDIRECT_URI);
+        $this->googleClient->setClientId($_ENV['CLIENT_ID']);
+        $this->googleClient->setClientSecret($_ENV['CLIENT_SECRET']);
+        $this->googleClient->setRedirectUri($_ENV['REDIRECT_URI']);
         $this->googleClient->addScope('email');
         $this->googleClient->addScope('profile');
         $this->code = $_GET['code'] ?? null;

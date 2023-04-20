@@ -6,10 +6,6 @@ use PDO;
 
 class Database
 {
-    private $host = "127.0.0.1";
-    private $user = "root";
-    private $password = "";
-    private $db_name = "OscarChessPlatform";
     private static $connectionInstance;
 
     private function __construct()
@@ -19,7 +15,7 @@ class Database
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
-        self::$connectionInstance = new PDO("mysql:host=$this->host;dbname=$this->db_name;", $this->user, $this->password, $options);
+        self::$connectionInstance = new PDO("mysql:host=" . $_ENV['DB_HOST'] .";dbname=" . $_ENV['DB_NAME'] . ";", $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $options);
         $this->createTables();
     }
 

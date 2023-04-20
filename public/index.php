@@ -2,11 +2,16 @@
 
 require_once '../vendor/autoload.php';
 
+
+use Dotenv\Dotenv;
 use App\core\Application;
 use App\controllers\SiteController;
 use App\controllers\UserController;
 use App\controllers\GoogleController;
 use App\controllers\PuzzleController;
+
+$dotenv = Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
 
 $app = new Application(dirname(__DIR__));
 
@@ -31,6 +36,13 @@ response. For example, when a user submits a registration form, the 'addUser' me
 $app->router->post('/register', [UserController::class, 'addUser']);
 $app->router->post('/login', [UserController::class, 'checkUser']);
 $app->router->post('/checkUsername', [UserController::class, 'checkUsername']);
+
+
+/**
+ * API
+ */
+//$app->router->get('/api/players', [UserController::class, 'getPlayers']);
+
 
 /* `->run();` is a method call that starts the application and handles the incoming HTTP request by
 matching the requested URL with the defined routes and calling the appropriate controller method to

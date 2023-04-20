@@ -7,3 +7,4 @@
     <title>OscarChessPlatform</title>
     <link rel="shortcut icon" href="images/icon/icon.png" type="image/x-icon">
     <script src="js/libraries/jQuery/jquery-3.6.3.min.js"></script>
+    <noscript>PLS ENABLE JAVASCRIPT, WITHOUT IT, IT CANNOT RUN</noscript>

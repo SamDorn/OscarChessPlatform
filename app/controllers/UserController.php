@@ -72,4 +72,9 @@ class UserController
         else
             echo json_encode("Username available");
     }
+
+    public function getPlayers(): mixed
+    {
+        return json_encode($this->userModel->getAll());
+    }
 }

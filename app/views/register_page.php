@@ -14,9 +14,10 @@
             <span id="errorPassword"></span><br>
             <input type="password" name="password2" id="passwordSignUpVerify" placeholder="verify password" required autocomplete="off">
             <span id="errorPasswordVerify"></span><br>
-            <input type="submit" value="Registrati" id="">
+            <input type="submit" value="Registrati" id="submitForm" disabled>
             <a href="login" id="">Già registrato?</a><br><br>
-            <div class="google-btn">
+            <span id="errors"></span>
+            <div class="google-btn" onclick="location.href='<?= $googleController->getUrl() ?>'">
                 <div class="google-icon-wrapper">
                     <img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />
                 </div>

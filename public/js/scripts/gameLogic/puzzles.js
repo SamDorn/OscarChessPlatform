@@ -1,7 +1,6 @@
 import { INPUT_EVENT_TYPE, COLOR } from "./../../libraries/cm-chessboard/Chessboard.js"
 import { MARKER_TYPE } from "./../../libraries/cm-chessboard/extensions/markers/Markers.js"
 import { ARROW_TYPE, } from "./../../libraries/cm-chessboard/extensions/arrows/Arrows.js"
-import { PromotionDialog } from "../../libraries/cm-chessboard/extensions/promotion-dialog/PromotionDialog.js"
 
 import { initializeChessboard, chess, board, drawArraws, getPuzzle, movesPc,movesPlayer, getPuzzleByCategory} from "./game.js";
 
@@ -13,7 +12,7 @@ var color = null //color that determine if the user is white or black
 var counter = 0
 
 //function that calls the api to get the daily puzzles
-getPuzzle("0Z3KE", color, inputHandler)
+getPuzzle("daily", color, inputHandler)
 
 //enable the move input calling the input handler and the color
 //so that the user can only pick up pieces from its color

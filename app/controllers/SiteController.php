@@ -2,7 +2,6 @@
 
 namespace App\controllers;
 
-use App\core\Request;
 use App\core\Controller;
 
 class SiteController extends Controller
@@ -33,6 +32,12 @@ class SiteController extends Controller
     {
         return $this->render('puzzles_page');
     }
+    /**
+     * Returns a rendered login page with a GoogleController object passed as a
+     * parameter needed to create the URL.
+     * 
+     * @return string A string that represents the rendered login page
+     */
     public function login(): string
     {
         $googleController = new GoogleController();
@@ -41,6 +46,12 @@ class SiteController extends Controller
         ];
         return $this->render('login_page', $params);
     }
+    /**
+     * Returns a rendered 'register_page' with a GoogleController object passed as a
+     * parameter needed to create the URL.
+     * 
+     * @return string A string that represents the rendered 'register_page' view
+     */
     public function register(): string
     {
         $googleController = new GoogleController();
@@ -48,18 +59,5 @@ class SiteController extends Controller
             'googleController' => $googleController
         ];
         return $this->render('register_page', $params);
-    }
-    /**
-     * It takes the request, gets the body of the request, and then dumps the body to the screen.
-     * 
-     * @param Request request The request object.
-     */
-    public function handleContact(Request $request)
-    {
-        $body = $request->getBody();
-        echo '<pre>';
-        var_dump($body);
-        echo '</pre>';
-        return 'Handling submitted data';
     }
 }

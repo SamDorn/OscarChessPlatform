@@ -184,7 +184,7 @@ class UserModel extends Model
         $stmt->execute();
         $result = $stmt->fetch();
 
-        if ($result > 0) {
+        if ($result) {
             if ($type === "normal") {
                 if (password_verify($this->password, $result["password"])) {
                     $this->setId($result['id']);
@@ -203,7 +203,7 @@ class UserModel extends Model
      * using an available username, if there is already a user with that username
      * is returned false otherwise is returned true.
      * 
-     * @return bool true if available
+     * @return bool true if username available
      */
     public function checkUsername(): bool
     {
@@ -213,7 +213,7 @@ class UserModel extends Model
         $stmt->execute();
         $result = $stmt->fetch();
 
-        if ($result > 0)
+        if ($result)
             return true;
         else
             return false;
@@ -228,7 +228,7 @@ class UserModel extends Model
         $query = "SELECT * FROM users";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        $result = $stmt->fetch();
+        $result = $stmt->fetch() ? $stmt->fetch() : [];
         return $result;
     }
     /**
@@ -237,15 +237,15 @@ class UserModel extends Model
      * @param int id  Is an integer representing the unique identifier of a user in the
      * database.
      * 
-     * @return array An array containing the user information for the user with the specified ID.
+     * @return ?array An array containing the user information for the user with the specified ID.
      */
-    public function getUserById(int $id): array
+    public function getUserById(int $id): ?array
     {
         $query = "SELECT * FROM users where id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
         $result = $stmt->fetch();
-        return $result;
+        return $result ?? null;
     }
 }
