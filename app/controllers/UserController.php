@@ -3,12 +3,13 @@
 namespace App\controllers;
 
 use App\core\Request;
-use App\utilitis\Jwt;
-use App\utilitis\Email;
+use App\utilities\Jwt;
+use App\core\Controller;
+use App\utilities\Email;
 use App\models\UserModel;
 
 
-class UserController
+class UserController extends Controller
 {
     private  $userModel;
 
@@ -30,7 +31,7 @@ class UserController
         $response = $this->userModel->addUser("normal");
         if ($response === "User added correctly in the database") {
 
-            Email::sendEmail($this->userModel->getEmail());
+            Email::sendEmail($this->userModel->getEmail(), "normal", $this->userModel->getVerificationCode());
             
         } else
             header("Location:login?error=01");
@@ -76,5 +77,16 @@ class UserController
     public function getPlayers(): mixed
     {
         return json_encode($this->userModel->getAll());
+    }
+    public function verifyEmail(Request $request)
+    {
+        $data = $request->getBody();
+        $this->userModel->setVerificationCode($data['code']);
+        if($this->userModel->verifyUser()){
+            header("Location: home?ev=t");
+        }
+        else{
+            header("Location: home?nv=t");
+        }
     }
 }

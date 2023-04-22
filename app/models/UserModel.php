@@ -3,6 +3,7 @@
 namespace App\models;
 
 use App\core\Model;
+use Exception;
 
 class UserModel extends Model
 {
@@ -15,6 +16,8 @@ class UserModel extends Model
     protected ?string $status;
     protected ?string $type;
     protected ?bool $verified;
+    protected ?string $verificationCode;
+    protected ?string $date;
 
     public function __construct()
     {
@@ -86,6 +89,10 @@ class UserModel extends Model
     {
         $this->verified = $verified;
     }
+    public function setVerificationCode(?string $verificationCode){
+        $this->verificationCode = $verificationCode;
+    }
+    
     public function getLast_ConnectionId(): int
     {
         return $this->last_connectionId;
@@ -143,6 +150,16 @@ class UserModel extends Model
         return $this->id;
     }
 
+    public function getVerificationCode() :?string
+    {
+        $query = "SELECT verification_code FROM users WHERE email = :email";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':email', $this->email);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result['verification_code'];
+    }
+    
     /**
      * This function add the user to the database 
      * It uses a prepared statement and bindParam
@@ -152,9 +169,11 @@ class UserModel extends Model
      */
     public function addUser(string $type): string
     {
+        $code = bin2hex(random_bytes(16));
+        $this->verificationCode = $type != "normal" ? null : $code;
         $this->verified = $type != "normal" ? true : false;
         $query = "INSERT INTO users (id, username, email, password, avatar, last_connectionId,
-        status, type, verified) VALUES (null, :username, :email, :password, :avatar, null, null, :type, :verified)";
+        status, type, verified, verification_code, date) VALUES (null, :username, :email, :password, :avatar, null, null, :type, :verified, :verification_code, NOW())";
         try {
             $stmt = $this->conn->prepare($query);
             $stmt->bindValue(':username', $this->username);
@@ -163,11 +182,12 @@ class UserModel extends Model
             $stmt->bindValue(':avatar', $this->avatar);
             $stmt->bindValue(':type', $type);
             $stmt->bindValue(':verified', $this->verified);
+            $stmt->bindValue(':verification_code', $code);
             $stmt->execute();
 
             return "User added correctly in the database";
-        } catch (\PDOException) {
-            return "There was a problem adding the user in the database";
+        } catch (\PDOException $e) {
+            return $e->getMessage();
         }
     }
 
@@ -178,7 +198,7 @@ class UserModel extends Model
      */
     public function checkUser(string $type): bool
     {
-        $query = "SELECT * FROM users WHERE username = :username";
+        $query = "SELECT id, password FROM users WHERE username = :username";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':username', $this->username);
         $stmt->execute();
@@ -207,7 +227,7 @@ class UserModel extends Model
      */
     public function checkUsername(): bool
     {
-        $query = "SELECT * FROM users WHERE username = :username";
+        $query = "SELECT id FROM users WHERE username = :username";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':username', $this->username);
         $stmt->execute();
@@ -217,6 +237,37 @@ class UserModel extends Model
             return true;
         else
             return false;
+    }
+    public function verifyUser(): bool
+    {
+        $this->conn->beginTransaction();
+        try{
+            $query = "SELECT email FROM users WHERE verification_code = :verification_code";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':verification_code', $this->verificationCode);
+            $stmt->execute();
+            $result = $stmt->fetch();
+            if($result)
+                $this->email = $result['email'];
+            else
+                return false;
+
+            $query = "UPDATE users SET verified = 1 WHERE email = :email";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':email', $this->email);
+            $stmt->execute();
+            $query = "UPDATE users SET verification_code = null WHERE email = :email";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':email', $this->email);
+            $stmt->execute();
+            $this->conn->commit();
+            return true;
+        }
+        catch(Exception $e){
+            $this->conn->rollBack();
+            return false;
+        }
+        
     }
     /**
      * Get all the users from the database

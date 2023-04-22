@@ -2,7 +2,7 @@
 
 namespace App\core;
 
-use App\utilitis\Jwt;
+use App\utilities\Jwt;
 
 class Controller
 {

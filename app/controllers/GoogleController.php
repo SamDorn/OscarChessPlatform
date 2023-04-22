@@ -3,7 +3,8 @@
 namespace App\controllers;
 
 use Google;
-use App\utilitis\Jwt;
+use App\utilities\Jwt;
+use App\utilities\Email;
 use App\models\UserModel;
 
 class GoogleController
@@ -43,6 +44,7 @@ class GoogleController
         if(!$this->userModel->checkUser('google')){ 
             $this->userModel->addUser('google');
             $this->userModel->checkUser('google'); //set the id of the user to create the jwt token
+            Email::sendEmail($data->email, "google", null);
         }
 
         Jwt::createToken($this->userModel);

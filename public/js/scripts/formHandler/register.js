@@ -28,10 +28,6 @@ $(document).ready(function () {
 
     })
 
-    $("#submitForm").click(function (e) {
-
-    })
-
 
 })
 function checkUsernameAjax() {

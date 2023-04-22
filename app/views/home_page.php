@@ -1,8 +1,4 @@
 <style>
-    body {
-        /* background-color: #161512; */
-        overflow-y: hidden;
-    }
     .prova{
         
         height: 100vh;
@@ -88,7 +84,6 @@
 </head>
 
 <body>
-    
     <div class="prova">
         <a class="play-button" id="play-button">Play</a>
         <div id="play-buttons">
@@ -100,9 +95,7 @@
             <a class="learn-button" id="puzzle-button">Resolve puzzles</a>
             </a>
         </div>
-        <?php if (!isset($_SESSION["username"])) : ?>
-            <a class="login-button" id="login">Login</a>
-        <?php endif; ?>
+        <a class="login-button" id="login">Login</a>
     </div>
 </body>
 
@@ -131,4 +124,3 @@
 </script>
 
 </html>
-<?php ?>

@@ -2,6 +2,7 @@
 
 require_once '../vendor/autoload.php';
 
+ini_set("display_errors", 1);
 
 use Dotenv\Dotenv;
 use App\core\Application;
@@ -27,6 +28,7 @@ $app->router->get('/login', [SiteController::class, 'login']);
 $app->router->get('/register', [SiteController::class, 'register']);
 $app->router->get('/google', [GoogleController::class, 'handleLogin']);
 $app->router->get('/puzzle', [PuzzleController::class, 'puzzleId']);
+$app->router->get('/verifyEmail', [UserController::class, 'verifyEmail']);
 
 
 /* These lines of code are defining the routes for the application using the POST method. Each route is

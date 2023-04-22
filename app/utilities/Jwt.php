@@ -1,6 +1,6 @@
 <?php
 
-namespace App\utilitis;
+namespace App\utilities;
 
 use App\models\UserModel;
 use ReallySimpleJWT\Token;
