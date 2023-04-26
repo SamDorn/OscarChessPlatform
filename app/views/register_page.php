@@ -1,4 +1,4 @@
-<script src="js/scripts/formHandler/register.js"></script>
+<!-- <script src="js/scripts/formHandler/register.js"></script> -->
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
 <link rel="stylesheet" href="styles/components/googleButton.css">
 </head>
@@ -6,15 +6,15 @@
 <body>
     <div class="registerForm" style="display:flex; justify-content:center;">
         <form action="register" method="POST">
-            <input type="text" name="username" id="usernameSignUp" placeholder="username" required autocomplete="off">
+            <input type="text" name="username" id="usernameSignUp" placeholder="username" autocomplete="off">
             <span id="errorUsername"></span><br>
-            <input type="email" name="email" id="emailSignUp" placeholder="email" required autocomplete="off">
+            <input type="email" name="email" id="emailSignUp" placeholder="email" autocomplete="off">
             <span id="errorEmail"></span><br>
-            <input type="password" name="password" id="passwordSignUp" placeholder="password" required autocomplete="off">
+            <input type="password" name="password" id="passwordSignUp" placeholder="password"  autocomplete="off">
             <span id="errorPassword"></span><br>
-            <input type="password" name="password2" id="passwordSignUpVerify" placeholder="verify password" required autocomplete="off">
+            <input type="password" name="passwordConfirm" id="passwordSignUpVerify" placeholder="verify password"  autocomplete="off">
             <span id="errorPasswordVerify"></span><br>
-            <input type="submit" value="Registrati" id="submitForm" disabled>
+            <input type="submit" value="Registrati" id="submitForm">
             <a href="login" id="">Già registrato?</a><br><br>
             <span id="errors"></span>
             <div class="google-btn" onclick="location.href='<?= $googleController->getUrl() ?>'">

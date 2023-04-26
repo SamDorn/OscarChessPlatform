@@ -15,10 +15,6 @@ class PuzzleModel extends Model
     {
         parent::__construct();
     }
-    public function rules(): array
-    {
-        return [];
-    }
     public function setId($id)
     {
         $this->id = $id;
@@ -49,5 +45,9 @@ class PuzzleModel extends Model
         $stmt->execute();
         $result = $stmt->fetch();
         $this->id = $result['id'];
+    }
+    public function rules(): array
+    {
+        return [];
     }
 }

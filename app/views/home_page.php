@@ -1,6 +1,5 @@
 <style>
-    .prova{
-        
+    .prova {
         height: 100vh;
         display: flex;
         flex-direction: column;

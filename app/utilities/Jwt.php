@@ -24,18 +24,26 @@ class Jwt
         setcookie("jwt", $token, time()+ 3600, '/', 'localhost', true, true);
     }
     /**
-     * Validates a jwt 
+     * Validates a jwt and if the jwt isn't valid it redirects the user
+     * to the login page
      * 
      * @param string jwt The jwt that needs to be validated.
      * 
      * @return bool Returns true on validation and false on error
      */
-    public static function validate(string $token): bool
+    public static function validate(?string $token): void
     {
-        return Token::validate($token, self::SECRET);
+        if($token){
+            if(!Token::validate($token, self::SECRET)){
+                unset($_COOKIE['jwt']);
+                setcookie('jwt', null, -1, '/'); 
+                header("Location: login?error=03");
+            }
+        }
+        
     }
     /**
-     * This function returns the payload of a given token using the Token class.
+     * Returns the payload of a given token
      * 
      * @param string token The parameter "token" is a string variable that represents a token. This
      * function is used to get the payload of the token.

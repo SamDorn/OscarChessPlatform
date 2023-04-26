@@ -11,6 +11,7 @@ class UserModel extends Model
     protected ?string $username;
     protected ?string $email;
     protected ?string $password;
+    protected ?string $passwordConfirm;
     protected ?string $avatar = "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg";
     protected ?int $last_connectionId;
     protected ?string $status;
@@ -159,6 +160,15 @@ class UserModel extends Model
         $result = $stmt->fetch();
         return $result['verification_code'];
     }
+    public function rules(): array
+    {
+        return [
+            'username' => [self::RULE_REQUIRED, self::RULE_UNIQUE],
+            'email' => [self::RULE_REQUIRED, self::RULE_EMAIL, self::RULE_UNIQUE],
+            'password' => [self::RULE_REQUIRED, [self::RULE_MIN, 'min' => 8], [self::RULE_MAX, 'max' => 24]],
+            'passwordConfirm' => [self::RULE_REQUIRED, [self::RULE_MATCH, 'match' => 'password']]
+        ];
+    }
     
     /**
      * This function add the user to the database 
@@ -238,7 +248,14 @@ class UserModel extends Model
         else
             return false;
     }
-    public function verifyUser(): bool
+
+    /**
+     * Verify the user email 
+     *
+     * @return boolean true if the verification was successfull and false
+     * if it wasn't
+     */
+    public function verifyEmail(): bool
     {
         $this->conn->beginTransaction();
         try{
@@ -263,7 +280,7 @@ class UserModel extends Model
             $this->conn->commit();
             return true;
         }
-        catch(Exception $e){
+        catch(Exception){
             $this->conn->rollBack();
             return false;
         }
@@ -299,4 +316,5 @@ class UserModel extends Model
         $result = $stmt->fetch();
         return $result ?? null;
     }
+
 }

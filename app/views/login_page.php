@@ -7,7 +7,7 @@
 <body>
     <div id="loginForm" style="display:flex; justify-content:center;">
         <form action="login" method="POST">
-            <input type="text" name="username" id="usernameLogin" placeholder="username" required><br>
+            <input type="email" name="email" id="emailLogin" placeholder="email" required><br>
             <input type="password" name="password" id="passwordLogin" placeholder="password" required><br>
             <input type="submit" value="Accedi" id="submitLogin">
             <a href="register" id="">Nuovo utente?</a><br><br>
@@ -19,6 +19,9 @@
             </div>
             <?php if(isset($error)):?>
                 <h1>Problema nella registrazione</h1>
+            <?php endif;?>
+            <?php if(isset($_GET['wc'])):?>
+                <h4>Wrong credentials</h4>
             <?php endif;?>
         </form>
     </div>

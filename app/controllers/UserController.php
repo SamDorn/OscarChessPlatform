@@ -28,13 +28,20 @@ class UserController extends Controller
     public function addUser(Request $request): void
     {
         $this->userModel->loadData($request->getBody());
+        $this->userModel->validate();
+        echo '<pre>';
+        var_dump($this->userModel->errors);
+        echo '</pre>';
         $response = $this->userModel->addUser("normal");
         if ($response === "User added correctly in the database") {
 
-            Email::sendEmail($this->userModel->getEmail(), "normal", $this->userModel->getVerificationCode());
+            //Email::sendEmail($this->userModel->getEmail(), "normal", $this->userModel->getVerificationCode());
+            //echo $this->render("home_page");
             
-        } else
-            header("Location:login?error=01");
+        } else{
+
+        }
+            //header("Location:login?error=01");
     }
     /** 
      * This function calls the checkUser function of the UserModel
@@ -51,7 +58,7 @@ class UserController extends Controller
                 Jwt::createToken($this->userModel);
                 header("Location: home");
             } else
-                echo "Wrong credentials";
+                header("Location: login?wc=1");
         } catch (\Exception) {
 
             echo "Qualcosa è andato storto";
@@ -78,11 +85,21 @@ class UserController extends Controller
     {
         return json_encode($this->userModel->getAll());
     }
+
+    /**
+     * Verify the user's email. If the verification was successfull
+     * the user is redirected to the home page, if it isn0t it is redirected 
+     * to the home page with an error. 
+     * 
+     *
+     * @param Request http request containing the body and other informations
+     * @return void
+     */
     public function verifyEmail(Request $request)
     {
         $data = $request->getBody();
         $this->userModel->setVerificationCode($data['code']);
-        if($this->userModel->verifyUser()){
+        if($this->userModel->verifyEmail()){
             header("Location: home?ev=t");
         }
         else{
