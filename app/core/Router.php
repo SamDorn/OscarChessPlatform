@@ -67,10 +67,7 @@ class Router
         // Throws a 404 error if it doesn't exist and render the view
         if (!$callback) {
             Application::$app->response->setStatusCode(404);
-            /**
-             * Which approach is better static or non static??
-             */
-            //return Controller::render("_404");
+
             $this->controller = new Controller();
             return $this->controller->render("_404");
         }

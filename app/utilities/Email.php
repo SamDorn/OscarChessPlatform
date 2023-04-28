@@ -7,9 +7,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 class Email
 {
 
-    public static function sendEmail(string $email, string $type, ?string $verificationCode)
+    public static function sendEmail(string $email, string $type, ?string $verificationCode): string
     {
-        if($type === "google"){
+        if ($type === "google") {
             $body = "<center><img src='https://raw.githubusercontent.com/SamDorn/OscarChessPlatform/main/public/images/icon/icon.PNG' style='
             height: 50px;
             width: 50px;'><h1>Welcome to OscarChessPlatform</h1><br>
@@ -17,8 +17,7 @@ class Email
             post on the forum (when it will be available)</h4></center>
             ";
             $subject = "Welcome";
-        }
-        else{
+        } else {
             $body = "<center><img src='https://raw.githubusercontent.com/SamDorn/OscarChessPlatform/main/public/images/icon/icon.PNG' style='
             height: 50px;
             width: 50px;'><h1>Welcome to OscarChessPlatform</h1><br>
@@ -52,9 +51,8 @@ class Email
         $mail->Subject = $subject;
         $mail->Body = $body;
         if (!$mail->Send()) {
-            header("Location: login?error=02");
-        } else {
-            header("Location: login?emailSent=1");
+            return "problem with sending the email";
         }
+        return "email sent";
     }
 }

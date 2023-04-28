@@ -90,10 +90,11 @@ class UserModel extends Model
     {
         $this->verified = $verified;
     }
-    public function setVerificationCode(?string $verificationCode){
+    public function setVerificationCode(?string $verificationCode)
+    {
         $this->verificationCode = $verificationCode;
     }
-    
+
     public function getLast_ConnectionId(): int
     {
         return $this->last_connectionId;
@@ -151,7 +152,7 @@ class UserModel extends Model
         return $this->id;
     }
 
-    public function getVerificationCode() :?string
+    public function getVerificationCode(): ?string
     {
         $query = "SELECT verification_code FROM users WHERE email = :email";
         $stmt = $this->conn->prepare($query);
@@ -160,16 +161,24 @@ class UserModel extends Model
         $result = $stmt->fetch();
         return $result['verification_code'];
     }
-    public function rules(): array
+
+    public function validate(): bool
     {
-        return [
-            'username' => [self::RULE_REQUIRED, self::RULE_UNIQUE],
-            'email' => [self::RULE_REQUIRED, self::RULE_EMAIL, self::RULE_UNIQUE],
-            'password' => [self::RULE_REQUIRED, [self::RULE_MIN, 'min' => 8], [self::RULE_MAX, 'max' => 24]],
-            'passwordConfirm' => [self::RULE_REQUIRED, [self::RULE_MATCH, 'match' => 'password']]
-        ];
+        $errors = 0;
+        if (!$this->username ||  strlen($this->username) > 30) {
+            $errors++;
+        }
+        if (!$this->email || !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+            $errors++;
+        }
+        if (!$this->password || strlen($this->password) < 8 || strlen($this->password) > 24) {
+            $errors++;
+        }
+        if ($this->passwordConfirm !== $this->password) {
+            $errors++;
+        }
+        return $errors === 0;
     }
-    
     /**
      * This function add the user to the database 
      * It uses a prepared statement and bindParam
@@ -183,7 +192,7 @@ class UserModel extends Model
         $this->verificationCode = $type != "normal" ? null : $code;
         $this->verified = $type != "normal" ? true : false;
         $query = "INSERT INTO users (id, username, email, password, avatar, last_connectionId,
-        status, type, verified, verification_code, date) VALUES (null, :username, :email, :password, :avatar, null, null, :type, :verified, :verification_code, NOW())";
+        status, type, verified, verification_code, date) VALUES (null, :username, :email, :password, :avatar, null, 'offline', :type, :verified, :verification_code, NOW())";
         try {
             $stmt = $this->conn->prepare($query);
             $stmt->bindValue(':username', $this->username);
@@ -197,6 +206,11 @@ class UserModel extends Model
 
             return "User added correctly in the database";
         } catch (\PDOException $e) {
+            if (str_contains($e->getMessage(), 'username')) {
+                return "username already taken";
+            } elseif (str_contains($e->getMessage(), 'email')) {
+                return "email already taken";
+            }
             return $e->getMessage();
         }
     }
@@ -208,15 +222,19 @@ class UserModel extends Model
      */
     public function checkUser(string $type): bool
     {
-        $query = "SELECT id, password FROM users WHERE username = :username";
+        $query = "SELECT id, password FROM users WHERE email = :email";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':username', $this->username);
+        $stmt->bindParam(':email', $this->email);
         $stmt->execute();
         $result = $stmt->fetch();
 
         if ($result) {
             if ($type === "normal") {
                 if (password_verify($this->password, $result["password"])) {
+                    $query = "UPDATE users SET status = 'online' WHERE email = :email";
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bindParam(':email', $this->email);
+                    $stmt->execute();
                     $this->setId($result['id']);
                     return true;
                 } else
@@ -258,13 +276,13 @@ class UserModel extends Model
     public function verifyEmail(): bool
     {
         $this->conn->beginTransaction();
-        try{
+        try {
             $query = "SELECT email FROM users WHERE verification_code = :verification_code";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':verification_code', $this->verificationCode);
             $stmt->execute();
             $result = $stmt->fetch();
-            if($result)
+            if ($result)
                 $this->email = $result['email'];
             else
                 return false;
@@ -279,25 +297,23 @@ class UserModel extends Model
             $stmt->execute();
             $this->conn->commit();
             return true;
-        }
-        catch(Exception){
+        } catch (Exception) {
             $this->conn->rollBack();
             return false;
         }
-        
     }
     /**
      * Get all the users from the database
      *
      * @return array
      */
-    public function getAll(): array
+    public function getAll(): mixed
     {
-        $query = "SELECT * FROM users";
+        $query = "SELECT username, avatar, status, verified, date FROM users";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        $result = $stmt->fetch() ? $stmt->fetch() : [];
-        return $result;
+        $result = $stmt->fetch();
+        return $result == false ? [] : $result;
     }
     /**
      * Retrieves a user's data from the database by their ID.
@@ -316,5 +332,4 @@ class UserModel extends Model
         $result = $stmt->fetch();
         return $result ?? null;
     }
-
 }

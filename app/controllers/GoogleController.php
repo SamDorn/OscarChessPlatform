@@ -41,7 +41,7 @@ class GoogleController
         /**
          * Checks if the user has already made the google login before
          */
-        if(!$this->userModel->checkUser('google')){ 
+        if (!$this->userModel->checkUser('google')) {
             $this->userModel->addUser('google');
             $this->userModel->checkUser('google'); //set the id of the user to create the jwt token
             Email::sendEmail($data->email, "google", null);

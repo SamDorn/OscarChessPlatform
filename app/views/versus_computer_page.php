@@ -3,20 +3,6 @@
 <link rel="stylesheet" href="styles/chessboard/arrows.css">
 <script src="js/scripts/gameLogic/vsComputer.js" type="module"></script>
 <style>
-    @media only screen and (max-width: 600px) {
-        #board {
-            width: 350px;
-        }
-    }
-
-    /* For PCs */
-    @media only screen and (min-width: 601px) {
-        #board {
-            display: flex;
-            width: 800px;
-        }
-    }
-
     a {
 
         text-align: center;
@@ -51,46 +37,47 @@
         color: #333335;
         background-color: #fff;
     }
+
     #hint:hover {
         cursor: pointer;
         background-color: #000;
         color: #fff;
     }
-    #finish{
+
+    #finish {
         color: #000;
         font-size: x-large;
     }
-    .prova{
+
+    .prova {
         display: flex;
         align-items: center;
         justify-content: center;
         height: 100vh;
     }
-    
+    #board {
+        width: 800px;
+    }
 </style>
 </head>
+
 <body>
-    <?php if (isset($_SESSION["username"])) : ?>
-        <div style="text-align: center;">
-            HELLO <?= $_SESSION["username"] ?>
-        </div>
-    <?php endif; ?>
     <div class="prova">
         <div id="board"></div>
-    </div>
-    <div>
-        <a id="menu">Torna al menu</a>
-        <button id="hint">Mostra mossa migliore</button>
+        <textarea name="" id="pgn" cols="30" rows="10"></textarea>
+    <button style="font-size:3rem" id="previous"> < </button>
+    <button style="font-size:3rem" id="next"> > </button>
+ 
     </div>
     <div id="finish"></div>
-    <input type="color" name="" id="color1">
-    <input type="color" name="" id="color2">
-    <textarea name="" id="pgn" cols="30" rows="10"></textarea>
-        <button style="font-size:3rem" id="previous"><</button>
-        <button style="font-size:3rem" id="next">></button>
+    <a id="menu">Torna al menu</a>
+        <button id="hint">Mostra mossa migliore</button>
+    </div>
+    <div>
 </body>
 <script>
     var sessionId = "<?= uniqid() ?>"
-    var jwt = "<?= $_COOKIE['jwt'] ?? null?>"
+    var jwt = "<?= $_COOKIE['jwt'] ?? null ?>"
 </script>
+
 </html>

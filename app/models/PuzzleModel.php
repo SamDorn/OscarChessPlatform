@@ -46,8 +46,4 @@ class PuzzleModel extends Model
         $result = $stmt->fetch();
         $this->id = $result['id'];
     }
-    public function rules(): array
-    {
-        return [];
-    }
 }

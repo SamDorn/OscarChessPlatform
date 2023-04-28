@@ -60,4 +60,8 @@ class SiteController extends Controller
         ];
         return $this->render('register_page', $params);
     }
+    public function api(): string
+    {
+        return $this->render('api_page');
+    }
 }

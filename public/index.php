@@ -26,9 +26,10 @@ $app->router->get('/vsPlayer', [SiteController::class, 'vsPlayer']);
 $app->router->get('/puzzles', [SiteController::class, 'puzzles']);
 $app->router->get('/login', [SiteController::class, 'login']);
 $app->router->get('/register', [SiteController::class, 'register']);
+$app->router->get('/verifyEmail', [UserController::class, 'verifyEmail']);
 $app->router->get('/google', [GoogleController::class, 'handleLogin']);
 $app->router->get('/puzzle', [PuzzleController::class, 'puzzleId']);
-$app->router->get('/verifyEmail', [UserController::class, 'verifyEmail']);
+
 
 
 /* These lines of code are defining the routes for the application using the POST method. Each route is
@@ -43,7 +44,8 @@ $app->router->post('/checkUsername', [UserController::class, 'checkUsername']);
 /**
  * API
  */
-//$app->router->get('/api/players', [UserController::class, 'getPlayers']);
+$app->router->get('/api', [SiteController::class, 'api']);
+$app->router->get('/api/players', [UserController::class, 'getPlayers']);
 
 
 /* `->run();` is a method call that starts the application and handles the incoming HTTP request by

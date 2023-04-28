@@ -17,8 +17,8 @@
                 </div>
                 <p class="btn-text">Log in in with Google</p>
             </div>
-            <?php if(isset($error)):?>
-                <h1>Problema nella registrazione</h1>
+            <?php if(isset($emailSent)):?>
+                <h1>Email sent</h1>
             <?php endif;?>
             <?php if(isset($_GET['wc'])):?>
                 <h4>Wrong credentials</h4>

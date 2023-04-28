@@ -20,7 +20,7 @@ class Controller
     {
         $token = $_COOKIE['jwt'] ?? null;
         Jwt::validate($token);
-
+        
         extract($params);
         ob_start();
         require_once Application::$ROOT_DIR . "/app/views/layout/header.php";

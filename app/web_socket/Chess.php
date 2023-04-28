@@ -8,7 +8,7 @@ namespace App\web_socket;
 
 require_once '../../vendor/autoload.php';
 
-use App\utilitis\Jwt;
+use App\utilities\Jwt;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
@@ -37,7 +37,7 @@ class Chess implements MessageComponentInterface
         $request = $data->request;
         $token = $data->jwt;
         
-        echo Jwt::getPayload($token)['user_id'];
+        //echo Jwt::getPayload($token)['user_id'];
 
 
         switch ($request) {
@@ -53,8 +53,6 @@ class Chess implements MessageComponentInterface
                 break;
             case 'vsPlayer':
                 
-
-
             default:
 
                 break;

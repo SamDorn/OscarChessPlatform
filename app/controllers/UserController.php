@@ -28,21 +28,26 @@ class UserController extends Controller
     public function addUser(Request $request): void
     {
         $this->userModel->loadData($request->getBody());
-        $this->userModel->validate();
-        echo '<pre>';
-        var_dump($this->userModel->errors);
-        echo '</pre>';
-        $response = $this->userModel->addUser("normal");
-        if ($response === "User added correctly in the database") {
+        if ($this->userModel->validate()) {
+            $response = $this->userModel->addUser("normal");
+            if ($response === "User added correctly in the database") {
+                $response = Email::sendEmail($this->userModel->getEmail(), "normal", $this->userModel->getVerificationCode());
+                if($response === 'problem with sending the email'){
+                    echo "problem";
+                    //header("Location: registartion?error=02");
+                }
+                //header("Location: login");
 
-            //Email::sendEmail($this->userModel->getEmail(), "normal", $this->userModel->getVerificationCode());
-            //echo $this->render("home_page");
-            
-        } else{
-
+            } else {
+                echo "problem database";
+                //header("Location: registartion");
+            }
         }
-            //header("Location:login?error=01");
+        else{
+            echo "problem validate";
+        }
     }
+
     /** 
      * This function calls the checkUser function of the UserModel
      * class with checks if the username and password match with a 
@@ -54,6 +59,7 @@ class UserController extends Controller
     {
         try {
             $this->userModel->loadData($request->getBody());
+            var_dump($this->userModel);
             if ($this->userModel->checkUser("normal")) {
                 Jwt::createToken($this->userModel);
                 header("Location: home");
@@ -83,7 +89,7 @@ class UserController extends Controller
 
     public function getPlayers(): mixed
     {
-        return json_encode($this->userModel->getAll());
+        return json_encode($this->userModel->getAll(), JSON_PRETTY_PRINT);
     }
 
     /**
@@ -95,14 +101,13 @@ class UserController extends Controller
      * @param Request http request containing the body and other informations
      * @return void
      */
-    public function verifyEmail(Request $request)
+    public function verifyEmail(Request $request): void
     {
         $data = $request->getBody();
         $this->userModel->setVerificationCode($data['code']);
-        if($this->userModel->verifyEmail()){
+        if ($this->userModel->verifyEmail()) {
             header("Location: home?ev=t");
-        }
-        else{
+        } else {
             header("Location: home?nv=t");
         }
     }
