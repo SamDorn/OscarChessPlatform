@@ -80,7 +80,11 @@ class UserModel extends Model
     }
     public function setStatus(?string $status): void
     {
-        $this->status = $status;
+        $query = "UPDATE users SET status = :status WHERE last_connectionId = :last_connectionId";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(":status", $status);
+        $stmt->bindValue(":last_connectionId", $this->getLast_ConnectionId());
+        $stmt->execute();
     }
     public function setType(?string $type): void
     {
@@ -97,7 +101,12 @@ class UserModel extends Model
 
     public function getLast_ConnectionId(): int
     {
-        return $this->last_connectionId;
+        $query = "SELECT last_connectionId FROM users WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':id', $this->id);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result['last_connectionId'];
     }
     public function getStatus(): string
     {
@@ -179,6 +188,18 @@ class UserModel extends Model
         }
         return $errors === 0;
     }
+
+
+    public function updateConnectionId()
+    {
+        $query = "UPDATE users SET last_connectionId = :connection_id WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':connection_id', $this->last_connectionId);
+        $stmt->bindValue(':id', $this->id);
+        $stmt->execute();
+    }
+
+
     /**
      * This function add the user to the database 
      * It uses a prepared statement and bindParam

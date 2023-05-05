@@ -31,15 +31,20 @@ class Jwt
      * 
      * @return bool Returns true on validation and false on error
      */
-    public static function validate(?string $token): void
+    public static function validate(?string $token): bool
     {
         if($token){
             if(!Token::validate($token, self::SECRET)){
                 unset($_COOKIE['jwt']);
                 setcookie('jwt', null, -1, '/'); 
                 header("Location: login?error=03");
+                return false;
+            }
+            else{
+                return true;
             }
         }
+        return false;
         
     }
     /**

@@ -19,7 +19,7 @@ class Controller
     public function render(string $view, array $params = []): string
     {
         $token = $_COOKIE['jwt'] ?? null;
-        Jwt::validate($token);
+        $isVerified = Jwt::validate($token);
         
         extract($params);
         ob_start();

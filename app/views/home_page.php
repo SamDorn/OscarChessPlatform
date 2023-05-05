@@ -1,3 +1,7 @@
+<?php
+if ($isVerified) : ?>
+    <script src="js/scripts/web_socket/connection.js"></script>
+<?php endif; ?>
 <style>
     .prova {
         height: 100vh;
@@ -95,10 +99,26 @@
             </a>
         </div>
         <a class="login-button" id="login">Login</a>
+        <div id="disconnect"></div>
     </div>
+
 </body>
 
 <script>
+    try {
+        var jwt = "<?= $_COOKIE['jwt'] ?? null ?>"
+        connect("home")
+        socket.onmessage = function(e) {
+            let object = JSON.parse(e.data)
+            if (object.disconnect === 'disconnect') {
+                $("#disconnect").html("A login from a different device has been made, i'm disconnecting from this device");
+            }
+            console.log(object.disconnect)
+        }
+    } catch (error) {
+        console.log(error)
+        console.log("You must login")
+    }
     $("#play-button").click(function(e) {
         $("#play-buttons").css("display") === "block" ? $("#play-buttons").css("display", "none") : $("#play-buttons").css("display", "block")
 

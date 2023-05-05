@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="styles/chessboard/arrows.css">
 <script src="js/scripts/gameLogic/vsComputer.js" type="module"></script>
 <style>
-    a {
+    a {  
 
         text-align: center;
         display: inline-block;
@@ -50,13 +50,21 @@
     }
 
     .prova {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
+        display: grid;
     }
     #board {
-        width: 800px;
+        width: 45%;
+        display: inline-grid;
+    }
+    @media only screen and (min-width: 601px) {
+        #board {
+            width: 45%;
+        }
+    }
+    @media only screen and (max-width: 600px) {
+        #board {
+            width: 80%;
+        }
     }
 </style>
 </head>

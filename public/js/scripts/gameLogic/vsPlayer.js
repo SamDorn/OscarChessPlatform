@@ -1,125 +1,120 @@
-var board = null
-var game = new Chess()
-var socket = new WebSocket('ws://172.20.10.3:8080');
+import { INPUT_EVENT_TYPE, COLOR } from "../../libraries/cm-chessboard/Chessboard.js"
+import { MARKER_TYPE } from "../../libraries/cm-chessboard/extensions/markers/Markers.js"
+import { ARROW_TYPE } from "../../libraries/cm-chessboard/extensions/arrows/Arrows.js"
+import { initializeChessboard, chess, board, playAudio, drawArraws, getMove } from "./game.js";
 
-var whiteSquareGrey = '#a9a9a9'
-var blackSquareGrey = '#696969'
-var prova = '#fff'
+var socket = new WebSocket('ws://localhost:8080');
 
-function removeGreySquares() {
-    $('#myBoard .square-55d63').css('background', '')
-}
+initializeChessboard()
 
-/*function highlight(square, target){
-  var $square = $('#myBoard .square-' + square)
-  var $target = $('#myBoard .square-' + target)
+drawArraws()
+var result = null
 
+//uses the ternary operator to casually generate the color
+const color = Math.floor(Math.random() * 2) === 0 ? COLOR.black : COLOR.white
 
-  $square.addClass("highlight-white")
-  $target.addClass("highlight-white")
-}*/
+board.setOrientation(color) //set the orientation of the board based on the color
 
+//uses the ternary operator to see if the user is black.
+//if it is it send a message to the webSocket server to make the first move
+color === COLOR.black ? getMove(socket, chess, board) : null
 
-function greySquare(square) {
-    var $square = $('#myBoard .square-' + square)
-    var background = whiteSquareGrey
-    if ($square.hasClass('black-3c85d')) {
-        background = blackSquareGrey
-    }
+/**
+ * Handles the input of the user
+ * @param {*} event 
+ * @returns 
+ */
+function inputHandler(event) {
 
-    $square.css('background', background)
-}
+    event.chessboard.removeMarkers(MARKER_TYPE.dot) //removes every dot that was generated
 
-function onDragStart(source, piece, position, orientation) {
+    if (event.type === INPUT_EVENT_TYPE.moveInputStarted) {
+        const moves = chess.moves({ square: event.square, verbose: true }) //gets all the possible moves from that particular square
 
-    // do not pick up pieces if the game is over
-    if (game.game_over()) return false
+        // draw dots on possible squares
+        for (const move of moves) {
+            event.chessboard.addMarker(MARKER_TYPE.dot, move.to)
+        }
+        return moves.length > 0
 
-    if (color == "white")
-        colorOpp = "b"
-    else
-        colorOpp = "w"
-    // only pick up pieces for White
-    //if (piece.search(/^b/) !== -1) return false
-    if (game.turn() === colorOpp || (piece.search(new RegExp('^' + colorOpp)) !== -1)) return false
-    var moves = game.moves({
-        square: source,
-        verbose: true,
-    })
+    } else if (event.type === INPUT_EVENT_TYPE.validateMoveInput) {
+        const promo = color === COLOR.black ? '2' : '7'
 
-    if (moves.lenght == 0) return
+        if ((event.squareTo.charAt(1) == "8" || event.squareTo.charAt(1) == "1") && event.piece.charAt(1) === "p" && (event.squareFrom.charAt(1) === promo)) { //check if the move is a pawn promotion
 
-    greySquare(source)
+            var move = event.squareFrom + event.squareTo //define the variable move that will be needed to tell the chess object which move was played
 
-    for (var i = 0; i < moves.length; i++) {
-        greySquare(moves[i].to)
-    }
-}
+            board.showPromotionDialog(event.squareTo, color, (event) => { //function that shows the promotion dialog
 
+                if (event.piece) {
+                    move = move + event.piece[1] //the piece (q,r,b,n) is added to the move
 
-function onDrop(source, target) {
-    removeGreySquares();
-    // see if the move is legal
-    var move = game.move({
-        from: source,
-        to: target,
-        promotion: 'q' // NOTE: always promote to a queen for example simplicity
-    })
+                    board.removeArrows(ARROW_TYPE.pointy)
+                    let prova = chess.move(move) //make the move
 
-    // illegal move
-    if (move === null) return 'snapback'
+                    playAudio(prova)
+                    board.setPosition(chess.fen(), true) //make the animation
 
 
+                    board.addMarker(MARKER_TYPE.square, move[0] + move[1]) //add the square type marker of the last move
+                    board.addMarker(MARKER_TYPE.square, move[2] + move[3]) //add the square type marker of the last move
+                    if (chess.isGameOver()) {
+                        $("#finish").text("Congratulazioni. Hai vinto")
+                    }
+                    else {
+                        getMove(socket, chess, board) //calls the function to get the pc move and update the chessboard
+                    }
 
-}
-var gameId = null
-// update the board position after the piece snap
-// for castling, en passant, pawn promotion
-function onSnapEnd() {
-    board.position(game.fen())
-    console.log(gameId)
+                } else { //if the user didn't clicked any of the piece showd in the promotion dialog
+                    board.setPosition(chess.fen()) //set the position to its original
+                }
+            })
+        }
+        else {
 
-    socket.send(JSON.stringify({ gameId: gameId, fen: game.fen() }))
-}
+            const move = { from: event.squareFrom, to: event.squareTo } //create an object from the squareFrom and squareTo
 
+            try { //need a try catch because chess.js library fires an exception if a move is not valid
 
-var config = {
-    draggable: true,
-    position: 'start',
-    onDragStart: onDragStart,
-    onDrop: onDrop,
-    onSnapEnd: onSnapEnd
-}
-var color = null
-socket.onmessage = function (e) {
-    var data = JSON.parse(e.data)
-    console.log(data)
-    if (data.status == "game terminated") {
-        var turn = game.turn()
-        if (turn == 'b')
-            turn = 'Il bianco'
-        else if (turn == 'w')
-            turn = 'Il nero'
-        alert("Gioco finito. Ha vinto " + turn)
-    }
-    board.orientation(data.color)
-    if (data.color !== undefined)
-        color = data.color
-    if (data.status === "Waiting for a second player")
-        $("#prova").show()
-    else {
-        $("#myBoard").show()
-        $("#prova").hide()
+                result = chess.move(move) //return the object move. It's a valid move
 
-    }
-    gameId = data.gameId
+            }
+            catch (error) {
 
-    //document.cookie = "gameId=" + gameId + "; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+                result = null //the move was not valid
 
-    board.position(data.fen)
-    game.load(data.fen)
-    if (game.game_over()) {
-        socket.send(JSON.stringify({ gameId: gameId, status: "game_over" }))
-        $("#rigioca").show()
+            }
+            if (result) { //if result isn't null
+                this.chessboard.state.moveInputProcess.then(() => {
+                    board.removeArrows(ARROW_TYPE.pointy)
+
+                    board.removeMarkers(MARKER_TYPE.square) //removes the markers of the previous move
+                    playAudio(result)
+                    board.setPosition(chess.fen(), true) //make the animation
+                    $("#pgn").html(chess.pgn());
+
+                    event.chessboard.addMarker(MARKER_TYPE.square, event.squareFrom) //add the square type marker of the last move
+                    event.chessboard.addMarker(MARKER_TYPE.square, event.squareTo) //add the square type marker of the last move
+
+                    if (chess.isGameOver()) {
+                        if (chess.isDraw()) {
+
+                            $("#finish").text("Pareggio. Nessuno vince")
+
+                        }
+                        else {
+
+                            $("#finish").text("Congratulazioni. Hai vinto")
+                        }
+                    }
+                    else {
+                        getMove(socket, chess, board) //calls the function to get the pc move and update the chessboard
+                    }
+
+                })
+            }
+        }
+        return result
     }
 }
+board.enableMoveInput(inputHandler, color) //enable the input for the color of the user

@@ -8,16 +8,22 @@ namespace App\web_socket;
 
 require_once '../../vendor/autoload.php';
 
+use App\models\GamesPvpModel;
 use App\utilities\Jwt;
+use App\models\UserModel;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
 class Chess implements MessageComponentInterface
 {
     private $clients;
+    private UserModel $userModel;
+    private GamesPvpModel $gamesPvpModel;
     public function __construct()
     {
         $this->clients = new \SplObjectStorage;
+        $this->userModel = new UserModel();
+        $this->gamesPvpModel = new GamesPvpModel();
         echo "Server Started\n";
     }
 
@@ -36,11 +42,29 @@ class Chess implements MessageComponentInterface
         $data = json_decode($msg); //decode the message
         $request = $data->request;
         $token = $data->jwt;
-        
-        //echo Jwt::getPayload($token)['user_id'];
 
+        $this->userModel->setId(Jwt::getPayload($token)['user_id']);
+        $this->userModel->setStatus("online");
 
         switch ($request) {
+            case 'home':
+                $this->userModel->setId(Jwt::getPayload($token)['user_id']);
+                $connectionId = $this->userModel->getLast_ConnectionId(); //need to disconnect the device if it exist in $this->clients
+
+                foreach($this->clients as $client){
+                    if($client->resourceId === $connectionId){
+                        $client->send(json_encode(array(
+                            'disconnect' => 'disconnect'
+                        )));
+                        echo "trovato connection id";
+                        break;
+                    }
+                }
+                echo $connectionId;
+                $this->userModel->setLast_ConnectionId($from->resourceId);
+                $this->userModel->updateConnectionId();
+                break;
+
             case 'vsComputer':
                 $fen = '"' . $data->fen . '"';
                 $fileName = "$data->username.txt";
@@ -61,6 +85,7 @@ class Chess implements MessageComponentInterface
     public function onClose(ConnectionInterface $conn)
     {
         $this->clients->detach($conn);
+        $this->userModel->setStatus("offline");
 
         echo "Connection {$conn->resourceId} has disconnected\n";
     }
