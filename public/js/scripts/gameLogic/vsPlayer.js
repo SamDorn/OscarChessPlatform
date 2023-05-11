@@ -3,21 +3,14 @@ import { MARKER_TYPE } from "../../libraries/cm-chessboard/extensions/markers/Ma
 import { ARROW_TYPE } from "../../libraries/cm-chessboard/extensions/arrows/Arrows.js"
 import { initializeChessboard, chess, board, playAudio, drawArraws, getMove } from "./game.js";
 
-var socket = new WebSocket('ws://localhost:8080');
 
 initializeChessboard()
 
 drawArraws()
+
+var color = null
 var result = null
 
-//uses the ternary operator to casually generate the color
-const color = Math.floor(Math.random() * 2) === 0 ? COLOR.black : COLOR.white
-
-board.setOrientation(color) //set the orientation of the board based on the color
-
-//uses the ternary operator to see if the user is black.
-//if it is it send a message to the webSocket server to make the first move
-color === COLOR.black ? getMove(socket, chess, board) : null
 
 /**
  * Handles the input of the user
@@ -59,7 +52,7 @@ function inputHandler(event) {
                     board.addMarker(MARKER_TYPE.square, move[0] + move[1]) //add the square type marker of the last move
                     board.addMarker(MARKER_TYPE.square, move[2] + move[3]) //add the square type marker of the last move
                     if (chess.isGameOver()) {
-                        $("#finish").text("Congratulazioni. Hai vinto")
+                        $("#finish").text("Congratulations. You won")
                     }
                     else {
                         getMove(socket, chess, board) //calls the function to get the pc move and update the chessboard
@@ -93,6 +86,15 @@ function inputHandler(event) {
                     board.setPosition(chess.fen(), true) //make the animation
                     $("#pgn").html(chess.pgn());
 
+                    socket.send(JSON.stringify({
+                        request: 'vsPlayer',
+                        state: 'update',
+                        jwt: jwt,
+                        pgn: chess.pgn(),
+                        move: event.squareFrom + event.squareTo,
+                        id: gameId
+                    }))
+
                     event.chessboard.addMarker(MARKER_TYPE.square, event.squareFrom) //add the square type marker of the last move
                     event.chessboard.addMarker(MARKER_TYPE.square, event.squareTo) //add the square type marker of the last move
 
@@ -108,7 +110,6 @@ function inputHandler(event) {
                         }
                     }
                     else {
-                        getMove(socket, chess, board) //calls the function to get the pc move and update the chessboard
                     }
 
                 })
@@ -117,4 +118,79 @@ function inputHandler(event) {
         return result
     }
 }
-board.enableMoveInput(inputHandler, color) //enable the input for the color of the user
+if (socket.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify({
+        request: 'vsPlayer',
+        jwt: jwt,
+        state: 'new game',
+        color: null,
+        id: gameId
+    }))
+
+}
+else {
+    socket.addEventListener('open', function () {
+        socket.send(JSON.stringify({
+            request: 'vsPlayer',
+            jwt: jwt,
+            state: 'new game',
+            color: null,
+            id: gameId
+        })
+        )
+    })
+}
+var i = 0
+socket.onmessage = function (e) {
+    var data = JSON.parse(e.data)
+    console.log(data)
+    console.log(data.color)
+    try {
+        if(data.status == "ready to play"){
+            $("#board").removeClass("hidden");
+            $(".ring").addClass("hidden");
+        }
+    } catch (error) {
+        console.log(error)
+        
+    }
+    if (i === 0) {
+        color = data.color === 'white' ? COLOR.white : COLOR.black
+        board.setOrientation(color)
+        board.enableMoveInput(inputHandler, color) //enable the input for the color of the user
+        i++
+    }
+    
+    try {
+        chess.loadPgn(data.pgn)
+        board.setPosition(chess.fen(), true)
+        $("#board").removeClass("hidden");
+        $(".ring").addClass("hidden");
+        board.removeMarkers(MARKER_TYPE.square)
+        board.addMarker(MARKER_TYPE.square, data.move[0] + data.move[1])
+        board.addMarker(MARKER_TYPE.square, data.move[2] + data.move[3])
+    } catch (error) {
+
+    }
+    try {
+        board.addMarker(MARKER_TYPE.square, data.last_move[0] + data.last_move[1])
+        board.addMarker(MARKER_TYPE.square, data.last_move[2] + data.last_move[3])
+        
+    } catch (error) {
+        
+    }
+
+    gameId = data.id_game
+
+    
+}
+$(".button").click(function (e) {
+    e.preventDefault();
+    socket.send(JSON.stringify({
+        request: 'vsPlayer',
+        state: 'delete',
+        jwt: jwt
+    }))
+    location.href = "home"
+    
+});

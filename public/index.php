@@ -6,6 +6,7 @@ ini_set("display_errors", 1);
 
 use Dotenv\Dotenv;
 use App\core\Application;
+use App\controllers\GameController;
 use App\controllers\SiteController;
 use App\controllers\UserController;
 use App\controllers\GoogleController;
@@ -29,6 +30,8 @@ $app->router->get('/register', [SiteController::class, 'register']);
 $app->router->get('/verifyEmail', [UserController::class, 'verifyEmail']);
 $app->router->get('/google', [GoogleController::class, 'handleLogin']);
 $app->router->get('/puzzle', [PuzzleController::class, 'puzzleId']);
+$app->router->get('/game/{id}', [GameController::class, 'getGame']);
+
 
 
 

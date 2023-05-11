@@ -8,7 +8,7 @@ namespace App\web_socket;
 
 require_once '../../vendor/autoload.php';
 
-use App\models\GamesPvpModel;
+use App\models\GamesPvpInProgressModel;
 use App\utilities\Jwt;
 use App\models\UserModel;
 use Ratchet\ConnectionInterface;
@@ -18,12 +18,12 @@ class Chess implements MessageComponentInterface
 {
     private $clients;
     private UserModel $userModel;
-    private GamesPvpModel $gamesPvpModel;
+    private GamesPvpInProgressModel $gamesPvpInProgressModel;
     public function __construct()
     {
         $this->clients = new \SplObjectStorage;
         $this->userModel = new UserModel();
-        $this->gamesPvpModel = new GamesPvpModel();
+        $this->gamesPvpInProgressModel = new GamesPvpInProgressModel();
         echo "Server Started\n";
     }
 
@@ -42,27 +42,14 @@ class Chess implements MessageComponentInterface
         $data = json_decode($msg); //decode the message
         $request = $data->request;
         $token = $data->jwt;
-
-        $this->userModel->setId(Jwt::getPayload($token)['user_id']);
-        $this->userModel->setStatus("online");
-
+        if ($token) {
+            $this->userModel->setId(Jwt::getPayload($token)['user_id']);
+            $this->userModel->setStatus("online");
+            $this->updateUser($token, $from);
+        }
         switch ($request) {
             case 'home':
-                $this->userModel->setId(Jwt::getPayload($token)['user_id']);
-                $connectionId = $this->userModel->getLast_ConnectionId(); //need to disconnect the device if it exist in $this->clients
 
-                foreach($this->clients as $client){
-                    if($client->resourceId === $connectionId){
-                        $client->send(json_encode(array(
-                            'disconnect' => 'disconnect'
-                        )));
-                        echo "trovato connection id";
-                        break;
-                    }
-                }
-                echo $connectionId;
-                $this->userModel->setLast_ConnectionId($from->resourceId);
-                $this->userModel->updateConnectionId();
                 break;
 
             case 'vsComputer':
@@ -75,13 +62,107 @@ class Chess implements MessageComponentInterface
                     'move' => $move
                 )));
                 break;
+
             case 'vsPlayer':
-                
+                echo $data->pgn;
+                $this->handlePvp($data, $from);
+                break;
+
             default:
 
                 break;
         }
     }
+
+    private function updateUser($token, $from): void //update the last_ConnectionId and if the user makes a login from another device it disconnects the other
+    {
+        $this->userModel->setId(Jwt::getPayload($token)['user_id']);
+        $connectionId = $this->userModel->getLast_ConnectionId(); //need to disconnect the device if it exist in $this->clients
+
+        if ($connectionId == $from->resourceId)
+            return;
+        foreach ($this->clients as $client) {
+            if ($client->resourceId === $connectionId) {
+                $client->send(json_encode(array(
+                    'disconnect' => 'disconnect'
+                )));
+                break;
+            }
+        }
+        $this->userModel->setLast_ConnectionId($from->resourceId);
+        $this->userModel->updateConnectionId();
+    }
+    private function handlePvp($data, $from): void
+    {
+        $this->gamesPvpInProgressModel->setIdPlayer(Jwt::getPayload($data->jwt)['user_id']);
+
+        switch ($data->state) {
+            case 'new game':
+                if ($this->gamesPvpInProgressModel->isUserInGame()) {
+                    $id = $this->gamesPvpInProgressModel->getIdFromUser();
+                    $this->gamesPvpInProgressModel->setId($id);
+
+                    $from->send(json_encode(array(
+                        'id_game' => $id,
+                        'color' => $this->gamesPvpInProgressModel->getColorById(),
+                        'pgn' => $this->gamesPvpInProgressModel->getPgnFromId() ?? null,
+                        'status' => 'ready to play',
+                        'last_move' => $this->gamesPvpInProgressModel->getLastMove()
+                    )));
+                } else {
+                    if ($this->gamesPvpInProgressModel->getGamesNoSecondPlayer()) {
+                        $this->gamesPvpInProgressModel->insertExistingGame();
+                        $from->send(json_encode(array(
+                            'id_game' => $this->gamesPvpInProgressModel->getId(),
+                            'color' => $this->gamesPvpInProgressModel->getColorById(),
+                            'status' => 'ready to play'
+                        )));
+                        $idUser = $this->gamesPvpInProgressModel->getOtherPlayer();
+                        $this->userModel->setId($idUser);
+                        $opponentConnectionId = $this->userModel->getLast_ConnectionId();
+                        foreach ($this->clients as $client) {
+                            if ($client->resourceId === $opponentConnectionId) {
+                                $client->send(json_encode(array(
+                                    'id_game' => $this->gamesPvpInProgressModel->getId(),
+                                    'status' => 'ready to play'
+                                )));
+                            }
+                        }
+                    } else {
+                        $this->gamesPvpInProgressModel->createGame();
+                        $from->send(json_encode(array(
+                            'id_game' => $this->gamesPvpInProgressModel->getId(),
+                            'color' => $this->gamesPvpInProgressModel->getColorById(),
+                            'status' => 'waiting for a second player'
+                        )));
+                    }
+                }
+                break;
+            case 'update':
+                $this->gamesPvpInProgressModel->setLastMove($data->move);
+                $this->gamesPvpInProgressModel->setPgn($data->pgn);
+                $this->gamesPvpInProgressModel->setId($data->id);
+                $this->gamesPvpInProgressModel->updatePgn();
+                $this->gamesPvpInProgressModel->updateLastMove();
+                $idUser = $this->gamesPvpInProgressModel->getOtherPlayer();
+                $this->userModel->setId($idUser);
+                $opponentConnectionId = $this->userModel->getLast_ConnectionId();
+                foreach ($this->clients as $client) {
+                    if ($client->resourceId === $opponentConnectionId) {
+                        $client->send(json_encode(array(
+                            'pgn' => $this->gamesPvpInProgressModel->getPgn(),
+                            'id_game' => $data->id,
+                            'move' => $data->move
+                        )));
+                    }
+                }
+                break;
+            case 'delete':
+                $this->gamesPvpInProgressModel->deleteGameNoSecondPlayer();
+                break;
+        }
+    }
+
     public function onClose(ConnectionInterface $conn)
     {
         $this->clients->detach($conn);
@@ -121,6 +202,5 @@ class Chess implements MessageComponentInterface
         unlink("../generated_files/$fileName"); //delete the file created by the python script
 
         return $move; //return the move generated
-
     }
 }

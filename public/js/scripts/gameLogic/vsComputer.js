@@ -5,7 +5,7 @@ import { initializeChessboard, chess, board, playAudio, hintClick, drawArraws, g
 
 
 // Create a new WebSocket connection
-var socket = new WebSocket('ws://localhost:8080');
+var socket = new WebSocket('ws://192.168.1.15:8080');
 
 initializeChessboard()
 

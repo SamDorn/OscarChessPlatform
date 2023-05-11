@@ -7,7 +7,7 @@ use Exception;
 
 class UserModel extends Model
 {
-    protected int $id;
+    protected ?int $id;
     protected ?string $username;
     protected ?string $email;
     protected ?string $password;
@@ -30,7 +30,7 @@ class UserModel extends Model
      * @param int $id
      * @return void
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
@@ -99,7 +99,7 @@ class UserModel extends Model
         $this->verificationCode = $verificationCode;
     }
 
-    public function getLast_ConnectionId(): int
+    public function getLast_ConnectionId(): ?int
     {
         $query = "SELECT last_connectionId FROM users WHERE id = :id";
         $stmt = $this->conn->prepare($query);

@@ -56,7 +56,7 @@ class Jwt
      * @return the payload of a token, which is obtained by calling the `getPayload` method of the
      * `Token` class with the provided token as its argument.
      */
-    public static function getPayload(string $token)
+    public static function getPayload(?string $token)
     {
         return Token::getPayload($token);
     }
