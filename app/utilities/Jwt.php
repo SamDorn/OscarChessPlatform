@@ -37,7 +37,6 @@ class Jwt
             if(!Token::validate($token, self::SECRET)){
                 unset($_COOKIE['jwt']);
                 setcookie('jwt', null, -1, '/'); 
-                header("Location: login?error=03");
                 return false;
             }
             else{
@@ -53,11 +52,15 @@ class Jwt
      * @param string token The parameter "token" is a string variable that represents a token. This
      * function is used to get the payload of the token.
      * 
-     * @return the payload of a token, which is obtained by calling the `getPayload` method of the
+     * @return array payload of a token, which is obtained by calling the `getPayload` method of the
      * `Token` class with the provided token as its argument.
      */
-    public static function getPayload(?string $token)
+    public static function getPayload(?string $token): array
     {
         return Token::getPayload($token);
+    }
+    public static function updateTime(string $token): void
+    {
+        setcookie("jwt", $token, time()+ 3600, '/', 'localhost', true, true);
     }
 }

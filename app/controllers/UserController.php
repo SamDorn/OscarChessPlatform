@@ -111,4 +111,9 @@ class UserController extends Controller
             header("Location: home?nv=t");
         }
     }
+    public function getPlayerById(Request $request, array $params): mixed
+    {
+        $this->userModel->setId($params[1]);
+        return json_encode($this->userModel->getUserById());
+    }
 }

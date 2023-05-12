@@ -328,7 +328,7 @@ class UserModel extends Model
      *
      * @return array
      */
-    public function getAll(): mixed
+    public function getAll(): array
     {
         $query = "SELECT username, avatar, status, verified, date FROM users";
         $stmt = $this->conn->prepare($query);
@@ -342,15 +342,15 @@ class UserModel extends Model
      * @param int id  Is an integer representing the unique identifier of a user in the
      * database.
      * 
-     * @return ?array An array containing the user information for the user with the specified ID.
+     * @return array An array containing the user information for the user with the specified ID.
      */
-    public function getUserById(int $id): ?array
+    public function getUserById(): array
     {
-        $query = "SELECT * FROM users where id = :id";
+        $query = "SELECT username, avatar, status, verified, date FROM users where id = :id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id', $this->id);
         $stmt->execute();
         $result = $stmt->fetch();
-        return $result ?? null;
+        return $result == false ? [] : $result;
     }
 }

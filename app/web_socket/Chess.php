@@ -64,7 +64,6 @@ class Chess implements MessageComponentInterface
                 break;
 
             case 'vsPlayer':
-                echo $data->pgn;
                 $this->handlePvp($data, $from);
                 break;
 
@@ -76,6 +75,7 @@ class Chess implements MessageComponentInterface
 
     private function updateUser($token, $from): void //update the last_ConnectionId and if the user makes a login from another device it disconnects the other
     {
+        //JWT::updateTime($token);
         $this->userModel->setId(Jwt::getPayload($token)['user_id']);
         $connectionId = $this->userModel->getLast_ConnectionId(); //need to disconnect the device if it exist in $this->clients
 
@@ -107,7 +107,8 @@ class Chess implements MessageComponentInterface
                         'color' => $this->gamesPvpInProgressModel->getColorById(),
                         'pgn' => $this->gamesPvpInProgressModel->getPgnFromId() ?? null,
                         'status' => 'ready to play',
-                        'last_move' => $this->gamesPvpInProgressModel->getLastMove()
+                        'last_move' => $this->gamesPvpInProgressModel->getLastMove(),
+                        'id_opponent' => $this->gamesPvpInProgressModel->getOtherPlayer()
                     )));
                 } else {
                     if ($this->gamesPvpInProgressModel->getGamesNoSecondPlayer()) {
@@ -115,7 +116,8 @@ class Chess implements MessageComponentInterface
                         $from->send(json_encode(array(
                             'id_game' => $this->gamesPvpInProgressModel->getId(),
                             'color' => $this->gamesPvpInProgressModel->getColorById(),
-                            'status' => 'ready to play'
+                            'status' => 'ready to play',
+                            'id_opponent' => $this->gamesPvpInProgressModel->getOtherPlayer()
                         )));
                         $idUser = $this->gamesPvpInProgressModel->getOtherPlayer();
                         $this->userModel->setId($idUser);
@@ -124,8 +126,10 @@ class Chess implements MessageComponentInterface
                             if ($client->resourceId === $opponentConnectionId) {
                                 $client->send(json_encode(array(
                                     'id_game' => $this->gamesPvpInProgressModel->getId(),
-                                    'status' => 'ready to play'
+                                    'status' => 'ready to play',
+                                    'id_opponent' => Jwt::getPayload($data->jwt)['user_id'],
                                 )));
+                                break;
                             }
                         }
                     } else {
@@ -157,6 +161,11 @@ class Chess implements MessageComponentInterface
                     }
                 }
                 break;
+
+            case 'finish':
+                
+                break;
+
             case 'delete':
                 $this->gamesPvpInProgressModel->deleteGameNoSecondPlayer();
                 break;

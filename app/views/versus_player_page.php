@@ -1,3 +1,7 @@
+<?php
+
+use App\utilities\Jwt;
+?>
 <script src="js/scripts/gameLogic/vsPlayer.js" type="module"></script>
 <script src="js/scripts/web_socket/connection.js"></script>
 <link rel="stylesheet" href="styles/chessboard/cm-chessboard.css">
@@ -129,11 +133,34 @@
         align-items: center;
         height: 100vh;
     }
+
+    h3 {
+        color: #fff000;
+    }
+
+    .img-opponent {
+        width: 50px;
+        height: 50px;
+    }
+
+    .img-player {
+        width: 50px;
+        height: 50px;
+    }
 </style>
 </head>
 
 <body>
+
+    <img src="" alt="" class="img-opponent">
+    <div class="opponent">
+        <h3 class="username-opponent"></h3>
+    </div>
+
     <div id="board" class="hidden"></div>
+    <img src="" alt="" class="hidden img-player">
+    <h3 class="hidden username-player"></h3>
+    <div class="player hidden"></div>
     <div class="ring">
         <p style="margin-top: 53px;">Searching for a player</p>
         <span></span>
@@ -149,6 +176,7 @@
 <script>
     var jwt = "<?= $_COOKIE['jwt'] ?? null ?>"
     var gameId = null
+    var idPlayer = "<?= Jwt::getPayload($_COOKIE['jwt'])['user_id']; ?>"
 </script>
 
 </html>

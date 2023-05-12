@@ -8,8 +8,10 @@ initializeChessboard()
 
 drawArraws()
 
+
 var color = null
 var result = null
+var username = null
 
 
 /**
@@ -100,16 +102,28 @@ function inputHandler(event) {
 
                     if (chess.isGameOver()) {
                         if (chess.isDraw()) {
+                            socket.send(JSON.stringify({
+                                request: 'vsPlayer',
+                                state: 'finish',
+                                jwt: jwt,
+                                pgn: chess.pgn(),
+                                msg: 'draw',
+                                id: gameId
+                            }))
 
                             $("#finish").text("Pareggio. Nessuno vince")
 
-                        }
-                        else {
-
+                        } else {
+                            socket.send(JSON.stringify({
+                                request: 'vsPlayer',
+                                state: 'finish',
+                                jwt: jwt,
+                                pgn: chess.pgn(),
+                                msg: 'win',
+                                id: gameId
+                            }))
                             $("#finish").text("Congratulazioni. Hai vinto")
                         }
-                    }
-                    else {
                     }
 
                 })
@@ -144,15 +158,36 @@ var i = 0
 socket.onmessage = function (e) {
     var data = JSON.parse(e.data)
     console.log(data)
-    console.log(data.color)
     try {
-        if(data.status == "ready to play"){
-            $("#board").removeClass("hidden");
-            $(".ring").addClass("hidden");
+        if (data.status == "ready to play") {
+            $.ajax({
+                type: "GET",
+                url: "player/" + data.id_opponent,
+                dataType: "json",
+                success: function (response) {
+                    console.log(response)
+                    if (data.color === 'white') {
+                        chess.header("White", username, 'Black', response.username)
+                    } else {
+                        console.log(response.username)
+                        chess.header("White", response.username, 'Black', username)
+                    }
+                    console.log(chess.pgn())
+                    $("#board").removeClass("hidden");
+                    $(".ring").remove();
+                    $(".username-opponent").html(response.username);
+                    $(".img-opponent").attr("src", response.avatar);
+                    $(".img-player").removeClass("hidden");
+                    $(".username-player").removeClass("hidden");
+                    $("#board").removeClass("hidden");
+                }
+            });
+
+
         }
     } catch (error) {
         console.log(error)
-        
+
     }
     if (i === 0) {
         color = data.color === 'white' ? COLOR.white : COLOR.black
@@ -160,12 +195,34 @@ socket.onmessage = function (e) {
         board.enableMoveInput(inputHandler, color) //enable the input for the color of the user
         i++
     }
-    
+
     try {
         chess.loadPgn(data.pgn)
         board.setPosition(chess.fen(), true)
         $("#board").removeClass("hidden");
         $(".ring").addClass("hidden");
+        if (chess.isGameOver()) {
+            if (chess.isDraw()) {
+                socket.send(JSON.stringify({
+                    request: 'vsPlayer',
+                    state: 'finish',
+                    jwt: jwt,
+                    pgn: chess.pgn(),
+                    msg: 'draw',
+                    id: gameId
+                }))
+            } else {
+                socket.send(JSON.stringify({
+                    request: 'vsPlayer',
+                    state: 'finish',
+                    jwt: jwt,
+                    pgn: chess.pgn(),
+                    msg: 'lost',
+                    id: gameId
+                }))
+            }
+
+        }
         board.removeMarkers(MARKER_TYPE.square)
         board.addMarker(MARKER_TYPE.square, data.move[0] + data.move[1])
         board.addMarker(MARKER_TYPE.square, data.move[2] + data.move[3])
@@ -175,14 +232,14 @@ socket.onmessage = function (e) {
     try {
         board.addMarker(MARKER_TYPE.square, data.last_move[0] + data.last_move[1])
         board.addMarker(MARKER_TYPE.square, data.last_move[2] + data.last_move[3])
-        
+
     } catch (error) {
-        
+
     }
 
     gameId = data.id_game
 
-    
+
 }
 $(".button").click(function (e) {
     e.preventDefault();
@@ -192,5 +249,17 @@ $(".button").click(function (e) {
         jwt: jwt
     }))
     location.href = "home"
-    
-});
+
+})
+$.ajax({
+    type: "GET",
+    url: "player/" + idPlayer,
+    dataType: "json",
+    success: function (response) {
+        console.log(response)
+        $(".username-player").html(response.username);
+        $(".img-player").attr("src", response.avatar);
+        username = response.username
+    }
+})
+
