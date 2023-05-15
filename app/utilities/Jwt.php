@@ -10,7 +10,7 @@ class Jwt
 {
 
     private const SECRET = '0$c@rCh3$$Pl@tf0rm';
-    private const ISSUER = 'localhost';
+    private const ISSUER = '192.168.1.16';
     /**
      * Creates a JWT token for a user and sets it as a cookie with a one hour expiration
      * time.
@@ -21,7 +21,7 @@ class Jwt
     public static function createToken(UserModel $userModel): void
     {
         $token = Token::create($userModel->getId(), self::SECRET, time()+ 3600, self::ISSUER);
-        setcookie("jwt", $token, time()+ 3600, '/', 'localhost', true, true);
+        setcookie("jwt", $token, time()+ 3600, '/', '', true, true);
     }
     /**
      * Validates a jwt and if the jwt isn't valid it redirects the user
@@ -45,6 +45,11 @@ class Jwt
         }
         return false;
         
+    }
+    public static function deleteToken(): void
+    {
+        unset($_COOKIE['jwt']);
+        setcookie('jwt', null, -1, '/');
     }
     /**
      * Returns the payload of a given token

@@ -62,6 +62,13 @@ class GamesPvpInProgressModel extends Model
         $stmt->bindValue(":id_player_white", $this->randomColor());
         $stmt->execute();
     }
+    public function endGame()
+    {
+        $query = "DELETE FROM games_pvp_in_progress WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(":id", $this->id);
+        $stmt->execute();
+    }
     /**
      * Check if the user is already in an existing game
      *
@@ -201,7 +208,7 @@ class GamesPvpInProgressModel extends Model
      *
      * @return integer id of the player
      */
-    public function getOtherPlayer(): int
+    public function getOtherPlayer(): ?int
     {
         $query = "SELECT id_player1, id_player2 FROM games_pvp_in_progress WHERE id = :id";
         $stmt = $this->conn->prepare($query);

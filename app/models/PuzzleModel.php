@@ -11,10 +11,6 @@ class PuzzleModel extends Model
     private $elo;
     public $keywords;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
     public function setId($id)
     {
         $this->id = $id;

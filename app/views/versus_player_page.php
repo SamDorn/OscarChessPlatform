@@ -1,6 +1,9 @@
 <?php
 
 use App\utilities\Jwt;
+
+if (!$isLoggedIn)
+    header("Location: login?po");
 ?>
 <script src="js/scripts/gameLogic/vsPlayer.js" type="module"></script>
 <script src="js/scripts/web_socket/connection.js"></script>
@@ -8,9 +11,56 @@ use App\utilities\Jwt;
 <link rel="stylesheet" href="styles/chessboard/promotion-dialog.css">
 <link rel="stylesheet" href="styles/chessboard/arrows.css">
 <style>
+    @media only screen and (min-width: 601px) {
+        #board {
+            width: 100%;
+            max-width: 800px;
+        }
+    }
+    @media only screen and (max-width: 600px) {
+        #board {
+            width: 55%;
+            min-width: 320px;
+        }
+    }
+    /* INIZIO MODAL */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 50% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    /* FINE MODAL */
     body {
         background: #262626;
-        overflow-y: hidden;
     }
 
     .ring {
@@ -91,9 +141,6 @@ use App\utilities\Jwt;
         }
     }
 
-    #board {
-        width: 800px;
-    }
 
     .hidden {
         display: none;
@@ -147,19 +194,46 @@ use App\utilities\Jwt;
         width: 50px;
         height: 50px;
     }
+
+    .opponent img {
+        display: inline;
+    }
+
+    .opponent h3 {
+        display: inline-block;
+    }
+
+    .img-player {
+        display: inline;
+    }
+
+    .player h3 {
+        display: inline-block;
+    }
 </style>
 </head>
 
 <body>
 
-    <img src="" alt="" class="img-opponent">
-    <div class="opponent">
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2 id="title-modal" style="text-align: center;">Modal Title</h2>
+            <a href="vsPlayer" class="button" style="text-align:center">New game</a>
+            <a href="" class="button" id="review-game" style="text-align:center">Review the game</a>
+        </div>
+    </div>
+
+    <div class="opponent hidden">
+        <img src="" alt="" class="img-opponent">
         <h3 class="username-opponent"></h3>
     </div>
 
     <div id="board" class="hidden"></div>
-    <img src="" alt="" class="hidden img-player">
-    <h3 class="hidden username-player"></h3>
+    <div class="player hidden">
+        <img src="" alt="" class="hidden img-player">
+        <h3 class="hidden username-player"></h3>
+    </div>
+
     <div class="player hidden"></div>
     <div class="ring">
         <p style="margin-top: 53px;">Searching for a player</p>
@@ -177,6 +251,11 @@ use App\utilities\Jwt;
     var jwt = "<?= $_COOKIE['jwt'] ?? null ?>"
     var gameId = null
     var idPlayer = "<?= Jwt::getPayload($_COOKIE['jwt'])['user_id']; ?>"
+    /**
+     * INIZIO MODAL
+     */
+
+    
 </script>
 
 </html>

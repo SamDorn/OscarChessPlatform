@@ -20,10 +20,6 @@ class UserModel extends Model
     protected ?string $verificationCode;
     protected ?string $date;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
     /**
      * Undocumented function
      *

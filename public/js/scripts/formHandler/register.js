@@ -45,6 +45,10 @@ function checkUsernameAjax() {
             success: function (data) {
                 console.log(data)
                 $("#errorUsername").text(data)
+                if(data === "Username available")
+                    $("#errorUsername").css("color", "green");
+                else
+                    $("#errorUsername").css("color", "red")
                 canSubmit()
             }
         })

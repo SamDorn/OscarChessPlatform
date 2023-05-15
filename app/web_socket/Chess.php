@@ -8,22 +8,28 @@ namespace App\web_socket;
 
 require_once '../../vendor/autoload.php';
 
-use App\models\GamesPvpInProgressModel;
 use App\utilities\Jwt;
 use App\models\UserModel;
 use Ratchet\ConnectionInterface;
+use App\models\FinishedGamesModel;
 use Ratchet\MessageComponentInterface;
+use App\models\GamesPveInProgressModel;
+use App\models\GamesPvpInProgressModel;
 
 class Chess implements MessageComponentInterface
 {
     private $clients;
     private UserModel $userModel;
     private GamesPvpInProgressModel $gamesPvpInProgressModel;
+    private GamesPveInProgressModel $gamesPveInProgressModel;
+    private FinishedGamesModel $finishedGamesModel;
     public function __construct()
     {
         $this->clients = new \SplObjectStorage;
         $this->userModel = new UserModel();
         $this->gamesPvpInProgressModel = new GamesPvpInProgressModel();
+        $this->gamesPveInProgressModel = new GamesPveInProgressModel();
+        $this->finishedGamesModel = new FinishedGamesModel();
         echo "Server Started\n";
     }
 
@@ -44,8 +50,9 @@ class Chess implements MessageComponentInterface
         $token = $data->jwt;
         if ($token) {
             $this->userModel->setId(Jwt::getPayload($token)['user_id']);
+            $this->updateUser($from);
+            $this->userModel->setLast_ConnectionId($from->resourceId);
             $this->userModel->setStatus("online");
-            $this->updateUser($token, $from);
         }
         switch ($request) {
             case 'home':
@@ -56,11 +63,25 @@ class Chess implements MessageComponentInterface
                 $fen = '"' . $data->fen . '"';
                 $fileName = "$data->username.txt";
                 $skill = $data->skill;
+                if (!isset($token)) {
+                    $move = $this->getMove($fileName, $fen, $skill);
 
-                $move = $this->getMove($fileName, $fen, $skill);
-                $from->send(json_encode(array(
-                    'move' => $move
-                )));
+                    $from->send(json_encode(array(
+                        'move' => $move,
+                        'best_move' => true
+                    )));
+                } else {
+                    $move = $this->getMove($fileName, $fen, $skill);
+
+                    $from->send(json_encode(array(
+                        'move' => $move
+                    )));
+                }
+
+
+
+                //$this->handlePve($data, $from, $fileName, $fen, $skill);
+
                 break;
 
             case 'vsPlayer':
@@ -73,10 +94,57 @@ class Chess implements MessageComponentInterface
         }
     }
 
-    private function updateUser($token, $from): void //update the last_ConnectionId and if the user makes a login from another device it disconnects the other
+
+    /**
+     * TO REDISIGN
+     *
+     * @param [type] $data
+     * @param [type] $from
+     * @param [type] $fileName
+     * @param [type] $fen
+     * @param [type] $skill
+     * @return void
+     */
+    private function handlePve($data, $from, $fileName, $fen, $skill): void
     {
-        //JWT::updateTime($token);
-        $this->userModel->setId(Jwt::getPayload($token)['user_id']);
+        if ($data->jwt) {
+            $this->gamesPveInProgressModel->setIdPlayer(Jwt::getPayload($data->jwt)['user_id']);
+            $this->gamesPveInProgressModel->setSkill($data->skill);
+            switch ($data->state) {
+                case 'newGame':
+                    if ($this->gamesPveInProgressModel->isUserInGame()) {
+                        $from->send(json_encode(array(
+                            'pgn' => $this->gamesPveInProgressModel->getPgn(),
+                            'move' => $this->gamesPveInProgressModel->getLastMove(),
+                            'color' => $this->gamesPveInProgressModel->getColor()
+                        )));
+                    } else {
+                        $pgn = isset($data->pgn) ? $data->pgn : null;
+                        if ($pgn) {
+                            $this->gamesPveInProgressModel->createGame(Jwt::getPayload($data->jwt)['user_id']);
+                            $from->send(json_encode(array(
+                                'pgn' => $this->getMove($fileName, $fen, $skill)
+                            )));
+                        } else {
+                            $this->gamesPveInProgressModel->createGame(null);
+                        }
+                    }
+                    break;
+
+                case 'update':
+                    $this->gamesPveInProgressModel->setPgn($data->pgn);
+                    $this->gamesPveInProgressModel->setLastMove($data->move);
+                    $this->gamesPveInProgressModel->updateGame();
+                    $this->getMove($fen, $fileName, $skill);
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        }
+    }
+    private function updateUser($from): void //update the last_ConnectionId and if the user makes a login from another device it disconnects the other
+    {
         $connectionId = $this->userModel->getLast_ConnectionId(); //need to disconnect the device if it exist in $this->clients
 
         if ($connectionId == $from->resourceId)
@@ -163,7 +231,15 @@ class Chess implements MessageComponentInterface
                 break;
 
             case 'finish':
-                
+                $msg = $data->msg;
+                $this->gamesPvpInProgressModel->setId($data->id);
+                $this->gamesPvpInProgressModel->endGame();
+                if ($msg !== 'draw') {
+                    $this->finishedGamesModel->setId($data->id);
+                    $this->finishedGamesModel->setIdPlayer(Jwt::getPayload($data->jwt)['user_id']);
+                    $this->finishedGamesModel->setWinner();
+                }
+
                 break;
 
             case 'delete':
@@ -175,6 +251,7 @@ class Chess implements MessageComponentInterface
     public function onClose(ConnectionInterface $conn)
     {
         $this->clients->detach($conn);
+        $this->userModel->setLast_ConnectionId($conn->resourceId);
         $this->userModel->setStatus("offline");
 
         echo "Connection {$conn->resourceId} has disconnected\n";

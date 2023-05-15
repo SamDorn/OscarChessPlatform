@@ -2,3 +2,9 @@
 02 = problem with sending the email to the user
 03 = problem with the jwt token
 04 = problem with the registration, mising or invalid fields
+
+wc = wrong credential
+we = wrong email
+ese = error sending email
+po = player need to be logged in order to play online
+de = login from a different device has been made

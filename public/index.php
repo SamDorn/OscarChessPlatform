@@ -2,7 +2,6 @@
 
 require_once '../vendor/autoload.php';
 
-ini_set("display_errors", 1);
 
 use Dotenv\Dotenv;
 use App\core\Application;
@@ -27,22 +26,13 @@ $app->router->get('/vsPlayer', [SiteController::class, 'vsPlayer']);
 $app->router->get('/puzzles', [SiteController::class, 'puzzles']);
 $app->router->get('/login', [SiteController::class, 'login']);
 $app->router->get('/register', [SiteController::class, 'register']);
+$app->router->get('/review/{id}', [SiteController::class, 'review']);
 $app->router->get('/verifyEmail', [UserController::class, 'verifyEmail']);
 $app->router->get('/google', [GoogleController::class, 'handleLogin']);
 $app->router->get('/puzzle', [PuzzleController::class, 'puzzleId']);
 $app->router->get('/game/{id}', [GameController::class, 'getGame']);
 $app->router->get('/player/{id}', [UserController::class, 'getPlayerById']);
-$app->router->get('/prova', function(){
-    $url = "https://lh3.googleusercontent.com/a/AGNmyxa9DTCOYMA41MODKMyT23K5vzgkBU1anA9gy_o=s96-c";
-    $filename = basename($url);
-    $img = file_get_contents($url);
-    
-    $folder_path = Application::$ROOT_DIR . "/app/images/$filename.png";
-
-    file_put_contents($folder_path, $img);
-});
-
-
+$app->router->get('/logout', [UserController::class, 'logout']);
 
 
 

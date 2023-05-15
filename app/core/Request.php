@@ -16,6 +16,18 @@ class Request
         $params = array();
         $path = trim($_SERVER['REQUEST_URI'], '/');
 
+        // $this->routes[
+        //     'get' => [
+        //         '/home', [SiteController::class, home],
+        //         '/login', [SiteController::class, login],
+        //         'player/{id}', [SiteController::class, player]
+        //     ]
+        // ]
+        /**
+         * If the preg_match was successfull $matches will contain an array of
+         * 2 element $matches = ['/player', [42]]. Since the
+         * parameter is needed is unset and left only with the parameter
+         */
         
         foreach ($routes[$this->getMethod()] as $route => $handler) {
             if (preg_match("%^$route%", $path, $matches) === 1) {

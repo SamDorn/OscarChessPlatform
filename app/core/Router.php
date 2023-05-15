@@ -6,7 +6,6 @@ class Router
 {
     private Controller $controller;
     private Request $request;
-    public Response $response;
     public array $routes = [];
     public function __construct(Request $request)
     {
@@ -66,7 +65,7 @@ class Router
 
         // Throws a 404 error if it doesn't exist and render the view
         if (!$callback) {
-            Application::$app->response->setStatusCode(404);
+            http_response_code(404);
 
             $this->controller = new Controller();
             return $this->controller->render("_404");

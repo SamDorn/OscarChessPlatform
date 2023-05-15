@@ -33,18 +33,17 @@ class UserController extends Controller
             if ($response === "User added correctly in the database") {
                 $response = Email::sendEmail($this->userModel->getEmail(), "normal", $this->userModel->getVerificationCode());
                 if($response === 'problem with sending the email'){
-                    echo "problem";
-                    //header("Location: registartion?error=02");
+                    header("Location: login?ese");
                 }
-                //header("Location: login");
+                header("Location: login");
 
             } else {
-                echo "problem database";
-                //header("Location: registartion");
+                http_response_code(505);
+                $this->render("_505");
             }
         }
         else{
-            echo "problem validate";
+            header("Location: register?we");
         }
     }
 
@@ -64,11 +63,16 @@ class UserController extends Controller
                 Jwt::createToken($this->userModel);
                 header("Location: home");
             } else
-                header("Location: login?wc=1");
+                header("Location: login?wc");
         } catch (\Exception) {
 
-            echo "Qualcosa è andato storto";
+            header("Location: login?ee");
         }
+    }
+    public function logout(): void
+    {
+        Jwt::deleteToken();
+        header("Location: home");
     }
 
     /**

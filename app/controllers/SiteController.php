@@ -2,6 +2,7 @@
 
 namespace App\controllers;
 
+use App\core\Request;
 use App\core\Controller;
 
 class SiteController extends Controller
@@ -63,5 +64,9 @@ class SiteController extends Controller
     public function api(): string
     {
         return $this->render('api_page');
+    }
+    public function review(Request $request, array $params): string
+    {
+        return $this->render('review_page', $params);
     }
 }

@@ -88,6 +88,10 @@ function inputHandler(event) {
                     board.setPosition(chess.fen(), true) //make the animation
                     $("#pgn").html(chess.pgn());
 
+                    /**
+                     * Send a message to the webSocket server telling to update the game and to send the
+                     * move to the other player
+                     */
                     socket.send(JSON.stringify({
                         request: 'vsPlayer',
                         state: 'update',
@@ -100,8 +104,13 @@ function inputHandler(event) {
                     event.chessboard.addMarker(MARKER_TYPE.square, event.squareFrom) //add the square type marker of the last move
                     event.chessboard.addMarker(MARKER_TYPE.square, event.squareTo) //add the square type marker of the last move
 
+                    /**
+                     * After the player makes a move it is impossible to lose so if te game is finished
+                     * it will be either a draw or a win for the player
+                     */
                     if (chess.isGameOver()) {
                         if (chess.isDraw()) {
+                            console.log("pareggio")
                             socket.send(JSON.stringify({
                                 request: 'vsPlayer',
                                 state: 'finish',
@@ -110,10 +119,12 @@ function inputHandler(event) {
                                 msg: 'draw',
                                 id: gameId
                             }))
+                            modal.style.display = "block";
+                            $("#title-modal").html("You drew:<br>You are a not a winner nor a loser");
 
-                            $("#finish").text("Pareggio. Nessuno vince")
 
                         } else {
+                            console.log("vittoria")
                             socket.send(JSON.stringify({
                                 request: 'vsPlayer',
                                 state: 'finish',
@@ -122,7 +133,8 @@ function inputHandler(event) {
                                 msg: 'win',
                                 id: gameId
                             }))
-                            $("#finish").text("Congratulazioni. Hai vinto")
+                            modal.style.display = "block";
+                            $("#title-modal").html("You won:<br>You are a winner");
                         }
                     }
 
@@ -132,6 +144,11 @@ function inputHandler(event) {
         return result
     }
 }
+/**
+ * Every time the page is refreshed it will send a message with 
+ * the request of a new game. The server will be able to tell if the
+ * player is already in an existing match or if he isn't
+ */
 if (socket.readyState === WebSocket.OPEN) {
     socket.send(JSON.stringify({
         request: 'vsPlayer',
@@ -154,22 +171,32 @@ else {
         )
     })
 }
-var i = 0
+var i = 0 // counter used to set the orientation of the board
+/**
+ * This portion of the code handles when the server sends a message and the message is 
+ * arrived
+ * @param {CallableFunction} e 
+ */
 socket.onmessage = function (e) {
     var data = JSON.parse(e.data)
+
+    gameId = data.id_game
     console.log(data)
     try {
-        if (data.status == "ready to play") {
+        if (data.status == "ready to play") { // this message is sent if the player was already in a game or a second player joined his game
+            /**
+             * Makes an ajax request to retriev information about the opponent. An id of the opponent
+             * is sent at the beginning of a match.
+             * Sets the image and username and the headers for the pgn of the game
+             */
             $.ajax({
                 type: "GET",
                 url: "player/" + data.id_opponent,
                 dataType: "json",
                 success: function (response) {
-                    console.log(response)
                     if (data.color === 'white') {
                         chess.header("White", username, 'Black', response.username)
                     } else {
-                        console.log(response.username)
                         chess.header("White", response.username, 'Black', username)
                     }
                     console.log(chess.pgn())
@@ -180,6 +207,8 @@ socket.onmessage = function (e) {
                     $(".img-player").removeClass("hidden");
                     $(".username-player").removeClass("hidden");
                     $("#board").removeClass("hidden");
+                    $(".opponent").removeClass("hidden");
+                    $(".player").removeClass("hidden");
                 }
             });
 
@@ -189,39 +218,36 @@ socket.onmessage = function (e) {
         console.log(error)
 
     }
+    /**
+     * THe orientation and the enable of the move needs to be done only one time
+     */
     if (i === 0) {
+        $("#review-game").attr("href", "recap/" + gameId);
         color = data.color === 'white' ? COLOR.white : COLOR.black
         board.setOrientation(color)
         board.enableMoveInput(inputHandler, color) //enable the input for the color of the user
         i++
     }
 
+    /**
+     * Handles the position and the chess object. Needs to be wrapped in a try catch beacuse
+     * the pgn is not sent if the player is seatching another player resulting in an exception 
+     * thrown by the chess object
+     */
     try {
         chess.loadPgn(data.pgn)
         board.setPosition(chess.fen(), true)
         $("#board").removeClass("hidden");
         $(".ring").addClass("hidden");
         if (chess.isGameOver()) {
-            if (chess.isDraw()) {
-                socket.send(JSON.stringify({
-                    request: 'vsPlayer',
-                    state: 'finish',
-                    jwt: jwt,
-                    pgn: chess.pgn(),
-                    msg: 'draw',
-                    id: gameId
-                }))
-            } else {
-                socket.send(JSON.stringify({
-                    request: 'vsPlayer',
-                    state: 'finish',
-                    jwt: jwt,
-                    pgn: chess.pgn(),
-                    msg: 'lost',
-                    id: gameId
-                }))
-            }
 
+            if (chess.isCheckmate()) {
+                modal.style.display = "block";
+                $("#title-modal").html("You lost:<br>You are a loser");
+            } else {
+                modal.style.display = "block";
+                $("#title-modal").html("You drew:<br>You are a not a winner nor a loser");
+            }
         }
         board.removeMarkers(MARKER_TYPE.square)
         board.addMarker(MARKER_TYPE.square, data.move[0] + data.move[1])
@@ -237,10 +263,13 @@ socket.onmessage = function (e) {
 
     }
 
-    gameId = data.id_game
 
 
 }
+/**
+ * Sends a socket message telling the server to delete the game the player created 
+ * Mostly used if the player is wating for a long time
+ */
 $(".button").click(function (e) {
     e.preventDefault();
     socket.send(JSON.stringify({
@@ -251,6 +280,10 @@ $(".button").click(function (e) {
     location.href = "home"
 
 })
+/**
+ * Get the informaton about the player himself. They are not visible until a 
+ * player has been found
+ */
 $.ajax({
     type: "GET",
     url: "player/" + idPlayer,
@@ -262,4 +295,19 @@ $.ajax({
         username = response.username
     }
 })
+var modal = document.getElementById("modal");
+
+
+
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+$(selector).click(function (e) {
+    e.preventDefault();
+
+});
 

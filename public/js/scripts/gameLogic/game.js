@@ -234,7 +234,8 @@ export function getMove(socket, chess, board) {
 
     socket.onmessage = function (e) {
         let object = JSON.parse(e.data)
-        let move = chess.move(object.move)
+        var move = null
+        setTimeout(() => { move = chess.move(object.move) }, 1500)
         setTimeout(() => { board.setPosition(chess.fen(), true) }, 1500)
         setTimeout(() => { board.removeMarkers(MARKER_TYPE.square) }, 1500) //removes the markers of the previous move
 

@@ -3,34 +3,34 @@
 <link rel="stylesheet" href="styles/chessboard/arrows.css">
 <script src="js/scripts/gameLogic/puzzles.js" type="module"></script>
 <style>
-    @media only screen and (max-width: 600px) {
-        #board {
-            width: 350px;
-        }
-
-        .button-group {
-            flex-direction: column;
-        }
-    }
-
-    /* For PCs */
     @media only screen and (min-width: 601px) {
         #board {
-            width: 600px;
+            width: 100%;
+            max-width: 800px;
         }
-
         .button-group {
             flex-direction: row;
             justify-content: center;
         }
     }
-
+    @media only screen and (max-width: 600px) {
+        #board {
+            width: 55%;
+            min-width: 320px;
+        }
+        
+    }
+    #board {
+        width: 45%;
+        display: inline-grid;
+    }
     body {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         font-family: Arial, sans-serif;
+        background-color: #262626;
     }
 
     .success {
@@ -49,156 +49,73 @@
     }
 
     a {
-        text-align: center;
         display: inline-block;
-        width: 140px;
-        padding: 10px 20px;
-        margin: 10px;
-        font-size: 18px;
-        font-weight: bold;
+        padding: 0.46em 1.6em;
+        border: 0.1em solid #000000;
+        margin: 0 0.2em 0.2em 0;
+        border-radius: 0.12em;
+        box-sizing: border-box;
         text-decoration: none;
-        border: 2px solid black;
-        border-radius: 10px;
-        color: #333335;
+        font-weight: 300;
+        color: #000000;
+        text-shadow: 0 0.04em 0.04em rgba(0, 0, 0, 0.35);
+        background-color: #fff000;
+        text-align: center;
+        transition: all 0.15s;
+        letter-spacing: 2px;
+        background-color: #fff000;
+        font-family: 'sans-serif';
+        cursor: pointer;
     }
 
-    a:hover {
-        background-color: #000;
-        color: #fff;
-    }
 
     h2 {
         text-align: center;
+        color: white;
+        font-size: 30px;
     }
 
-    button {
-        text-align: center;
-        display: inline-block;
-        width: 140px;
-        padding: 10px 20px;
-        margin: 10px;
-        font-size: 18px;
-        font-weight: bold;
-        text-decoration: none;
-        border: 2px solid black;
-        border-radius: 10px;
-        color: #333335;
-        background-color: #fff;
-        cursor: pointer;
-    }
 
-    button:hover {
-        cursor: pointer;
-        background-color: #000;
-        color: #fff;
-    }
-
-    #hint:hover {
-        cursor: pointer;
-        background-color: #000;
-        color: #fff;
-    }
 
     #player {
         font-size: 3rem;
         color: #000;
 
     }
-
-    .loading {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
+    .secondary-button {
+        padding: 30px 60px;
         font-size: 24px;
-        font-weight: bold;
-        color: #000;
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
     }
-
-    .dot {
-        margin: 0 5px;
-        opacity: 0;
-        animation-name: dots;
-        animation-duration: 1.5s;
-        animation-iteration-count: infinite;
-        animation-timing-function: linear;
-    }
-
-    .dot-1,
-    .dot-2,
-    .dot-3 {
-        opacity: 0;
-        animation-name: dots;
-        animation-duration: 1.5s;
-        animation-iteration-count: infinite;
-        animation-timing-function: linear;
-    }
-
-    .dot-2 {
-        animation-delay: 0.5s;
-    }
-
-    .dot-3 {
-        animation-delay: 1s;
-    }
-
-    .remove {
-        display: none;
-    }
-
-    @keyframes dots {
-        0% {
-            opacity: 0;
-        }
-
-        25% {
-            opacity: 1;
-        }
-
-        50% {
-            opacity: 0;
-        }
-
-        75% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 0;
-        }
+    .secondary-button:hover{
+        box-shadow: 0 0 10px #1a98c1;
     }
 </style>
 </head>
 
 <body>
     <h2 id="title">Daily puzzle</h2>
-    <div>
+    
         <div id="board"></div>
-    </div>
-    <div id="player" st></div>
+    
+    <div id="player" style="font-size: 30px; color:white"></div>
     <div id="state"></div>
-    <button id="hint">Mostra soluzione</button>
+    <a id="hint" class="secondary-button">Mostra soluzione</a>
     <h2>Scegli una categoria di problemi</h2>
     <div class="button-group">
         <div>
-            <button id="opening">Apertura</button>
-            <button id="endgame">Finale</button>
+            <a id="opening" class="secondary-button" style="font-size: 2rem;">Apertura</a>
+            <a id="endgame" class="secondary-button" style="font-size: 2rem;">Finale</a>
         </div>
         <div>
-            <button id="middlegame">Mediogioco</button>
+            <a id="middlegame" class="secondary-button" style="font-size: 2rem;">Mediogioco</a><br><br><br>
         </div>
     </div>
-    <a href="home">Torna al menu</a>
-    <div id="loading" class="loading remove">
-        <span>Loading</span>
-        <span class="dot-1">.</span>
-        <span class="dot-2">.</span>
-        <span class="dot-3">.</span>
-    </div>
+    <a href="home" class="secondary-button">Torna al menu</a>
 
 </body>
 <script>
