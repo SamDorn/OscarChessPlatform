@@ -213,7 +213,7 @@ export function getMove(socket, chess, board) {
             request: "vsComputer",
             username: sessionId,
             fen: chess.fen(),
-            skill: 20,
+            skill: 0,
             jwt: jwt
         }))
 
@@ -224,7 +224,7 @@ export function getMove(socket, chess, board) {
                 request: "vsComputer",
                 username: sessionId,
                 fen: chess.fen(),
-                skill: 20,
+                skill: 0,
                 jwt: jwt
             })
             )

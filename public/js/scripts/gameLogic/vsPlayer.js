@@ -57,7 +57,7 @@ function inputHandler(event) {
                         $("#finish").text("Congratulations. You won")
                     }
                     else {
-                        getMove(socket, chess, board) //calls the function to get the pc move and update the chessboard
+                        //getMove(socket, chess, board) //calls the function to get the pc move and update the chessboard
                     }
 
                 } else { //if the user didn't clicked any of the piece showd in the promotion dialog
@@ -306,8 +306,4 @@ window.onclick = function (event) {
         modal.style.display = "none";
     }
 }
-$(selector).click(function (e) {
-    e.preventDefault();
-
-});
 

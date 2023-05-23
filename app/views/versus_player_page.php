@@ -251,9 +251,7 @@ if (!$isLoggedIn)
     var jwt = "<?= $_COOKIE['jwt'] ?? null ?>"
     var gameId = null
     var idPlayer = "<?= Jwt::getPayload($_COOKIE['jwt'])['user_id']; ?>"
-    /**
-     * INIZIO MODAL
-     */
+
 
     
 </script>

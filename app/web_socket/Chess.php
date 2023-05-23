@@ -45,9 +45,10 @@ class Chess implements MessageComponentInterface
     public function onMessage(ConnectionInterface $from, $msg)
     {
 
-        $data = json_decode($msg); //decode the message
-        $request = $data->request;
-        $token = $data->jwt;
+
+        $data =  json_decode($msg); //decode the message
+        $request = htmlspecialchars($data->request);
+        $token = htmlspecialchars($data->jwt);
         if ($token) {
             $this->userModel->setId(Jwt::getPayload($token)['user_id']);
             $this->updateUser($from);

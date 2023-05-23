@@ -1,4 +1,4 @@
-var socket = new WebSocket('ws://192.168.1.16:8080')
+var socket = new WebSocket('ws://localhost:8080')
 function connect(request){
     if (socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({
