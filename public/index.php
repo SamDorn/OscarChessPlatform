@@ -20,6 +20,9 @@ $app = new Application(dirname(__DIR__));
 associated with a specific controller method that will handle the request and return the appropriate
 response. For example, when a user navigates to the '/home' route, the 'home' method in the
 'SiteController' class will be called to handle the request and return the appropriate response. */
+$app->router->get('/', function(){
+    header("Location: home");
+});
 $app->router->get('/home', [SiteController::class, 'home']);
 $app->router->get('/vsComputer', [SiteController::class, 'vsComputer']);
 $app->router->get('/vsPlayer', [SiteController::class, 'vsPlayer']);

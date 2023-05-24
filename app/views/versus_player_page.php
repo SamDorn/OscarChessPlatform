@@ -17,12 +17,14 @@ if (!$isLoggedIn)
             max-width: 800px;
         }
     }
+
     @media only screen and (max-width: 600px) {
         #board {
             width: 55%;
             min-width: 320px;
         }
     }
+
     /* INIZIO MODAL */
     .modal {
         display: none;
@@ -210,6 +212,28 @@ if (!$isLoggedIn)
     .player h3 {
         display: inline-block;
     }
+
+    #surrender-dialog,
+    #draw-dialog, #draw-accept-dialog  {
+        position: absolute;
+        top: calc(50% - 60px);
+        /* Adjust the value based on the dialog height */
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 20px;
+        text-align: center;
+    }
+
+    #surrender-dialog p,
+    #draw-dialog p {
+        margin: 0 0 20px;
+    }
+
+    #confirm-message {
+        margin-bottom: 20px;
+    }
 </style>
 </head>
 
@@ -221,6 +245,21 @@ if (!$isLoggedIn)
             <a href="vsPlayer" class="button" style="text-align:center">New game</a>
             <a href="" class="button" id="review-game" style="text-align:center">Review the game</a>
         </div>
+    </div>
+    <div id="surrender-dialog" class="hidden">
+        <p id="confirm-message">Are you sure you want to surrender?</p>
+        <a class="button" id="yes-surrender">Yes</a>
+        <a class="button" id="no-surrender">No</a>
+    </div>
+    <div id="draw-accept-dialog" class="hidden">
+        <p id="confirm-message">Your opponent requested a draw. Do you accept?</p>
+        <a class="button" id="yes-accept-draw">Yes</a>
+        <a class="button" id="no-accept-draw">No</a>
+    </div>
+    <div id="draw-dialog" class="hidden">
+        <p>Do you want to ask for a draw?</p>
+        <a class="button" id="yes-draw">Yes</a>
+        <a class="button" id="no-draw">No</a>
     </div>
 
     <div class="opponent hidden">
@@ -239,9 +278,11 @@ if (!$isLoggedIn)
         <p style="margin-top: 53px;">Searching for a player</p>
         <span></span>
     </div>
+    <a id="surrender" class="button" style="text-align:center">Surrender</a>
+    <a id="draw" class="button" style="text-align:center">Draw</a>
     <div class="center" style="display: flex; justify-content:center; align-items:center">
         <div style="font-size:1.5em"> <br><br><br><br><br><br><br><br><br><br><br><br><br>
-            <a class="button">BACK TO MENU</a>
+            <a id="back-menu" class="button">BACK TO MENU</a>
         </div>
     </div>
 
@@ -251,8 +292,16 @@ if (!$isLoggedIn)
     var jwt = "<?= $_COOKIE['jwt'] ?? null ?>"
     var gameId = null
     var idPlayer = "<?= Jwt::getPayload($_COOKIE['jwt'])['user_id']; ?>"
-
-
+    $("#surrender").click(function(e) {
+        e.preventDefault();
+        $("#surrender-dialog").removeClass("hidden");
+        $("#draw-dialog").addClass("hidden");
+    });
+    $("#draw").click(function(e) {
+        e.preventDefault();
+        $("#surrender-dialog").addClass("hidden");
+        $("#draw-dialog").removeClass("hidden");
+    });
     
 </script>
 

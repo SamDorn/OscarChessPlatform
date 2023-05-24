@@ -9,8 +9,6 @@ use ReallySimpleJWT\Token;
 class Jwt
 {
 
-    private const SECRET = '0$c@rCh3$$Pl@tf0rm';
-    private const ISSUER = '192.168.1.16';
     /**
      * Creates a JWT token for a user and sets it as a cookie with a one hour expiration
      * time.
@@ -20,8 +18,8 @@ class Jwt
      */
     public static function createToken(UserModel $userModel): void
     {
-        $token = Token::create($userModel->getId(), self::SECRET, time()+ 3600, self::ISSUER);
-        setcookie("jwt", $token, time()+ 3600, '/', '', true, true);
+        $token = Token::create($userModel->getId(), $_ENV['JWT_SECRET'], time() + 54000, $_ENV['ISSUER']);
+        setcookie("jwt", $token, time() + 54000, '/', '', true, true);
     }
     /**
      * Validates a jwt and if the jwt isn't valid it redirects the user
@@ -33,18 +31,14 @@ class Jwt
      */
     public static function validate(?string $token): bool
     {
-        if($token){
-            if(!Token::validate($token, self::SECRET)){
-                unset($_COOKIE['jwt']);
-                setcookie('jwt', null, -1, '/'); 
-                return false;
-            }
-            else{
-                return true;
-            }
+        if (!$token) {
+            return false;
         }
-        return false;
-        
+        if (!Token::validate($token, $_ENV['JWT_SECRET'])) {
+            self::deleteToken();
+            return false;
+        }
+        return true;
     }
     public static function deleteToken(): void
     {
@@ -64,8 +58,18 @@ class Jwt
     {
         return Token::getPayload($token);
     }
-    public static function updateTime(string $token): void
+    /**
+     * Updates the time token for a given user by deleting the existing token and creating
+     * a new one.
+     * 
+     * @param UserModel Instance of the UserModel class, which
+     * contains information about a user such as their ID, name, email, and other relevant data. This
+     * parameter is used to update the time token for the user, which is a security measure to ensure
+     * that the user's session remains active
+     */
+    public static function updateTimeToken(UserModel $userModel): void
     {
-        setcookie("jwt", $token, time()+ 3600, '/', 'localhost', true, true);
+        self::deleteToken();
+        self::createToken($userModel);
     }
 }

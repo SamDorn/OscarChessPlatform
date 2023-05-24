@@ -362,13 +362,17 @@ h2{
         socket.onmessage = function(e) {
             let object = JSON.parse(e.data)
             if (object.disconnect === 'disconnect') {
-                location.href = "logout?de"
+                $.ajax({
+                    type: "GET",
+                    url: "logout",
+                    success: function (response) {
+                        location.href = "login?de"
+                    }
+                });
             }
-            console.log(object.disconnect)
         }
     } catch (error) {
         console.log(error)
-        console.log("You must login")
     }
 
 

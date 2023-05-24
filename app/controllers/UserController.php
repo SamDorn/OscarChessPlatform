@@ -35,11 +35,10 @@ class UserController extends Controller
                 if($response === 'problem with sending the email'){
                     header("Location: login?ese");
                 }
-                header("Location: login");
+                header("Location: login?es");
 
             } else {
-                http_response_code(505);
-                $this->render("_505");
+                //
             }
         }
         else{
@@ -58,21 +57,22 @@ class UserController extends Controller
     {
         try {
             $this->userModel->loadData($request->getBody());
-            var_dump($this->userModel);
             if ($this->userModel->checkUser("normal")) {
                 Jwt::createToken($this->userModel);
                 header("Location: home");
             } else
                 header("Location: login?wc");
-        } catch (\Exception) {
+        } catch (\Exception $e) {
 
-            header("Location: login?ee");
+            echo '<pre>';
+            var_dump($e->getMessage());
+            echo '</pre>';
+            //header("Location: login?ee");
         }
     }
     public function logout(): void
     {
         Jwt::deleteToken();
-        header("Location: home");
     }
 
     /**
@@ -82,13 +82,13 @@ class UserController extends Controller
      *
      * @return void
      */
-    public function checkUsername(Request $request): void
+    public function checkUsername(Request $request): mixed
     {
         $this->userModel->loadData($request->getBody());
         if ($this->userModel->checkUsername())
-            echo json_encode("Username already taken");
+            return json_encode("Username already taken");
         else
-            echo json_encode("Username available");
+            return json_encode("Username available");
     }
 
     public function getPlayers(): mixed
@@ -110,9 +110,9 @@ class UserController extends Controller
         $data = $request->getBody();
         $this->userModel->setVerificationCode($data['code']);
         if ($this->userModel->verifyEmail()) {
-            header("Location: home?ev=t");
+            header("Location: home?ev");
         } else {
-            header("Location: home?nv=t");
+            header("Location: home?nv");
         }
     }
     public function getPlayerById(Request $request, array $params): mixed

@@ -18,18 +18,21 @@ class Request
 
         // $this->routes[
         //     'get' => [
+        //         '', [SiteController::class, home], // Route for the default URL
         //         '/home', [SiteController::class, home],
         //         '/login', [SiteController::class, login],
         //         'player/{id}', [SiteController::class, player]
         //     ]
         // ]
-        /**
-         * If the preg_match was successfull $matches will contain an array of
-         * 2 element $matches = ['/player', [42]]. Since the
-         * parameter is needed is unset and left only with the parameter
-         */
-        
+
         foreach ($routes[$this->getMethod()] as $route => $handler) {
+
+            if ($path === '') { // Check for the default URL route
+                $callback = $handler;
+                break;
+            }
+            $route = $route === "" ? "nessuno" : $route;
+
             if (preg_match("%^$route%", $path, $matches) === 1) {
                 $callback = $handler;
                 unset($matches[0]);

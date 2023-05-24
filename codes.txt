@@ -1,10 +1,17 @@
 01 = problem adding the user to the database
-02 = problem with sending the email to the user
 03 = problem with the jwt token
 04 = problem with the registration, mising or invalid fields
 
+
+LOGIN/REGISTRATION
 wc = wrong credential
-we = wrong email
+we = email already in use
 ese = error sending email
+es = email successfully sent
+
 po = player need to be logged in order to play online
 de = login from a different device has been made
+
+EMAIL
+ev = email verified
+nt = email not verified
