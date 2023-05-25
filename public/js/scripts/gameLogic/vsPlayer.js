@@ -153,6 +153,8 @@ function inputHandler(event) {
                             }))
                             modal.style.display = "block";
                             $("#title-modal").html("You drew:<br>You are a not a winner nor a loser");
+                            $("#draw").remove();
+                            $("#surrender").remove();
 
 
                         } else {
@@ -167,6 +169,8 @@ function inputHandler(event) {
                             }))
                             modal.style.display = "block";
                             $("#title-modal").html("You won:<br>You are a winner");
+                            $("#draw").remove();
+                            $("#surrender").remove();
                         }
                     }
 
@@ -230,6 +234,8 @@ socket.onmessage = function (e) {
     if(data.state === "Opponent resigned"){
         modal.style.display = "block";
         $("#title-modal").html("You won:<br>Your opponent resigned");
+        $("#draw").remove();
+        $("#surrender").remove();
     }
     if(data.state === "Opponent requested draw"){
         $("#draw-accept-dialog").removeClass("hidden");
@@ -246,17 +252,18 @@ socket.onmessage = function (e) {
             $("#draw-accept-dialog").addClass("hidden");
             $("#title-modal").html("You draw:<br>You accepted the draw offer");
             modal.style.display = "block";
-            console.log("I accepted")
+            $("#draw").remove();
+            $("#surrender").remove();
         });
     }
     if(data.state === "Opponent accepted the draw"){
         $("#title-modal").html("You draw:<br>Your opponent accepted the draw");
+        $("#draw").remove();
+        $("#surrender").remove();
         modal.style.display = "block";
-        console.log("Opponent accepted")
     }
 
     gameId = data.id_game
-    console.log(data)
     try {
         if (data.status == "ready to play") { // this message is sent if the player was already in a game or a second player joined his game
             /**
@@ -264,6 +271,7 @@ socket.onmessage = function (e) {
              * is sent at the beginning of a match.
              * Sets the image and username and the headers for the pgn of the game
              */
+            console.log("giusto")
             $.ajax({
                 type: "GET",
                 url: "player/" + data.id_opponent,
@@ -274,20 +282,21 @@ socket.onmessage = function (e) {
                     } else {
                         chess.header("White", response.username, 'Black', username)
                     }
-                    console.log(chess.pgn())
                     $("#board").removeClass("hidden");
                     $(".ring").remove();
+                    $(".center").remove();
                     $(".username-opponent").html(response.username);
-                    $(".img-opponent").attr("src", response.avatar);
+                    $(".img-opponent").attr("src", "images/avatars/" + response.avatar);
                     $(".img-player").removeClass("hidden");
                     $(".username-player").removeClass("hidden");
                     $("#board").removeClass("hidden");
                     $(".opponent").removeClass("hidden");
                     $(".player").removeClass("hidden");
+                    $("#draw").removeClass("hidden");
+                    $("#surrender").removeClass("hidden");
+                    $("body").append("<br><a class='button' href='home'>Back to menu</a>");
                 }
             });
-
-
         }
     } catch (error) {
         console.log(error)
@@ -318,9 +327,13 @@ socket.onmessage = function (e) {
             if (chess.isCheckmate()) {
                 modal.style.display = "block";
                 $("#title-modal").html("You lost:<br>Your opponent was stronger or luckier");
+                $("#draw").remove();
+                $("#surrender").remove();
             } else {
                 modal.style.display = "block";
                 $("#title-modal").html("You drew:<br>You are a not a winner nor a loser");
+                $("#draw").remove();
+                $("#surrender").remove();
             }
         }
         board.removeMarkers(MARKER_TYPE.square)
@@ -365,7 +378,7 @@ $.ajax({
     success: function (response) {
         console.log(response)
         $(".username-player").html(response.username);
-        $(".img-player").attr("src", response.avatar);
+        $(".img-player").attr("src", "images/avatars/" + response.avatar);
         username = response.username
     }
 })
@@ -393,6 +406,8 @@ $("#yes-surrender").click(function(e) {
     }))
     $("#title-modal").html("You lost:<br>You resigned like a coward");
     modal.style.display = "block";
+    $("#draw").remove();
+    $("#surrender").remove();
 });
 $("#no-surrender").click(function (e) { 
     e.preventDefault();

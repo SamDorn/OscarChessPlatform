@@ -5,9 +5,11 @@
 
 LOGIN/REGISTRATION
 wc = wrong credential
-we = email already in use
+we = wrong email
 ese = error sending email
 es = email successfully sent
+eau = email already used
+uau = username already used
 
 po = player need to be logged in order to play online
 de = login from a different device has been made
@@ -15,3 +17,6 @@ de = login from a different device has been made
 EMAIL
 ev = email verified
 nt = email not verified
+
+PROFILE
+ac = account modified

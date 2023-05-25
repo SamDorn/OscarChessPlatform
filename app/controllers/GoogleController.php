@@ -3,6 +3,7 @@
 namespace App\controllers;
 
 use Google;
+use App\utilities\Img;
 use App\utilities\Jwt;
 use App\utilities\Email;
 use App\models\UserModel;
@@ -32,11 +33,14 @@ class GoogleController
         $googleService = new Google\Service\Oauth2($this->googleClient);
         $data = $googleService->userinfo->get();
 
+        
+        Img::saveImg($data->name, $data->picture);
+
         $this->userModel->setUsername($data->name);
         $this->userModel->setEmail($data->email);
         $this->userModel->setPassword(null);
-        $this->userModel->setAvatar($data->picture);
         $this->userModel->setVerified(true);
+        $this->userModel->setAvatar("$data->name.png");
 
         /**
          * Checks if the user has already made the google login before

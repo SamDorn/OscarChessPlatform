@@ -128,11 +128,18 @@ h1{
     <div class="registerForm">
         <form action="register" method="POST">
             <input type="text" name="username" id="usernameSignUp" placeholder="username" autocomplete="off" required>
-            <span id="errorUsername"></span><br>
+            <span id="errorUsername">
+            <?php if (isset($_GET['uau'])) : ?>
+                    <h4>The username provided is already in use</h4>
+                <?php endif; ?>
+            </span><br>
             <input type="email" name="email" id="emailSignUp" placeholder="email" autocomplete="off" required>
             <span id="errorEmail">
                 <?php if (isset($_GET['we'])) : ?>
                     <h4>The email provided is not a valid email</h4>
+                <?php endif; ?>
+                <?php if (isset($_GET['eau'])) : ?>
+                    <h4>The email provided is already in use</h4>
                 <?php endif; ?>
             </span><br>
         

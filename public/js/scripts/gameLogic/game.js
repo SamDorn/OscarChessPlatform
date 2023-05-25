@@ -137,7 +137,7 @@ export function getPuzzle(data, color, inputHandler) {
             //usage of the ternary operator to determine if the color the user is playing 
             //is white or black. If the color to move is black it will be black otherwise white
             color = chess.turn() == 'b' ? COLOR.black : COLOR.white
-            color === COLOR.white ? $("#player").text("muove il bianco") : $("#player").text("Muove il nero")
+            color === COLOR.white ? $("#player").text("White to move") : $("#player").text("Black to move")
 
             board.setPosition(chess.fen())
             board.setOrientation(color) //set the orientation of the board based on the color
@@ -206,14 +206,14 @@ export function getPuzzleByCategory(category, color, inputHandler) {
     })
 }
 
-export function getMove(socket, chess, board) {
+export function getMove(socket, chess, board, skill) {
 
     if (socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({
             request: "vsComputer",
             username: sessionId,
             fen: chess.fen(),
-            skill: 0,
+            skill: skill,
             jwt: jwt
         }))
 
@@ -224,7 +224,7 @@ export function getMove(socket, chess, board) {
                 request: "vsComputer",
                 username: sessionId,
                 fen: chess.fen(),
-                skill: 0,
+                skill: skill,
                 jwt: jwt
             })
             )
@@ -248,10 +248,14 @@ export function getMove(socket, chess, board) {
         setTimeout(() => {
             if (chess.isGameOver()) {
                 if (chess.isDraw()) {
-                    $("#finish").text("Pareggio. Nessuno vince")
-                }
+                    $("#modal-finish").removeClass("hidden");
+                    $("#title-modal").html("You drew:<br>You are a not a winner nor a loser");
+                    
+                    }
                 else {
-                    $("#finish").text("Sembra che hai perso. Allenati ancora un pó")
+                    $("#modal-finish").removeClass("hidden");
+                    $("#title-modal").html("You lost:<br>The computer never lose ;)");
+                
                 }
             }
         }, 1500)

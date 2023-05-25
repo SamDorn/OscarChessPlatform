@@ -135,7 +135,7 @@
             </div>
             <a href="home">Homepage</a>
             <?php if (isset($_GET['po'])) : ?>
-                <h4>You need to be logged to be able to play online</h4>
+                <h4>You need to be logged in to be able to play online</h4>
             <?php endif; ?>
         </form>
     </div>

@@ -32,13 +32,18 @@ class UserController extends Controller
             $response = $this->userModel->addUser("normal");
             if ($response === "User added correctly in the database") {
                 $response = Email::sendEmail($this->userModel->getEmail(), "normal", $this->userModel->getVerificationCode());
-                if($response === 'problem with sending the email'){
+                if($response === 'email sent'){
+                    header("Location: login?es");
+                } else{
                     header("Location: login?ese");
                 }
-                header("Location: login?es");
 
             } else {
-                //
+                if($response === "username already taken")
+                    header("Location: register?uau");
+                elseif ($response === "email already taken") {
+                    header("Location: register?eau");
+                }
             }
         }
         else{
@@ -119,5 +124,20 @@ class UserController extends Controller
     {
         $this->userModel->setId($params[1]);
         return json_encode($this->userModel->getUserById());
+    }
+    public function updateUser(Request $request): void
+    {
+        $this->userModel->loadData($request->getBody());
+        $this->userModel->loadData($this->userModel->getAllInfo());
+        $this->userModel->loadData($request->getBody());
+        $this->userModel->updateUser();
+        header("Location: home?am");
+    }
+    public function sendEmail(Request $request) : mixed
+    {
+        $this->userModel->loadData($request->getBody());
+        $this->userModel->loadData($this->userModel->getAllInfo());
+        $email = $this->userModel->getEmail();
+        return json_encode(Email::sendEmail($email, "normal", $this->userModel->getVerificationCode()));
     }
 }

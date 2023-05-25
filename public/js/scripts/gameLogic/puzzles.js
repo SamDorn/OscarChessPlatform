@@ -78,7 +78,7 @@ function inputHandler(event) {
                     else { //if it isn't the right move
 
                         $("#state").removeClass("right");
-                        $("#state").text("Loser,\nyou made the wrong move");
+                        $("#state").text("That's the wrong move");
                         $("#state").addClass("fail");
 
                         //still makes an animation and uses the chess.undo() function to delete the last move.
@@ -133,7 +133,7 @@ function inputHandler(event) {
                         board.setPosition(chess.fen(), true) //make the animation with the original chessboard
 
                         $("#state").removeClass("right");
-                        $("#state").text("Loser,\nyou made the wrong move");
+                        $("#state").text("That's the wrong move");
                         $("#state").addClass("fail");
                     })
                 }

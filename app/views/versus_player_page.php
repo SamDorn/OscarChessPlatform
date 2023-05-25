@@ -63,6 +63,7 @@ if (!$isLoggedIn)
     /* FINE MODAL */
     body {
         background: #262626;
+        overflow-y: hidden;
     }
 
     .ring {
@@ -145,7 +146,7 @@ if (!$isLoggedIn)
 
 
     .hidden {
-        display: none;
+        display: none !important;
     }
 
     a.button {
@@ -278,8 +279,8 @@ if (!$isLoggedIn)
         <p style="margin-top: 53px;">Searching for a player</p>
         <span></span>
     </div>
-    <a id="surrender" class="button" style="text-align:center">Surrender</a>
-    <a id="draw" class="button" style="text-align:center">Draw</a>
+    <a id="surrender" class="button hidden" style="text-align:center">Surrender</a>
+    <a id="draw" class="button hidden" style="text-align:center">Draw</a>
     <div class="center" style="display: flex; justify-content:center; align-items:center">
         <div style="font-size:1.5em"> <br><br><br><br><br><br><br><br><br><br><br><br><br>
             <a id="back-menu" class="button">BACK TO MENU</a>

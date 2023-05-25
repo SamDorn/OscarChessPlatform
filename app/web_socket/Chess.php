@@ -250,8 +250,10 @@ class Chess implements MessageComponentInterface
                 $this->gamesPvpInProgressModel->setId($data->id);
                 $idUserOpponent = $this->gamesPvpInProgressModel->getOtherPlayer();
 
+
                 $this->userModel->setId($idUserOpponent);
                 $opponentConnectionId = $this->userModel->getLast_ConnectionId();
+                
 
                 $this->gamesPvpInProgressModel->endGame(); //deletes the game from the table
                 if ($msg === 'win') {
@@ -272,10 +274,8 @@ class Chess implements MessageComponentInterface
                         }
                     }
                 } else {
-      
                     foreach ($this->clients as $client) {
                         if ($client->resourceId === $opponentConnectionId) {
-                            echo "send accept draw";
                             $client->send(json_encode(array(
                                 'id_game' => $data->id,
                                 'state' => "Opponent accepted the draw"
@@ -294,7 +294,6 @@ class Chess implements MessageComponentInterface
                 $opponentConnectionId = $this->userModel->getLast_ConnectionId();
                 foreach ($this->clients as $client) {
                     if ($client->resourceId === $opponentConnectionId) {
-                        echo "sent request draw";
                         $client->send(json_encode(array(
                             'id_game' => $data->id,
                             'state' => "Opponent requested draw"
@@ -302,6 +301,7 @@ class Chess implements MessageComponentInterface
                         break;
                     }
                 }
+                break;
 
                 /**
                  * Will happen when a user who is waiting for a game to start and clicks back to menu.

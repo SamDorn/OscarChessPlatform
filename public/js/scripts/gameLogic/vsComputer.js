@@ -12,14 +12,8 @@ initializeChessboard()
 
 var result = null
 
-//uses the ternary operator to casually generate the color
-const color = Math.floor(Math.random() * 2) === 0 ? COLOR.black : COLOR.white
 
-board.setOrientation(color) //set the orientation of the board based on the color
 
-//uses the ternary operator to see if the user is black.
-//if it is it send a message to the webSocket server to make the first move
-color === COLOR.black ? getMove(socket, chess, board) : null
 
 
 
@@ -63,10 +57,18 @@ function inputHandler(event) {
           board.addMarker(MARKER_TYPE.square, move[0] + move[1]) //add the square type marker of the last move
           board.addMarker(MARKER_TYPE.square, move[2] + move[3]) //add the square type marker of the last move
           if (chess.isGameOver()) {
-            $("#finish").text("Congratulazioni. Hai vinto")
+            if (chess.isDraw()) {
+              
+              $("#modal-finish").removeClass("hidden");
+              $("#title-modal").html("You drew:<br>You are a not a winner nor a loser");
+            }
+            else {
+              $("#modal-finish").removeClass("hidden");
+              $("#title-modal").html("You won:<br>You are a winner");
+            }
           }
           else {
-            getMove(socket, chess, board) //calls the function to get the pc move and update the chessboard
+            getMove(socket, chess, board, skill) //calls the function to get the pc move and update the chessboard
           }
 
         } else { //if the user didn't clicked any of the piece showd in the promotion dialog
@@ -103,16 +105,17 @@ function inputHandler(event) {
           if (chess.isGameOver()) {
             if (chess.isDraw()) {
 
-              $("#finish").text("Pareggio. Nessuno vince")
+              $("#modal-finish").removeClass("hidden");
+              $("#title-modal").html("You drew:<br>You are a not a winner nor a loser");
 
             }
             else {
-
-              $("#finish").text("Congratulazioni. Hai vinto")
+              $("#modal-finish").removeClass("hidden");
+              $("#title-modal").html("You won:<br>You are a winner");
             }
           }
           else {
-            getMove(socket, chess, board) //calls the function to get the pc move and update the chessboard
+            getMove(socket, chess, board, skill) //calls the function to get the pc move and update the chessboard
           }
 
         })
@@ -121,10 +124,24 @@ function inputHandler(event) {
     return result
   }
 }
+function start(color, skill) {
+  if (color === "random")
+    color = Math.floor(Math.random() * 2) === 0 ? COLOR.black : COLOR.white
+  else {
+    color = color === "white" ? COLOR.white : COLOR.black
+  }
 
-board.enableMoveInput(inputHandler, color) //enable the input for the color of the user
 
-hintClick(color, socket)
+  board.setOrientation(color) //set the orientation of the board based on the color
+
+  //uses the ternary operator to see if the user is black.
+  //if it is it send a message to the webSocket server to make the first move
+  color === COLOR.black ? getMove(socket, chess, board, skill) : null
+  board.enableMoveInput(inputHandler, color) //enable the input for the color of the user
+
+  hintClick(color, socket)
+}
+
 drawArraws()
 
 
@@ -133,4 +150,21 @@ the home page. */
 $("#menu").click(function () {
   location.href = "home"
 })
+
+$("#play").click(function (e) {
+  e.preventDefault();
+  if (color === null) {
+    $("#error").html("Choose a color");
+    $("#error").removeClass("hidden");
+    return
+  }
+  if (skill === null) {
+
+    $("#error").html("Choose a skill");
+    $("#error").removeClass("hidden");
+    return
+  }
+  $("#modal").remove();;
+  start(color, skill)
+});
 

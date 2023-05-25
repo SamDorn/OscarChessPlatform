@@ -2,6 +2,7 @@
 
 namespace App\utilities;
 
+use Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class Email
@@ -22,7 +23,7 @@ class Email
             height: 50px;
             width: 50px;'><h1>Welcome to OscarChessPlatform</h1><br>
             <h3>Click here to verify your email</h3><br>
-            <a href='http://192.168.1.15/verifyEmail?code=$verificationCode'style='
+            <a href='https://oscarchessplatform.org/verifyEmail?code=$verificationCode'style='
             border: 3px solid black;
             background-color: black;
             color: white;
@@ -37,6 +38,7 @@ class Email
         }
         $mail = new PHPMailer();
         $mail->IsSMTP();
+        $mail->SMTPDebug  = 1;
         $mail->Mailer = "smtp";
 
         $mail->SMTPAuth   = TRUE;
@@ -46,13 +48,16 @@ class Email
         $mail->Username   = $_ENV['SMTP_USERNAME'];
         $mail->Password   = $_ENV['SMTP_PASSWORD'];
         $mail->addAddress($email);
-        $mail->SetFrom($_ENV['SMTP_USERNAME'], "OscarChessPlatform");
+        $mail->SetFrom($_ENV['SMTP_EMAIL'], "OscarChessPlatform");
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body = $body;
+
         if (!$mail->Send()) {
-            return "problem with sending the email";
+            //return "problem with sending the email";
         }
+
+
         return "email sent";
     }
 }

@@ -69,4 +69,8 @@ class SiteController extends Controller
     {
         return $this->render('review_page', $params);
     }
+    public function profile(): string
+    {
+        return $this->render('profile_page');
+    }
 }

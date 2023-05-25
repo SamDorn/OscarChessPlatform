@@ -12,7 +12,7 @@ class UserModel extends Model
     protected ?string $email;
     protected ?string $password;
     protected ?string $passwordConfirm;
-    protected ?string $avatar = "https://i.pinimg.com/originals/f1/0f/f7/f10ff70a7155e5ab666bcdd1b45b726d.jpg";
+    protected ?string $avatar = "anonymous.jpg";
     protected ?int $last_connectionId;
     protected ?string $status;
     protected ?string $type;
@@ -342,7 +342,28 @@ class UserModel extends Model
      */
     public function getUserById(): array
     {
-        $query = "SELECT username, avatar, status, verified, date FROM users where id = :id";
+        $query = "SELECT username, avatar, status, verified, date FROM users WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result == false ? [] : $result;
+    }
+    public function updateUser(): void
+    {
+        $query = "UPDATE users SET username = :username, email = :email, password = :password, avatar = :avatar WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':username', $this->username);
+        $stmt->bindParam(':email', $this->email);
+        $stmt->bindParam(':password', $this->password);
+        $stmt->bindParam(':avatar', $this->avatar);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+    }
+    public function getAllInfo(): array
+    {
+        $query = "SELECT * FROM users WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();

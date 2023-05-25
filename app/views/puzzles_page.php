@@ -104,18 +104,18 @@
     
     <div id="player" style="font-size: 30px; color:white"></div>
     <div id="state"></div>
-    <a id="hint" class="secondary-button">Mostra soluzione</a>
-    <h2>Scegli una categoria di problemi</h2>
+    <a id="hint" class="secondary-button">Show solution</a>
+    <h2>Choose a problem category</h2>
     <div class="button-group">
         <div>
-            <a id="opening" class="secondary-button" style="font-size: 2rem;">Apertura</a>
-            <a id="endgame" class="secondary-button" style="font-size: 2rem;">Finale</a>
+            <a id="opening" class="secondary-button" style="font-size: 2rem;">Opening</a>
+            <a id="endgame" class="secondary-button" style="font-size: 2rem;">endgame</a>
         </div>
         <div>
-            <a id="middlegame" class="secondary-button" style="font-size: 2rem;">Mediogioco</a><br><br><br>
+            <a id="middlegame" class="secondary-button" style="font-size: 2rem;">middlegame</a><br><br><br>
         </div>
     </div>
-    <a href="home" class="secondary-button">Torna al menu</a>
+    <a href="home" class="secondary-button">Back to menu</a>
 
 </body>
 <script>

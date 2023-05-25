@@ -22,7 +22,8 @@ if ($isLoggedIn) : ?>
         .wrapper .sidebar {
             max-width: 30%;
         }
-        .secondary-button{
+
+        .secondary-button {
             margin-left: 0 auto;
         }
 
@@ -42,7 +43,7 @@ if ($isLoggedIn) : ?>
         padding: 20px 0;
         transition: all 0.5s ease;
         box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
-        
+
     }
 
     .wrapper .sidebar .profile {
@@ -135,7 +136,13 @@ if ($isLoggedIn) : ?>
         min-width: 500px;
     }
 
+    i {
+        cursor: pointer;
+    }
 
+    .hidden {
+        display: none;
+    }
 
     p {
         font-size: 25px;
@@ -199,7 +206,8 @@ if ($isLoggedIn) : ?>
         border-radius: 5px;
         cursor: pointer;
     }
-    .secondary-button:hover{
+
+    .secondary-button:hover {
         box-shadow: 0 0 10px #1a98c1;
     }
 
@@ -210,27 +218,70 @@ if ($isLoggedIn) : ?>
     h2 {
         text-align: center;
     }
-    .disabled{
+
+    .disabled {
         background-color: #ccc;
         cursor: not-allowed;
     }
+
     .left-div {
         text-align: center;
-        height:150px; 
-        width:300px; 
+        height: 150px;
+        width: 300px;
         border: 2px solid black;
-        left: 0 ;
-}
-.sub{
-    text-align: center;
-}
-h2{
-    font-size: 25px;
-}
+        left: 0;
+    }
+
+    .sub {
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 25px;
+    }
+
+    a:hover {
+        cursor: pointer;
+    }
+
+    .alert {
+        position: absolute;
+        top: 0px;
+        margin: 0 auto;
+        padding: 15px;
+        border-radius: 4px;
+        text-align: center;
+        width: fit-content;
+        margin: 0 auto;
+        margin-bottom: 15px;
+        font-size: 30px;
+        left: 45%;
+
+    }
+
+    .green {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+
+    .orange {
+        color: #ffa500;
+        background-color: #ffe6cc;
+        border-color: #ffcc99;
+    }
 </style>
 
 <body>
-
+    <?php if (isset($_GET['am'])) : ?>
+        <div class="alert green">Account modified successfully.<i class="fa-solid fa-xmark close-btn"></i></div>
+    <?php endif; ?>
+    <?php if (isset($_GET['ev'])) : ?>
+        <div class="alert green">Email verified successfully.<i class="fa-solid fa-xmark close-btn"></i></div>
+    <?php endif; ?>
+    <?php if (isset($_GET['nv'])) : ?>
+        <div class="alert orange">There was a problem verifying your email.<i class="fa-solid fa-xmark close-btn"></i></div>
+    <?php endif; ?>
     <div class="wrapper">
         <div class="section">
             <div class="top_navbar">
@@ -241,7 +292,7 @@ h2{
                 <h1>Welcome on OscarChessPlatform</h1> <br>
 
                 <p class="sub">
-                    OscarChessPlatform is the new best platform available where you can play chess or enjoy watching other people playing
+                    OscarChessPlatform is the new best platform available where you can play chess or enjoy watching other people playing. <br>
                     These are some of the reviews left by our users who played on this platform <br> <br>
                 </p>
 
@@ -254,15 +305,15 @@ h2{
                         <button class="secondary-button disabled" id="online" onclick="location.href = 'vsPlayer'"><i class="fa-solid fa-globe"></i>&nbspPlay online</button> <br><br><br>
                         <h2>It's time to learn some new tactics</h2><br><br>
                         <button style="margin-left:150px" class="secondary-button" id="vspuzzle" onclick="location.href = 'puzzles'"><i class="fa-solid fa-graduation-cap"></i>&nbspResolve puzzles</button>
-                    
+
                     </div>
                 </div><br><br>
-                
+
                 <h2>Reviews</h2> <br>
                 <div class="review">
                     <h4>Best chess platform by an amateur</h4>
                     <p>"Of course it isn't the best one on the market, but let's think about it for a second. Only one person was behind all of this and was able
-                        to pull this masterpiece. Hats of for <a href="http://github.com/SamDorn" target="_blank">Sam Dorn</a>"</p>
+                        to pull this masterpiece. Hats off for <a href="http://github.com/SamDorn" target="_blank">Sam Dorn</a>"</p>
                     <p class="author">- Mattia Rocchi</p>
                 </div>
                 <div class="review">
@@ -270,7 +321,7 @@ h2{
                     <p>"This came out of nowhere and it was the right thing at the right moment. The market of chess platform
                         was very static, with only 2 major sites, but <b>OscarChessPlatform</b> was able to change things and
                         save the day. A lot could be improved but the fact that is <a href="http://github.com/SamDorn/OscarChessPlatform" target="_blank">open source</a> make me feel safer
-                        since I know my personal data will not be shared with 3-partyies "</p>
+                        since I know my personal data will not be used incorrectly"</p>
                     <p class="author">- Nigario</p>
                 </div>
                 <div class="review">
@@ -328,20 +379,22 @@ h2{
                     </a>
                 </li>
                 <li>
-                    <a href="login">
-                        <span class="icon"><i class="fa-solid fa-user"></i></span>
-                        <span class="item">
-                            <?php if ($isLoggedIn) : ?>
-                                Profile
-                            <?php else : ?>
-                                Login/Sign-up
-                            <?php endif; ?>
-                        </span>
-                    </a>
+
+                    <?php if ($isLoggedIn) : ?>
+                        <a href="profile">
+                            <span class="icon"><i class="fa-solid fa-user"></i></span>
+                            <span class="item">Profile</span></a>
+                    <?php else : ?>
+                        <a href="login">
+                            <span class="icon"><i class="fa-solid fa-user"></i></span>
+                            <span class="item">Login/Sign-up</span></a>
+                    <?php endif; ?>
+
+
                 </li>
                 <?php if ($isLoggedIn) : ?>
                     <li>
-                        <a href="logout">
+                        <a id="logout">
                             <span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span>
                             <span class="item">Logout</span>
                         </a>
@@ -365,7 +418,7 @@ h2{
                 $.ajax({
                     type: "GET",
                     url: "logout",
-                    success: function (response) {
+                    success: function(response) {
                         location.href = "login?de"
                     }
                 });
@@ -385,7 +438,7 @@ h2{
         dataType: "json",
         success: function(response) {
             console.log(response)
-            $("#img-profile").attr("src", response.avatar);
+            $("#img-profile").attr("src", "images/avatars/" + response.avatar);
             $("h3").html(response.username);
         }
     });
@@ -394,6 +447,29 @@ h2{
     });
     $("#online").click(function(e) {
         location.href = "vsPlayer"
+    });
+    $.ajax({
+        type: "GET",
+        url: "",
+        data: "data",
+        dataType: "dataType",
+        success: function(response) {
+
+        }
+    });
+    $("#logout").click(function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: "logout",
+            success: function(response) {
+                location.href = "login"
+            }
+        });
+    });
+    $(".close-btn").click(function(e) {
+        e.preventDefault();
+        $(".alert").addClass("hidden");
     });
 </script>
 

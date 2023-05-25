@@ -29,6 +29,7 @@ $app->router->get('/vsPlayer', [SiteController::class, 'vsPlayer']);
 $app->router->get('/puzzles', [SiteController::class, 'puzzles']);
 $app->router->get('/login', [SiteController::class, 'login']);
 $app->router->get('/register', [SiteController::class, 'register']);
+$app->router->get('/profile', [SiteController::class, 'profile']);
 $app->router->get('/review/{id}', [SiteController::class, 'review']);
 $app->router->get('/verifyEmail', [UserController::class, 'verifyEmail']);
 $app->router->get('/google', [GoogleController::class, 'handleLogin']);
@@ -36,6 +37,7 @@ $app->router->get('/puzzle', [PuzzleController::class, 'puzzleId']);
 $app->router->get('/game/{id}', [GameController::class, 'getGame']);
 $app->router->get('/player/{id}', [UserController::class, 'getPlayerById']);
 $app->router->get('/logout', [UserController::class, 'logout']);
+$app->router->get('/sendEmail', [UserController::class, 'sendEmail']);
 
 
 
@@ -46,6 +48,7 @@ response. For example, when a user submits a registration form, the 'addUser' me
 $app->router->post('/register', [UserController::class, 'addUser']);
 $app->router->post('/login', [UserController::class, 'checkUser']);
 $app->router->post('/checkUsername', [UserController::class, 'checkUsername']);
+$app->router->post('/updateProfile', [UserController::class, 'updateUser']);
 
 
 /**
