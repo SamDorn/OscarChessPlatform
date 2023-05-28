@@ -14,13 +14,7 @@
 
 ## What is it?
 It's a web application that allow you to do different things.\
-For now you can play against a computer which is set at the maximum level.\
-When it will be finished you should be able to:\
--Play against the computer at differents levels;\
--Play against another player (only if sign-in);\
--Watch the games you played to learn from your mistakes (only if sign-in);\
--Learn from a repository of chess basics, patterns and more;\
--Watch another player's game in live. 
+For now you can play against the computer and another player.
 
 
 
@@ -29,20 +23,34 @@ When it will be finished you should be able to:\
 
 ### Against computer
 
-  Every time the player makes a move, an ajax request, sending the current fen, the session_id()\
-  and the skill level of the computer, is sent to the index.php which \
-  redirect the request to the app/controllers/AjaxController. The AjaxController runs the app/python/main.py script. The script uses the stockfish.py\
-  library which allows the usage of the stockfish engine more easily.\
-  The script will set the engine to the skill provided, will set the fen position provided\
-  and will calculate the best move according to the skill level. The fen representing the move\
-  stockfish played is saved in a file named with the session_id provided.\
-  The AjaxController will then read the file created, echo out the fen and the board is updated. 
+  When the user land on the vsComputer page it will connect to a webSocket server and every time\
+  he makes a move a message is sent indicating the request(VsComputer), the current fen position, the skill of the\     
+  computer the player chose, the username (which is a uniqueId) and a jwt. \
+  On the server side when the server receive a vsComputer request thanks to stockfish-py \
+  it uses the stockfish engine to calculate the best move according to the skill provided\
+  then the move is saved in a .txt file with the name of the username which will be unique for everyone.\
+  The server will be then be able to read the content of the file, get the best move, and send it back\
+  to who sent the message. The file then gets deleted. 
+  The idea of the jwt token sent is to save games in the database if the player is logged in \
+  but this needs to be implemented.
 
 ### Against player
 
-  The idea is to use webSocket to connect 2 players. If there are no games\
-  with second player null it will craete a new game.\
-  Still in designing process.
+  As for the versus computer, the vsPlayer uses web socket to send and receive information\
+  about the game. The logic of the game is based on a switch case. That's because\
+  for example when the user first lands on the page a request vsPlayer is sent with a state of\
+  newGame: the server will check if the user is already in an existing match and if he is it will sends\
+  all the information he needs to continue playing the game. If the server doesn't found any game\
+  he was playing in he will check if there are other player waiting for a second player to join. If there\
+  are it will join that game and start the match, if there aren't it will create a game with a status of \
+  waiting another player. When another user will look for a game and find the game created it will notify \
+  the user who created the game and start the match.\
+  Every time a player makes a move it will send an update state changing the PGN and the last move and will send\
+  a message to the other player containing the PGN and the move he played.\
+  When a game is over a finsh message is sent and there could be some scenarios. Since there is no timer\
+  if the player send a message finish it has either draw or win since you can't lose on your turn.\
+  A msg is sent along with the state finish indicating if the player has won or draw. In either case it will\
+  notify the other user of the state of the game. 
 
 ### Learn section
 
